@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Success сounter</string>
+    <string name="isSave">Сохранить</string>
+    <string name="idCancel">Закрыть</string>
+    <string name="title_activity_exercise_set">История</string>
+
+    <string name="title_activity_fullscreen">Упражнение</string>
+</resources>

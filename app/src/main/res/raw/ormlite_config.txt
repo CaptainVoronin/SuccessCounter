@@ -1,0 +1,49 @@
+#
+# generated on 2019/10/22 12:33:05
+#
+# --table-start--
+dataClass=org.max.successcounter.model.ExerciseSet
+tableName=exerciseset
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+allowGeneratedIdInsert=true
+# --field-end--
+# --field-start--
+fieldName=name
+# --field-end--
+# --field-start--
+fieldName=exercises
+foreignCollection=true
+foreignCollectionEager=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=org.max.successcounter.model.Exercise
+tableName=exercise
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+allowGeneratedIdInsert=true
+# --field-end--
+# --field-start--
+fieldName=date
+# --field-end--
+# --field-start--
+fieldName=attemptsCount
+# --field-end--
+# --field-start--
+fieldName=successCount
+# --field-end--
+# --field-start--
+fieldName=parent
+columnName=parent_id
+foreign=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
