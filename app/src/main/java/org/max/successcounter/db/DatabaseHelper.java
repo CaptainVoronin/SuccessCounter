@@ -12,12 +12,13 @@ import com.j256.ormlite.table.TableUtils;
 import org.max.successcounter.R;
 import org.max.successcounter.model.Exercise;
 import org.max.successcounter.model.ExerciseSet;
+import org.max.successcounter.model.HistoryItem;
 
 
 public final class DatabaseHelper extends OrmLiteSqliteOpenHelper
 {
     private static final String DATABASE_NAME = "scounter.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 9;
 
     private Dao<ExerciseSet, Integer> sDao;
     private Dao<Exercise, Integer> eDao;
@@ -31,6 +32,7 @@ public final class DatabaseHelper extends OrmLiteSqliteOpenHelper
         try {
             TableUtils.createTable(connectionSource, ExerciseSet.class);
             TableUtils.createTable(connectionSource, Exercise.class);
+            TableUtils.createTable(connectionSource, HistoryItem.class);
         } catch (java.sql.SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Unable to create datbases", e);
         }
@@ -39,9 +41,8 @@ public final class DatabaseHelper extends OrmLiteSqliteOpenHelper
     @Override
     public void onUpgrade(SQLiteDatabase sqliteDatabase, ConnectionSource connectionSource, int oldVer, int newVer) {
         try {
-            TableUtils.dropTable(connectionSource, ExerciseSet.class, true);
-            TableUtils.dropTable(connectionSource, Exercise.class, true);
-            onCreate(sqliteDatabase, connectionSource);
+            TableUtils.dropTable(connectionSource, HistoryItem.class, false );
+            TableUtils.createTable(connectionSource, HistoryItem.class);
         } catch (java.sql.SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Unable to upgrade database from version " + oldVer + " to new "
                     + newVer, e);

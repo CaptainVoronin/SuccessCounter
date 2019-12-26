@@ -22,12 +22,16 @@ import com.j256.ormlite.dao.Dao;
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.Exercise;
 import org.max.successcounter.model.ExerciseSet;
+import org.max.successcounter.model.HistoryItem;
+import org.max.successcounter.model.HistoryOperator;
+import org.max.successcounter.model.excercise.IStep;
+import org.max.successcounter.model.excercise.RunToExcercise;
+import org.max.successcounter.model.excercise.SimpleExercise;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Stack;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,7 +46,7 @@ public class ExerciseActivity extends AppCompatActivity
     public final static String exerciseID = "exerciseID";
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
-    //private View mControlsView;
+
     private final Runnable mShowPart2Runnable = new Runnable()
     {
         @Override
@@ -57,9 +61,10 @@ public class ExerciseActivity extends AppCompatActivity
             //mControlsView.setVisibility(View.VISIBLE);
         }
     };
-    Stack<Integer> history;
-    List<Entry> percentHistory;
-    Exercise current;
+
+
+    //SimpleExercise sxr;
+    RunToExcercise sxr;
     ExerciseSet exSet;
     Dao<Exercise, Integer> exDao;
     TextView lbPercent;
@@ -67,6 +72,7 @@ public class ExerciseActivity extends AppCompatActivity
     LineChart mChart;
     ImageButton btnRollback;
     private View mContentView;
+
     private final Runnable mHidePart2Runnable = new Runnable()
     {
         @SuppressLint("InlinedApi")
@@ -113,9 +119,6 @@ public class ExerciseActivity extends AppCompatActivity
             }
         });
 
-        history = new Stack<>();
-        percentHistory = new ArrayList<>();
-
         try
         {
             prepareControls();
@@ -132,28 +135,18 @@ public class ExerciseActivity extends AppCompatActivity
 
     private void prepareControls()
     {
-
-
         lbPercent = findViewById(R.id.lbPercent);
         lbAttempts = findViewById(R.id.lbAttempts);
 
         ImageButton btn = findViewById(R.id.btnAttempt);
 
         btn.setOnClickListener(e -> {
-            current.incAttempts();
-            history.add(0);
-            percentHistory.add(new Entry(percentHistory.size(), new Float(current.getPercent())));
-            updatePercent();
-            saveResult();
+            addStep( 0 );
         });
 
         btn = findViewById(R.id.btnSuccess);
         btn.setOnClickListener(e -> {
-            current.incSuccess();
-            history.add(1);
-            percentHistory.add(new Entry(percentHistory.size(), new Float(current.getPercent())));
-            updatePercent();
-            saveResult();
+            addStep( 1 );
         });
 
         btnRollback = findViewById(R.id.btnRollback);
@@ -194,20 +187,38 @@ public class ExerciseActivity extends AppCompatActivity
 
     }
 
+    private void addStep(int points)
+    {
+        sxr.addStepByPoints( points );
+        saveResult( );
+        updatePercent();
+        if( sxr.isFinished() )
+        {
+            lockScreen();
+        }
+    }
+
+    private void lockScreen()
+    {
+
+    }
+
     private void saveResult()
     {
         try
         {
+/*
             current.setDate(Calendar.getInstance().getTime());
             if (current.getId() == null)
                 exDao.create(current);
             else
                 exDao.update(current);
+*/
 
-            btnRollback.setEnabled(current.getAttemptsCount() != 0);
+            btnRollback.setEnabled(sxr.getSteps().size() != 0);
 
             setResult(RESULT_OK);
-        } catch (SQLException e)
+        } catch ( Exception e)
         {
             e.printStackTrace();
         }
@@ -215,8 +226,13 @@ public class ExerciseActivity extends AppCompatActivity
 
     void updatePercent()
     {
-        lbPercent.setText(current.getPercent() + "%");
-        lbAttempts.setText("" + current.getSuccessCount() + "(" + current.getAttemptsCount() + ")");
+        IStep step = sxr.getLastStep();
+        if( step != null )
+            lbPercent.setText( step.getPercent() + "%");
+        else
+            lbPercent.setText( "0.0%");
+
+        lbAttempts.setText("" + sxr.getSuccessCount() + "(" + sxr.getAttemptsCount() + ")");
         drawCharts();
     }
 
@@ -224,30 +240,39 @@ public class ExerciseActivity extends AppCompatActivity
     {
         DatabaseHelper db = new DatabaseHelper(this);
 
+        // initialize the history operator
+        HistoryOperator.instance.createDAO( db );
+
         Integer setId = getIntent().getIntExtra(HistoryActivity.EX_SET_ID, -1);
 
         if (setId == -1)
             throw new IllegalArgumentException("Exercise set id is missing");
 
         Dao<ExerciseSet, Integer> exSetDao = db.getDao(ExerciseSet.class);
+
+        // Get the exercise set by its id
         exSet = exSetDao.queryForId(setId);
 
         exDao = db.getDao(Exercise.class);
+        //sxr = new SimpleExercise();
+        sxr = new RunToExcercise( 15 );
 
-        Integer id = getIntent().getIntExtra(exerciseID, -1);
+
+        // Check, if exercise already exists
+     /*   Integer id = getIntent().getIntExtra(exerciseID, -1);
 
         if (id == -1)
         {
             current = new Exercise();
             current.setParent(exSet);
+
         } else
         {
             current = findExById(exSet, id);
             if (current == null)
                 throw new IllegalArgumentException("Exercise not found. id " + id);
             updatePercent();
-        }
-
+        } */
     }
 
     private Exercise findExById(ExerciseSet exSet, Integer id)
@@ -261,26 +286,8 @@ public class ExerciseActivity extends AppCompatActivity
 
     void undo()
     {
-        int count;
-
-        if (history.empty())
-            return;
-
-        Integer val = history.pop();
-
-        if (val == 1)
-        {
-            count = current.getSuccessCount();
-            if (count > 0)
-                current.setSuccessCount(count - 1);
-        }
-        count = current.getAttemptsCount();
-        if (count > 0)
-            current.setAttemptsCount(count - 1);
-
-        percentHistory.remove(percentHistory.size() - 1);
-
-        btnRollback.setEnabled(count != 0);
+        sxr.undo();
+        btnRollback.setEnabled( sxr.getSteps().size() != 0);
     }
 
     private void drawCharts()
@@ -288,7 +295,7 @@ public class ExerciseActivity extends AppCompatActivity
         mChart.clear();
         LineData data = new LineData();
         int color = Color.rgb(0xDD, 0x88, 0x00);
-        LineDataSet set = new LineDataSet(percentHistory, "%");
+        LineDataSet set = new LineDataSet(sxr.getPercentHistory(), "%");
         set.setDrawCircleHole(false);
         set.setDrawCircles(false);
         set.setColor(color);
