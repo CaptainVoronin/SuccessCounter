@@ -5,7 +5,7 @@ public class SimpleExercise extends AExercise
     @Override
     public IStep addStepByPoints(Integer points)
     {
-        IStep step = new ElementaryStep();
+        IStep step = new Step();
         step.setPoints(points);
         step.setExercise(this);
         addStep(step);
@@ -14,7 +14,7 @@ public class SimpleExercise extends AExercise
         return step;
     }
 
-    public int getSuccessCount()
+    public Integer getSuccessCount()
     {
         return (int) steps.stream().filter(step -> step.getPoints() != 0).count();
     }

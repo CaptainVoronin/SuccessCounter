@@ -4,5 +4,8 @@
 
     <item
         android:id="@+id/idAddNew"
-        android:title="Добавить" />
+        android:title="Новое простое" />
+    <item
+        android:id="@+id/idNewCompound"
+        android:title="Новое составное" />
 </menu>

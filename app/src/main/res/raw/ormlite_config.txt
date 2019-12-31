@@ -1,9 +1,9 @@
 #
-# generated on 2019/10/22 12:33:05
+# generated on 2020/01/01 02:09:05
 #
 # --table-start--
-dataClass=org.max.successcounter.model.ExerciseSet
-tableName=exerciseset
+dataClass=org.max.successcounter.model.excercise.Result
+tableName=result
 # --table-fields-start--
 # --field-start--
 fieldName=id
@@ -11,10 +11,53 @@ generatedId=true
 allowGeneratedIdInsert=true
 # --field-end--
 # --field-start--
+fieldName=parent
+columnName=parent_id
+foreign=true
+# --field-end--
+# --field-start--
+fieldName=percent
+# --field-end--
+# --field-start--
+fieldName=shots
+# --field-end--
+# --field-start--
+fieldName=date
+# --field-end--
+# --field-start--
+fieldName=points
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=org.max.successcounter.model.excercise.Template
+tableName=template
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+allowGeneratedIdInsert=true
+# --field-end--
+# --field-start--
+fieldName=limit
+# --field-end--
+# --field-start--
+fieldName=limited
+# --field-end--
+# --field-start--
 fieldName=name
 # --field-end--
 # --field-start--
-fieldName=exercises
+fieldName=compound
+# --field-end--
+# --field-start--
+fieldName=options
+foreignCollection=true
+foreignCollectionEager=true
+# --field-end--
+# --field-start--
+fieldName=results
 foreignCollection=true
 foreignCollectionEager=true
 # --field-end--
@@ -22,27 +65,27 @@ foreignCollectionEager=true
 # --table-end--
 #################################
 # --table-start--
-dataClass=org.max.successcounter.model.Exercise
-tableName=exercise
+dataClass=org.max.successcounter.model.HistoryItem
+tableName=history
 # --table-fields-start--
 # --field-start--
 fieldName=id
 generatedId=true
-allowGeneratedIdInsert=true
 # --field-end--
 # --field-start--
-fieldName=date
+fieldName=points
 # --field-end--
 # --field-start--
-fieldName=attemptsCount
-# --field-end--
-# --field-start--
-fieldName=successCount
+fieldName=percent
 # --field-end--
 # --field-start--
 fieldName=parent
 columnName=parent_id
 foreign=true
+# --field-end--
+# --field-start--
+fieldName=templateID
+canBeNull=false
 # --field-end--
 # --table-fields-end--
 # --table-end--

@@ -6,9 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -17,8 +14,8 @@ import android.widget.TextView;
 import com.j256.ormlite.dao.Dao;
 
 import org.max.successcounter.db.DatabaseHelper;
-import org.max.successcounter.model.Exercise;
-import org.max.successcounter.model.ExerciseSet;
+import org.max.successcounter.model.excercise.Result;
+import org.max.successcounter.model.excercise.Template;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -29,10 +26,10 @@ import androidx.appcompat.widget.Toolbar;
 
 public class HistoryActivity extends AppCompatActivity
 {
-    public final static String EX_SET_ID = "EX_SET_ID";
-    Dao<Exercise, Integer> exDao;
-    Dao<ExerciseSet, Integer> exSetDao;
-    Integer exSetId;
+    public final static String TEMPLATE_ID = "TEMPLATE_ID";
+    Dao<Template, Integer> templateDao;
+    Dao<Result, Integer> resultDao;
+    Integer templateId;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
@@ -50,7 +47,7 @@ public class HistoryActivity extends AppCompatActivity
             }
     }
 
-    ExerciseSet exSet;
+    Template template;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,18 +58,22 @@ public class HistoryActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         DatabaseHelper db = new DatabaseHelper(this);
         try
         {
-            exDao = db.getDao(Exercise.class);
-            exSetDao = db.getDao(ExerciseSet.class);
+            Dao<Result, Integer> resultDao = db.getDao(Result.class);
+
+            templateDao = db.getDao(Template.class);
             Intent in = getIntent();
-            exSetId = in.getIntExtra(EX_SET_ID, -1);
-            if (exSetId == -1)
+            templateId = in.getIntExtra(TEMPLATE_ID, -1);
+            if (templateId == -1)
                 throw new IllegalArgumentException();
 
+
             fillList();
-            setTitle( exSet.getName() );
+            setTitle( template.getName() );
+
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -82,45 +83,44 @@ public class HistoryActivity extends AppCompatActivity
 
     private void fillList() throws SQLException
     {
-        exSet = exSetDao.queryForId( exSetId );
+        template = templateDao.queryForId(templateId);
         TableLayout table = findViewById( R.id.historyTable );
         table.removeAllViews();
 
-        for( Exercise ex : exSet.getExercisesAsList() )
-            table.addView( makeRow( ex, isItLastExercise( ex, exSet.getExercisesAsList() ) ) );
+        for( Result res : template.getResults() )
+            table.addView( makeRow( res, isItLastExercise( res, template.getExercisesAsList() ) ) );
     }
 
-    private View makeRow(Exercise ex, boolean isLast)
+    private View makeRow(Result res, boolean isLast)
     {
         TableRow tr = (TableRow) getLayoutInflater().inflate( R.layout.historyrow, null );
         TextView tv = tr.findViewById( R.id.lbDate );
-        tv.setText( Exercise.getFormattedDate( ex ) );
-        tv.setOnLongClickListener( new ExLongClickListener( ex.getId() ));
+        tv.setText( Result.getFormattedDate( res ) );
+        tv.setOnLongClickListener( new ExLongClickListener( res.getId() ));
 
         if( isLast )
-            tv.setOnClickListener( new ExClickListener( ex.getId() ) );
+            tv.setOnClickListener( new ExClickListener( res.getId() ) );
 
         tv = tr.findViewById( R.id.lbPercent );
-        tv.setText( Exercise.getPercentString( ex ) );
-        tv.setOnLongClickListener( new ExLongClickListener( ex.getId() ));
+        tv.setText( Result.getPercentString( res ) );
+        tv.setOnLongClickListener( new ExLongClickListener( res.getId() ));
 
         if( isLast )
-            tv.setOnClickListener( new ExClickListener( ex.getId() ) );
+            tv.setOnClickListener( new ExClickListener( res.getId() ) );
 
         tv = tr.findViewById( R.id.lbCount );
-        tv.setText( "" + ex.getSuccessCount() + "(" + ex.getAttemptsCount() + ")" );
-        tv.setOnLongClickListener( new ExLongClickListener( ex.getId() ));
+        tv.setText( "" + res.getPoints() + "(" + res.getShots() + ")" );
+        tv.setOnLongClickListener( new ExLongClickListener( res.getId() ));
 
         if( isLast )
-            tv.setOnClickListener( new ExClickListener( ex.getId() ) );
-
+            tv.setOnClickListener( new ExClickListener( res.getId() ) );
 
         return tr;
     }
 
-    private void deleteEx(Object tag)
+    private void deleteResult(Object tag)
     {
-        Exercise ex = (Exercise) tag;
+        Result res = (Result) tag;
         AlertDialog.Builder builder = new AlertDialog.Builder(HistoryActivity.this);
         builder.setTitle("Удаление");
         builder.setMessage("Подтвердите удаление");
@@ -131,7 +131,7 @@ public class HistoryActivity extends AppCompatActivity
                 dialog.dismiss();
                 try
                 {
-                    exDao.delete(ex);
+                    resultDao.delete(res);
                     setResult(RESULT_OK);
                     fillList();
                 } catch (SQLException e)
@@ -166,7 +166,7 @@ public class HistoryActivity extends AppCompatActivity
                 switch (item.getItemId())
                 {
                     case R.id.idMenuDeleteExSet:
-                        deleteEx(v.getTag());
+                        deleteResult(v.getTag());
                         return true;
                     default:
                         return false;
@@ -179,11 +179,11 @@ public class HistoryActivity extends AppCompatActivity
         return false;
     }
 
-    boolean isItLastExercise(Exercise ex, List<Exercise> items)
+    boolean isItLastExercise(Result res, List<Result> items)
     {
-        long date = ex.getDate().getTime();
+        long date = res.getDate().getTime();
 
-        for (Exercise item : items)
+        for (Result item : items)
             if (item.getDate().getTime() > date)
                 return false;
 
@@ -218,9 +218,9 @@ public class HistoryActivity extends AppCompatActivity
         @Override
         public void onClick(View v)
         {
-            Intent in = new Intent( HistoryActivity.this, ExerciseActivity.class );
-            in.putExtra( ExerciseActivity.exerciseID, id );
-            in.putExtra( ExerciseDynamicActivity.EX_SET_ID, exSet.getId() );
+            Intent in = new Intent( HistoryActivity.this, SimpleExerciseActivity.class );
+            in.putExtra( AExerciseActivity.RESULT_ID, id );
+            in.putExtra( ExerciseProgressActivity.TEMPLATE_ID, template.getId() );
             startActivityForResult( in, ActivityIDs.EXERCISEACTIVITY_ID );
 
             // TODO : Обновлять после OK

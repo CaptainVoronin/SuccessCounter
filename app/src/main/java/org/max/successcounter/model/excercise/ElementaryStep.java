@@ -5,6 +5,7 @@ public class ElementaryStep implements IStep
     Integer points;
     Float percent;
     IExercise exercise;
+    Integer id;
 
     @Override
     public Float getPercent()
@@ -40,5 +41,17 @@ public class ElementaryStep implements IStep
     public IExercise getExercise()
     {
         return exercise;
+    }
+
+    @Override
+    public Integer getId()
+    {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer id)
+    {
+        this.id = id;
     }
 }

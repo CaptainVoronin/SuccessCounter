@@ -1,7 +1,6 @@
 package org.max.successcounter.model.excercise;
 
 import com.github.mikephil.charting.data.Entry;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +9,26 @@ public abstract class AExercise implements IExercise
     String name;
     Integer id;
     List<IStep> steps;
+    Template template;
+    Result result;
+
+    @Override
+    public void setTemplate(Template template)
+    {
+        this.template = template;
+    }
+
+    @Override
+    public Template getTemplate()
+    {
+        return template;
+    }
+
+    @Override
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
     public AExercise()
     {
@@ -95,5 +114,28 @@ public abstract class AExercise implements IExercise
     public int getAttemptsCount()
     {
         return steps.size();
+    }
+
+    @Override
+    public Result getResult()
+    {
+        if( result == null )
+        {
+            result = new Result();
+            result.setParent( getTemplate() );
+        }
+
+        result.setShots( getAttemptsCount() );
+        result.setPercent( getLastStep().getPercent() );
+        result.setPoints( getSuccessCount() );
+
+        return result;
+    }
+
+    @Override
+    public void setSteps(List<IStep> steps)
+    {
+        this.steps = steps;
+        this.steps.forEach( step -> step.setExercise( this ) );
     }
 }

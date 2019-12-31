@@ -8,50 +8,47 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
 import com.j256.ormlite.dao.Dao;
-
+import com.j256.ormlite.dao.ForeignCollection;
 import org.max.successcounter.db.DatabaseHelper;
-import org.max.successcounter.model.Exercise;
-import org.max.successcounter.model.ExerciseSet;
-
+import org.max.successcounter.model.excercise.Result;
+import org.max.successcounter.model.excercise.Template;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity
 {
     DatabaseHelper dbHelper;
-    Dao<ExerciseSet, Integer> exSetDao;
+    Dao<Template, Integer> exTemplateDao;
     TableLayout table;
-    ListView mainList;
-    ExerciseComparator comparator;
+//    ListView mainList;
+    ResultComparator comparator;
+    SimpleDateFormat dateFormatter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        comparator = new ExerciseComparator();
+        comparator = new ResultComparator();
         table = findViewById(R.id.mainTable);
         dbHelper = new DatabaseHelper(this);
+        dateFormatter = new SimpleDateFormat( "dd.MM.yyyy" );
 
         try
         {
-            exSetDao = dbHelper.getDao(ExerciseSet.class);
+            exTemplateDao = dbHelper.getDao(Template.class);
             fillList();
         } catch (SQLException e)
         {
@@ -61,43 +58,40 @@ public class MainActivity extends AppCompatActivity
 
     private void fillList() throws SQLException
     {
-        List<ExerciseSet> list = exSetDao.queryForAll();
+        List<Template> list = exTemplateDao.queryForAll();
         table.removeAllViews();
         
-        for( ExerciseSet set : list )
+        for( Template set : list )
         {
             TableRow tr = makeRow( set );
             table.addView( tr );
         }
     }
 
-    private TableRow makeRow(ExerciseSet set)
+    private TableRow makeRow(Template template)
     {
-
         TableRow tr = (TableRow) getLayoutInflater().inflate( R.layout.exsetrow, null );
 
         TextView tv = tr.findViewById( R.id.lbName );
-        tv.setTag( set );
-        tv.setText( set.getName() );
-        tv.setOnClickListener(new OnExSetClick(set.getId()));
+        tv.setTag( template );
+        tv.setText( template.getName() );
+        tv.setOnClickListener(new OnExSetClick(template));
         tv.setOnLongClickListener(new ExSetLongClickListener(tv));
 
-        if( set.getExercises().size() != 0 )
+        if( template.getResults() != null && template.getResults().size() > 0 )
         {
-            List<Exercise> lst = new ArrayList<>();
-            lst.addAll(set.getExercises());
-            Exercise ex = getLatestExercise(lst);
+            org.max.successcounter.model.excercise.Result res = getLatestResult(template.getResults());
 
-            tv = tr.findViewById( R.id.lbPercent );
-            tv.setTag( set );
-            tv.setText( Exercise.getPercentString( ex ) );
-            tv.setOnClickListener(new OnExSetClick(set.getId()));
+            tv = tr.findViewById(R.id.lbPercent);
+            tv.setTag(template);
+            tv.setText(res.getPercent().toString());
+            tv.setOnClickListener(new OnExSetClick(template));
             tv.setOnLongClickListener(new ExSetLongClickListener(tv));
 
-            tv = tr.findViewById( R.id.lbDate );
-            tv.setTag( set );
-            tv.setText( Exercise.getFormattedDate( ex ) );
-            tv.setOnClickListener(new OnExSetClick(set.getId()));
+            tv = tr.findViewById(R.id.lbDate);
+            tv.setTag(template);
+            tv.setText(dateFormatter.format(res.getDate()));
+            tv.setOnClickListener(new OnExSetClick(template));
             tv.setOnLongClickListener(new ExSetLongClickListener(tv));
         }
 
@@ -111,60 +105,17 @@ public class MainActivity extends AppCompatActivity
         switch (id)
         {
             case R.id.idAddNew:
-                addNewExerciseSet();
+                addNewSimpleExercise();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void addNewExerciseSet()
+    private void addNewSimpleExercise()
     {
-        AlertDialog.Builder b = makeDialog("Новое упражнение");
-        LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.newexsetdialog, null);
-        b.setView(view);
-
-        EditText ed = view.findViewById(R.id.edName);
-
-        b.setPositiveButton(R.string.isSave, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                dialog.dismiss();
-                saveNewExSet(ed.getText().toString());
-            }
-        });
-
-        b.setNegativeButton(R.string.idCancel, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                dialog.cancel();
-            }
-        });
-
-        b.show();
-
-    }
-
-    void saveNewExSet(String name)
-    {
-        ExerciseSet set = new ExerciseSet();
-        set.setName(name);
-        int id = 0;
-        try
-        {
-            id = exSetDao.create(set);
-            set.setId(id);
-            fillList();
-
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
+        Intent in = new Intent(this, NewSimpleExActivity.class);
+        startActivityForResult(in,ActivityIDs.NEWSIMPLEEXERCISE_ID);
     }
 
     @Override
@@ -176,22 +127,24 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * ЗАпустить экран со списком выполненных подходов к упражнению
+     * Запустить экран со списком выполненных подходов к упражнению
      *
      * @param id - упражнение
      */
-    private void gotoExercise(Integer id)
+    private void gotoExercise(Template template)
     {
-        Intent in = new Intent(this, ExerciseDynamicActivity.class);
-        //in.putExtra(HistoryActivity.EX_SET_ID, id);
-        in.putExtra(ExerciseDynamicActivity.EX_SET_ID, id);
-        startActivityForResult(in,ActivityIDs.EXERCISEDYNAMICACTIVITY_ID);
+        Intent in = new Intent(this, ExerciseProgressActivity.class);
+
+        in.putExtra(ExerciseProgressActivity.TEMPLATE_ID, template.getId());
+
+        startActivityForResult(in,ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
-        if( requestCode == ActivityIDs.EXERCISEDYNAMICACTIVITY_ID )
+        if( requestCode == ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID ||
+                requestCode == ActivityIDs.NEWSIMPLEEXERCISE_ID )
             if( resultCode == RESULT_OK )
             {
                 try
@@ -204,16 +157,16 @@ public class MainActivity extends AppCompatActivity
             }
     }
 
-    private void renameExSet(Object tag)
+    private void renameTemplate(Object tag)
     {
-        ExerciseSet set = (ExerciseSet) tag;
+        Template res = (Template) tag;
         AlertDialog.Builder b = makeDialog("Переименовать");
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.newexsetdialog, null);
         b.setView(view);
 
         EditText ed = view.findViewById(R.id.edName);
-        ed.setText(set.getName());
+        ed.setText( res.getName());
 
         b.setPositiveButton(R.string.isSave, new DialogInterface.OnClickListener()
         {
@@ -224,8 +177,8 @@ public class MainActivity extends AppCompatActivity
                 {
                     dialog.dismiss();
                     String name = ed.getText().toString();
-                    set.setName(name);
-                    exSetDao.update(set);
+                    res.setName(name);
+                    //exTemplateDao.update(set);
                     fillList();
                 } catch (SQLException e)
                 {
@@ -246,12 +199,12 @@ public class MainActivity extends AppCompatActivity
         b.show();
     }
 
-    private void deleteExSet(Object tag)
+    private void deleteTemplate(Object tag)
     {
-        ExerciseSet set = (ExerciseSet) tag;
+        Template template = (Template) tag;
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Удаление");
-        builder.setMessage("Подтвердите удаление " + set.getName());
+        builder.setMessage("Подтвердите удаление " + template.getName());
         builder.setPositiveButton("Да", new DialogInterface.OnClickListener()
         {
             public void onClick(DialogInterface dialog, int id)
@@ -259,7 +212,7 @@ public class MainActivity extends AppCompatActivity
                 dialog.dismiss();
                 try
                 {
-                    exSetDao.delete(set);
+                    //exTemplateDao.delete(set);
                     fillList();
                 } catch (SQLException e)
                 {
@@ -293,10 +246,10 @@ public class MainActivity extends AppCompatActivity
                 switch (item.getItemId())
                 {
                     case R.id.idMenuDeleteExSet:
-                        deleteExSet(v.getTag());
+                        deleteTemplate(v.getTag());
                         return true;
                     case R.id.idMenuRenameExSet:
-                        renameExSet(v.getTag());
+                        renameTemplate(v.getTag());
                         return true;
                     default:
                         return false;
@@ -309,11 +262,13 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
-    private Exercise getLatestExercise(List<Exercise> exercises)
+    private Result getLatestResult(ForeignCollection<Result> results)
     {
-        Collections.sort((List) exercises, comparator);
-        Exercise ex = (Exercise) ((List) exercises).get(exercises.size() - 1);
-        return ex;
+        List<Result> lst = new ArrayList<>();
+        results.forEach( item -> lst.add( item ) );
+        Collections.sort( lst, comparator);
+        Result res = lst.get(results.size() - 1);
+        return res;
     }
 
     AlertDialog.Builder makeDialog(String title)
@@ -328,11 +283,12 @@ public class MainActivity extends AppCompatActivity
         return b;
     }
 
-    class ExSetAdapter extends BaseAdapter
+/*
+    class ResultAdapter extends BaseAdapter
     {
-        List<ExerciseSet> items;
+        List<Result> items;
 
-        public ExSetAdapter(List<ExerciseSet> items)
+        public ResultAdapter(List<Result> items)
         {
             this.items = items;
         }
@@ -362,30 +318,31 @@ public class MainActivity extends AppCompatActivity
             {
                 convertView = getLayoutInflater().inflate(R.layout.exsetrowview, container, false);
             }
-            ExerciseSet set = (ExerciseSet) getItem(position);
+
+            Template result = (Template) getItem(position);
             TextView tv = (TextView) convertView.findViewById(R.id.lbAttempts);
 
-            tv.setText(set.getName());
-            tv.setOnClickListener(new OnExSetClick(set.getId()));
+            tv.setText(result.getName());
+            tv.setOnClickListener(new OnExSetClick(result));
 
-            tv.setTag(set);
+            tv.setTag(result);
             tv.setOnLongClickListener(new ExSetLongClickListener(tv));
 
             TextView tvPercent = (TextView) convertView.findViewById(R.id.lbPercent);
             TextView tvDate = (TextView) convertView.findViewById(R.id.lbDate);
-            if (set.getExercises() != null && set.getExercises().size() > 0)
+            if (result.getResults() != null && result.getResults().size() > 0)
             {
-                List<Exercise> lst = new ArrayList<>();
-                lst.addAll(set.getExercises());
-                Exercise ex = getLatestExercise(lst);
+                List<Result> lst = new ArrayList<>();
+                lst.addAll(result.getResults());
+                Result res = getLatestResult(lst);
 
-                tvPercent.setText(Exercise.getPercentString(ex));
-                tvPercent.setOnClickListener(new OnExSetClick(set.getId()));
+                tvPercent.setText( Result.getPercentString(res));
+                tvPercent.setOnClickListener(new OnExSetClick(result));
                 tvPercent.setOnLongClickListener(new ExSetLongClickListener(tv));
 
-                tvDate.setText(Exercise.getFormattedDate(ex));
+                tvDate.setText(Exercise.getFormattedDate(res));
                 tvDate.setOnLongClickListener(new ExSetLongClickListener(tv));
-                tvDate.setOnClickListener(new OnExSetClick(set.getId()));
+                tvDate.setOnClickListener(new OnExSetClick(result));
             }
             else
             {
@@ -395,11 +352,12 @@ public class MainActivity extends AppCompatActivity
             return convertView;
         }
     }
+*/
 
-    class ExerciseComparator implements Comparator<Exercise>
+    class ResultComparator implements Comparator<Result>
     {
         @Override
-        public int compare(Exercise o1, Exercise o2)
+        public int compare(Result o1, Result o2)
         {
             return Long.compare(o1.getDate().getTime(), o2.getDate().getTime());
         }
@@ -407,17 +365,17 @@ public class MainActivity extends AppCompatActivity
 
     class OnExSetClick implements View.OnClickListener
     {
-        Integer id;
+        Template template;
 
-        public OnExSetClick(Integer id)
+        public OnExSetClick(Template template)
         {
-            this.id = id;
+            this.template = template;
         }
 
         @Override
         public void onClick(View v)
         {
-            gotoExercise(id);
+            gotoExercise(template);
         }
     }
 

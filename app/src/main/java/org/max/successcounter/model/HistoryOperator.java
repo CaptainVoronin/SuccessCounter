@@ -1,11 +1,12 @@
 package org.max.successcounter.model;
 
-import com.github.mikephil.charting.data.Entry;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
-
 import org.max.successcounter.db.DatabaseHelper;
+import org.max.successcounter.model.excercise.IExercise;
+import org.max.successcounter.model.excercise.IStep;
+import org.max.successcounter.model.excercise.Step;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,109 +16,63 @@ public enum HistoryOperator
 {
     instance;
 
-    Dao<HistoryItem, Integer> histDao;
-    Exercise exercise;
-    List<HistoryItem> items;
+    private Dao<HistoryItem, Integer> histDao;
+    private IExercise exercise;
 
-    public static ArrayList<Entry> historyToPercent(List<HistoryItem> items)
+    public IExercise getExercise()
     {
-        // TODO: implement it
-        return null;
-    }
-
-    private Exercise getExercise() throws SQLException
-    {
-        if (exercise == null)
-            throw new SQLException("No parent exercise set");
-
         return exercise;
     }
 
-    public void setExercise(Exercise exercise)
-    {
-        this.exercise = exercise;
-        items = new ArrayList<>();
-    }
-
-    void clearHistory() throws SQLException
+    public void clearHistory() throws SQLException
     {
         DeleteBuilder<HistoryItem, Integer > dbl = getDAO().deleteBuilder();
-        dbl.where().eq( "parent_id", getExercise().getId() );
+        dbl.where().eq( "templateID", exercise.getTemplate().getId() );
         dbl.delete();
     }
 
-    public void createDAO(DatabaseHelper db) throws SQLException
+    public void init(DatabaseHelper db, IExercise exercise ) throws SQLException
     {
         histDao = db.getDao(HistoryItem.class);
+        this.exercise = exercise;
     }
 
-    public List<HistoryItem> getHistory() throws SQLException
+    public List<IStep> getHistory() throws SQLException
     {
         QueryBuilder<HistoryItem, Integer> bld = getDAO().queryBuilder();
-        bld.where().eq("parent_id", getExercise().getId());
-        return bld.query();
+        bld.where().eq("templateID", exercise.getTemplate().getId());
+        List<IStep> steps = new ArrayList<>();
+        List<HistoryItem> hist = bld.query();
+        hist.forEach( hi -> {
+            IStep step = new Step();
+            step.setPercent( hi.getPercent() );
+            step.setPoints( hi.getPoints() );
+            step.setId( hi.getId() );
+            steps.add( step );
+        } );
+        return steps;
     }
 
-    public void addItem(int points)
+    public void saveStep(IStep step) throws SQLException
     {
-        HistoryItem item = new HistoryItem();
-        item.setPoints(points);
-        item.setParent(exercise);
-        items.add(item);
+        HistoryItem hi = new HistoryItem();
+        hi.setTemplateID( exercise.getTemplate().getId() );
+        hi.setPoints( step.getPoints() );
+        hi.setPercent( step.getPercent( ) );
+        hi.setParent( exercise.getResult() );
+        getDAO().create(hi);
+        step.setId( hi.getId() );
     }
 
-    public void putItem(HistoryItem item) throws SQLException
-    {
-        if (item.getId() == -1)
-            getDAO().create(item);
-        items.add( item );
-    }
-
-    Dao<HistoryItem, Integer> getDAO() throws SQLException
+    private Dao<HistoryItem, Integer> getDAO() throws SQLException
     {
         if (histDao == null)
             throw new SQLException("DAO not initialized properly");
         return histDao;
     }
 
-    public void clearHistoryForExercise() throws SQLException
+    public int deleteStep(IStep step) throws SQLException
     {
-        DeleteBuilder<HistoryItem, Integer> bld = getDAO().deleteBuilder();
-        bld.where().eq("parent_id", getExercise().getId());
-        bld.delete();
+        return getDAO().deleteById( step.getId() );
     }
-
-    public void undo() throws SQLException
-    {
-        if( items.size() == 0 )
-            return;
-
-        HistoryItem item = items.get( items.size() - 1 );
-        deleteItem( item );
-        items.remove( items.size() - 1 );
-    }
-
-    private void deleteItem(HistoryItem item) throws SQLException
-    {
-        getDAO().delete( item );
-    }
-
-    public List<HistoryItem> getItems()
-    {
-        return items;
-    }
-
-    public List<Entry> getPercentHistory()
-    {
-        List<Entry> list = new ArrayList<>();
-        int i = 0;
-
-        for( HistoryItem item : items )
-        {
-
-        }
-
-        return list;
-    }
-
 }

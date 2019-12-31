@@ -61,7 +61,7 @@ public class RunToExcercise extends SimpleExercise
     }
 
     @Override
-    public int getSuccessCount()
+    public Integer getSuccessCount()
     {
         return steps.size();
     }

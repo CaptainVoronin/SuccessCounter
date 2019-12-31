@@ -13,101 +13,51 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.j256.ormlite.dao.Dao;
 
 import org.max.successcounter.db.DatabaseHelper;
-import org.max.successcounter.model.Exercise;
-import org.max.successcounter.model.ExerciseSet;
-import org.max.successcounter.model.HistoryItem;
 import org.max.successcounter.model.HistoryOperator;
+import org.max.successcounter.model.excercise.ExerciseFactory;
+import org.max.successcounter.model.excercise.Result;
+import org.max.successcounter.model.excercise.Template;
+import org.max.successcounter.model.excercise.IExercise;
 import org.max.successcounter.model.excercise.IStep;
-import org.max.successcounter.model.excercise.RunToExcercise;
-import org.max.successcounter.model.excercise.SimpleExercise;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
-public class ExerciseActivity extends AppCompatActivity
+public abstract class AExerciseActivity<T> extends AppCompatActivity implements IExerciseForm<T>
 {
+    public final static String RESULT_ID = "RESULT_ID";
 
-    public final static String exerciseID = "exerciseID";
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
-
-    private final Runnable mShowPart2Runnable = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            // Delayed display of UI elements
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null)
-            {
-                actionBar.show();
-            }
-            //mControlsView.setVisibility(View.VISIBLE);
-        }
-    };
-
-
-    //SimpleExercise sxr;
-    RunToExcercise sxr;
-    ExerciseSet exSet;
-    Dao<Exercise, Integer> exDao;
-    TextView lbPercent;
-    TextView lbAttempts;
-    LineChart mChart;
-    ImageButton btnRollback;
+    private DatabaseHelper db;
+    private TextView lbPercent;
+    private TextView lbAttempts;
+    private LineChart mChart;
+    private ImageButton btnRollback;
     private View mContentView;
-
-    private final Runnable mHidePart2Runnable = new Runnable()
-    {
-        @SuppressLint("InlinedApi")
-        @Override
-        public void run()
-        {
-            mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        }
-    };
-    private boolean mVisible;
-    private final Runnable mHideRunnable = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            hide();
-        }
-    };
+    private IExercise exercise;
+    private Dao<Result, Integer> daoResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_exercise);
+        setContentView( getViewID() );
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mVisible = true;
-        //mControlsView = findViewById(R.id.fullscreen_content_controls);
+
         mContentView = findViewById(R.id.fullscreen_content);
 
         mContentView.setOnClickListener(new View.OnClickListener()
@@ -119,11 +69,13 @@ public class ExerciseActivity extends AppCompatActivity
             }
         });
 
+        db = new DatabaseHelper(this);
+
         try
         {
             prepareControls();
             prepareObjects();
-            setTitle( exSet.getName() );
+            setTitle( getExercise().getName() );
 
         } catch (SQLException e)
         {
@@ -152,7 +104,7 @@ public class ExerciseActivity extends AppCompatActivity
         btnRollback = findViewById(R.id.btnRollback);
         btnRollback.setOnClickListener(e -> {
             undo();
-            updatePercent();
+            updateUIResults();
             saveResult();
         });
 
@@ -184,15 +136,14 @@ public class ExerciseActivity extends AppCompatActivity
 
         Legend legend = mChart.getLegend();
         legend.setEnabled(false);
-
     }
 
-    private void addStep(int points)
+    protected void addStep(int points)
     {
-        sxr.addStepByPoints( points );
+        getExercise().addStepByPoints( points );
         saveResult( );
-        updatePercent();
-        if( sxr.isFinished() )
+        updateUIResults();
+        if( getExercise().isFinished() )
         {
             lockScreen();
         }
@@ -207,16 +158,11 @@ public class ExerciseActivity extends AppCompatActivity
     {
         try
         {
-/*
-            current.setDate(Calendar.getInstance().getTime());
-            if (current.getId() == null)
-                exDao.create(current);
-            else
-                exDao.update(current);
-*/
+            Result res = exercise.getResult();
+            daoResult.createOrUpdate( res );
+            HistoryOperator.instance.saveStep( getExercise().getLastStep() );
 
-            btnRollback.setEnabled(sxr.getSteps().size() != 0);
-
+            btnRollback.setEnabled(getExercise().getSteps().size() != 0);
             setResult(RESULT_OK);
         } catch ( Exception e)
         {
@@ -224,70 +170,89 @@ public class ExerciseActivity extends AppCompatActivity
         }
     }
 
-    void updatePercent()
+    void updateUIResults()
     {
-        IStep step = sxr.getLastStep();
+        IStep step = getExercise().getLastStep();
         if( step != null )
             lbPercent.setText( step.getPercent() + "%");
         else
             lbPercent.setText( "0.0%");
 
-        lbAttempts.setText("" + sxr.getSuccessCount() + "(" + sxr.getAttemptsCount() + ")");
+        lbAttempts.setText("" + getExercise().getSuccessCount() + "(" + getExercise().getAttemptsCount() + ")");
         drawCharts();
     }
 
     void prepareObjects() throws SQLException
     {
-        DatabaseHelper db = new DatabaseHelper(this);
 
-        // initialize the history operator
-        HistoryOperator.instance.createDAO( db );
+        Integer templateID = getIntent().getIntExtra( ExerciseProgressActivity.TEMPLATE_ID, -1);
 
-        Integer setId = getIntent().getIntExtra(HistoryActivity.EX_SET_ID, -1);
+        if (templateID == -1)
+            throw new IllegalArgumentException("Exercise result id is missing");
 
-        if (setId == -1)
-            throw new IllegalArgumentException("Exercise set id is missing");
+        // Load the execercise template
+        Template et = getTemplate( templateID );
 
-        Dao<ExerciseSet, Integer> exSetDao = db.getDao(ExerciseSet.class);
+        // Make an exercise instance
+        IExercise ex = ExerciseFactory.instance.makeExercise( et );
+        setExerсise( ex );
+        HistoryOperator.instance.init( getDb(), getExercise() );
 
-        // Get the exercise set by its id
-        exSet = exSetDao.queryForId(setId);
+        // Check if it is the continue of an exercise
+        Integer id = getIntent().getIntExtra( AExerciseActivity.RESULT_ID, -1);
+        daoResult = getDao( Result.class, getDb() );
 
-        exDao = db.getDao(Exercise.class);
-        //sxr = new SimpleExercise();
-        sxr = new RunToExcercise( 15 );
-
-
-        // Check, if exercise already exists
-     /*   Integer id = getIntent().getIntExtra(exerciseID, -1);
-
-        if (id == -1)
+        // Yes, it is the continue
+        if( id != -1 )
         {
-            current = new Exercise();
-            current.setParent(exSet);
-
-        } else
+            List<IStep> steps = HistoryOperator.instance.getHistory();
+            getExercise().setSteps( steps );
+            updateUIResults();
+        }
+        else
         {
-            current = findExById(exSet, id);
-            if (current == null)
-                throw new IllegalArgumentException("Exercise not found. id " + id);
-            updatePercent();
-        } */
+            // This is the new exercise,
+            // so the the old history must be deleted
+            HistoryOperator.instance.clearHistory();
+        }
     }
 
-    private Exercise findExById(ExerciseSet exSet, Integer id)
+    protected DatabaseHelper getDb()
     {
-        for (Exercise ex : exSet.getExercisesAsList())
-            if (ex.getId() == id)
-                return ex;
-
-        return null;
+        return db;
     }
 
     void undo()
     {
-        sxr.undo();
-        btnRollback.setEnabled( sxr.getSteps().size() != 0);
+        try
+        {
+            IStep step = getExercise().getLastStep();
+            HistoryOperator.instance.deleteStep(step);
+            getExercise().undo();
+            btnRollback.setEnabled( getExercise().getSteps().size() != 0);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public <T> Dao<T, Integer> getDao(Class<T> exerciseClass, DatabaseHelper db) throws SQLException
+    {
+        return db.getDao( exerciseClass );
+    }
+
+    @Override
+    public void setExerсise( IExercise exercise )
+    {
+        this.exercise = exercise;
+    }
+
+    @Override
+    public IExercise getExercise()
+    {
+        return exercise;
     }
 
     private void drawCharts()
@@ -295,7 +260,7 @@ public class ExerciseActivity extends AppCompatActivity
         mChart.clear();
         LineData data = new LineData();
         int color = Color.rgb(0xDD, 0x88, 0x00);
-        LineDataSet set = new LineDataSet(sxr.getPercentHistory(), "%");
+        LineDataSet set = new LineDataSet(getExercise().getPercentHistory(), "%");
         set.setDrawCircleHole(false);
         set.setDrawCircles(false);
         set.setColor(color);
@@ -326,13 +291,11 @@ public class ExerciseActivity extends AppCompatActivity
 
     private void hide()
     {
-        // Hide UI first
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
         {
             actionBar.hide();
         }
-//        mControlsView.setVisibility(View.GONE);
         mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay
@@ -366,5 +329,53 @@ public class ExerciseActivity extends AppCompatActivity
         {
             return "";
         }
+    }
+
+    private final Runnable mShowPart2Runnable = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            // Delayed display of UI elements
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null)
+            {
+                actionBar.show();
+            }
+            //mControlsView.setVisibility(View.VISIBLE);
+        }
+    };
+
+    private final Runnable mHidePart2Runnable = new Runnable()
+    {
+        @SuppressLint("InlinedApi")
+        @Override
+        public void run()
+        {
+            mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        }
+    };
+
+    private boolean mVisible;
+
+    private final Runnable mHideRunnable = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            hide();
+        }
+    };
+
+    private Template getTemplate(Integer id ) throws SQLException
+    {
+        Dao<Template, Integer> d = getDb().getDao( Template.class );
+        Template et = d.queryForId( id );
+        return et;
     }
 }

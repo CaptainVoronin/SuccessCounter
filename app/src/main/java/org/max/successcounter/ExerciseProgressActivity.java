@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -15,24 +14,22 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.j256.ormlite.dao.Dao;
 
 import org.max.successcounter.db.DatabaseHelper;
-import org.max.successcounter.model.Exercise;
-import org.max.successcounter.model.ExerciseSet;
-
+import org.max.successcounter.model.excercise.Result;
+import org.max.successcounter.model.excercise.Template;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExerciseDynamicActivity extends AppCompatActivity
+public class ExerciseProgressActivity extends AppCompatActivity
 {
-    public final static String EX_SET_ID = "EX_SET_ID";
-    Integer exSetId;
+    public final static String TEMPLATE_ID = "TEMPLATE_ID";
+    Integer templateId;
     LineChart mChart;
-    Dao<ExerciseSet, Integer> exsetDao;
-    ExerciseSet exSet;
+    Dao<Template, Integer> exsetDao;
+    Template template;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -44,13 +41,14 @@ public class ExerciseDynamicActivity extends AppCompatActivity
         try
         {
             Intent in = getIntent();
-            exSetId = in.getIntExtra( EX_SET_ID, -1 );
-            if( exSetId == -1 )
+            templateId = in.getIntExtra(TEMPLATE_ID, -1 );
+            if( templateId == -1 )
                 throw new IllegalArgumentException();
 
-            exsetDao = db.getDao( ExerciseSet.class );
-            exSet = exsetDao.queryForId( exSetId );
-            setTitle( exSet.getName() );
+            exsetDao = db.getDao( Template.class );
+            template = exsetDao.queryForId(templateId);
+
+            setTitle( template.getName() );
 
             TextView tv = findViewById( R.id.lbNew );
             tv.setOnClickListener( e->{gotoExercise();} );
@@ -60,7 +58,7 @@ public class ExerciseDynamicActivity extends AppCompatActivity
 
             makeChart( );
             fillStats();
-            setTitle( exSet.getName() );
+            setTitle( template.getName() );
 
         } catch (SQLException e)
         {
@@ -73,16 +71,16 @@ public class ExerciseDynamicActivity extends AppCompatActivity
         TextView tv = findViewById( R.id.lbTotalExercises );
         int count = 0;
 
-        tv.setText( "" + exSet.getExercises().size() );
+        tv.setText( "" + template.getResults().size() );
 
-        for( Exercise ex : exSet.getExercisesAsList() )
-            count += ex.getSuccessCount();
+        for( Result res : template.getResults() )
+            count += res.getPoints();
 
         tv = findViewById( R.id.lbTotalSuccess );
         tv.setText( "" + count );
 
-        for( Exercise ex : exSet.getExercisesAsList() )
-            count += ex.getAttemptsCount();
+        for( Result res : template.getResults() )
+            count += res.getShots();
 
         tv = findViewById( R.id.lbTotalShots );
         tv.setText( "" + count );
@@ -91,7 +89,7 @@ public class ExerciseDynamicActivity extends AppCompatActivity
     private void gotoHistory()
     {
         Intent in = new Intent( this, HistoryActivity.class );
-        in.putExtra( EX_SET_ID, exSetId );
+        in.putExtra(TEMPLATE_ID, templateId);
         startActivityForResult( in, ActivityIDs.HISTORYACTIVITY_ID );
     }
 
@@ -103,10 +101,10 @@ public class ExerciseDynamicActivity extends AppCompatActivity
 
     private void fillChart( ) throws SQLException
     {
-        List<Exercise> items = new ArrayList<>();
-        exSet = exsetDao.queryForId( exSetId );
+        List<Result> items = new ArrayList<>();
+        template = exsetDao.queryForId(templateId);
 
-        items.addAll( exSet.getExercises() );
+        items.addAll( template.getResults() );
         List<Entry> exes = new ArrayList<>();
         for( int i = 0; i < items.size(); i++  )
             exes.add( new Entry( (float) i, new Float( items.get(i).getPercent() ) ) );
@@ -152,23 +150,36 @@ public class ExerciseDynamicActivity extends AppCompatActivity
 
     private void gotoExercise()
     {
-        Intent in = new Intent( this, ExerciseActivity.class );
-        in.putExtra( EX_SET_ID, exSetId );
-        startActivityForResult( in, ActivityIDs.EXERCISEDYNAMICACTIVITY_ID );
+        Intent in;
+
+        if( !template.getCompound()  )
+        {
+            if( template.getLimited() )
+                in = new Intent( this, RunToExerciseActivity.class );
+            else
+                in = new Intent( this, SimpleExerciseActivity.class );
+        }
+        else
+            in = new Intent( this, CompoundExerciseActivity.class );
+
+        in.putExtra(TEMPLATE_ID, template.getId());
+        startActivityForResult( in, ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if( requestCode == ActivityIDs.EXERCISEDYNAMICACTIVITY_ID ||
+        if( requestCode == ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID ||
             requestCode == ActivityIDs.HISTORYACTIVITY_ID )
             if( resultCode == RESULT_OK )
             {
+                setResult( RESULT_OK );
                 try
                 {
                     fillChart();
                     fillStats();
+
                 } catch (SQLException e)
                 {
                     e.printStackTrace();

@@ -50,43 +50,12 @@
         </com.github.mikephil.charting.charts.LineChart>
 
         <LinearLayout
+            android:id="@+id/llOptionsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:gravity="center_vertical|center_horizontal"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/btnAttempt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/dark_blue"
-                    app:srcCompat="@drawable/fail075" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/btnSuccess"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/dark_blue"
-                    app:srcCompat="@drawable/success075" />
-            </LinearLayout>
-
-        </LinearLayout>
+            android:orientation="vertical" />
 
         <ImageButton
             android:id="@+id/btnRollback"

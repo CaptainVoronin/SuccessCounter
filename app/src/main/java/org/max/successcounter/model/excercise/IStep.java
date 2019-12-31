@@ -8,4 +8,6 @@ public interface IStep
     void setPoints( Integer points );
     void setExercise( IExercise exercise );
     IExercise getExercise( );
+    Integer getId();
+    void setId( Integer id );
 }

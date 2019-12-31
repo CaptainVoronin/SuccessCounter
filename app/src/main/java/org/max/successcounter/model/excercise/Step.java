@@ -5,6 +5,19 @@ public class Step implements IStep
     Float percent;
     Integer points;
     IExercise exercise;
+    Integer id;
+
+    @Override
+    public Integer getId()
+    {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer id)
+    {
+        this.id = id;
+    }
 
     public void setPercent(Float percent)
     {
