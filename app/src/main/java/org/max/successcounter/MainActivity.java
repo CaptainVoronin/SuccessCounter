@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity
 
             tv = tr.findViewById(R.id.lbPercent);
             tv.setTag(template);
-            tv.setText(res.getPercent().toString());
+            tv.setText(Result.getPercentString( res ));
             tv.setOnClickListener(new OnExSetClick(template));
             tv.setOnLongClickListener(new ExSetLongClickListener(tv));
 

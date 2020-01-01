@@ -13,6 +13,6 @@ public class RunToExerciseActivity extends AExerciseActivity<SimpleExercise>
     @Override
     public void onExerciseFinished()
     {
-
+        // TODO: implement
     }
 }

@@ -3,7 +3,9 @@ package org.max.successcounter;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -22,6 +24,7 @@ import org.max.successcounter.model.excercise.Template;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 public class ExerciseProgressActivity extends AppCompatActivity
 {
@@ -30,20 +33,26 @@ public class ExerciseProgressActivity extends AppCompatActivity
     LineChart mChart;
     Dao<Template, Integer> exsetDao;
     Template template;
+    SharedPreferences mPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exercise_dynamic);
-
+        setContentView(R.layout.activity_exercise_progress);
+        mPrefs = getPreferences( Context.MODE_PRIVATE );
         DatabaseHelper db = new DatabaseHelper( this );
         try
         {
             Intent in = getIntent();
             templateId = in.getIntExtra(TEMPLATE_ID, -1 );
             if( templateId == -1 )
-                throw new IllegalArgumentException();
+            {
+                templateId  = savedInstanceState.getInt( TEMPLATE_ID );
+                templateId = mPrefs.getInt( TEMPLATE_ID , -1);
+                if( templateId == -1 )
+                    throw new IllegalArgumentException();
+            }
 
             exsetDao = db.getDao( Template.class );
             template = exsetDao.queryForId(templateId);
@@ -185,5 +194,13 @@ public class ExerciseProgressActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
             }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        SharedPreferences.Editor ed =  mPrefs.edit();
+        ed.putInt("templateID", templateId);
+        ed.commit();
     }
 }

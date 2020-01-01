@@ -32,7 +32,6 @@
         <activity
             android:name=".HistoryActivity"
             android:label="@string/title_activity_exercise_set"
-            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

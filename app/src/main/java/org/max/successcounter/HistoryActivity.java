@@ -78,7 +78,6 @@ public class HistoryActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-
     }
 
     private void fillList() throws SQLException

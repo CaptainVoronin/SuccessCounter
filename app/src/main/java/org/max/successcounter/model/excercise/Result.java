@@ -98,8 +98,7 @@ public class Result
 
     public static final String getPercentString( Result res )
     {
-        float r = 100f * ((float)res.getPercent()) / res.getShots();
-        double d = Math.round(r * 10) / 10.0;
+        double d = Math.round(res.getPercent() * 10) / 10.0;
         return String.format( "%.1f%%", d);
     }
 
