@@ -13,17 +13,22 @@ import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
+
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.excercise.Result;
 import org.max.successcounter.model.excercise.Template;
+
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,9 +37,9 @@ public class MainActivity extends AppCompatActivity
     DatabaseHelper dbHelper;
     Dao<Template, Integer> exTemplateDao;
     TableLayout table;
-//    ListView mainList;
     ResultComparator comparator;
     SimpleDateFormat dateFormatter;
+    FloatingActionButton btnPlus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -44,7 +49,8 @@ public class MainActivity extends AppCompatActivity
         comparator = new ResultComparator();
         table = findViewById(R.id.mainTable);
         dbHelper = new DatabaseHelper(this);
-        dateFormatter = new SimpleDateFormat( "dd.MM.yyyy" );
+        dateFormatter = new SimpleDateFormat("dd.MM.yyyy");
+        btnPlus = findViewById(R.id.btnAddNew);
 
         try
         {
@@ -54,37 +60,47 @@ public class MainActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+
+        btnPlus.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent in = new Intent(MainActivity.this, NewExerciseActivity.class);
+                startActivityForResult(in, ActivityIDs.NEW_TEMPLATE_ACTIVITY_ID);
+            }
+        });
     }
 
     private void fillList() throws SQLException
     {
         List<Template> list = exTemplateDao.queryForAll();
         table.removeAllViews();
-        
-        for( Template set : list )
+
+        for (Template set : list)
         {
-            TableRow tr = makeRow( set );
-            table.addView( tr );
+            TableRow tr = makeRow(set);
+            table.addView(tr);
         }
     }
 
     private TableRow makeRow(Template template)
     {
-        TableRow tr = (TableRow) getLayoutInflater().inflate( R.layout.exsetrow, null );
+        TableRow tr = (TableRow) getLayoutInflater().inflate(R.layout.exsetrow, null);
 
-        TextView tv = tr.findViewById( R.id.lbName );
-        tv.setTag( template );
-        tv.setText( template.getName() );
+        TextView tv = tr.findViewById(R.id.lbName);
+        tv.setTag(template);
+        tv.setText(template.getName());
         tv.setOnClickListener(new OnExSetClick(template));
         tv.setOnLongClickListener(new ExSetLongClickListener(tv));
 
-        if( template.getResults() != null && template.getResults().size() > 0 )
+        if (template.getResults() != null && template.getResults().size() > 0)
         {
             org.max.successcounter.model.excercise.Result res = getLatestResult(template.getResults());
 
             tv = tr.findViewById(R.id.lbPercent);
             tv.setTag(template);
-            tv.setText(Result.getPercentString( res ));
+            tv.setText(Result.getPercentString(res));
             tv.setOnClickListener(new OnExSetClick(template));
             tv.setOnLongClickListener(new ExSetLongClickListener(tv));
 
@@ -115,7 +131,7 @@ public class MainActivity extends AppCompatActivity
     private void addNewSimpleExercise()
     {
         Intent in = new Intent(this, NewSimpleExActivity.class);
-        startActivityForResult(in,ActivityIDs.NEWSIMPLEEXERCISE_ID);
+        startActivityForResult(in, ActivityIDs.NEWSIMPLEEXERCISE_ID);
     }
 
     @Override
@@ -137,15 +153,16 @@ public class MainActivity extends AppCompatActivity
 
         in.putExtra(ExerciseProgressActivity.TEMPLATE_ID, template.getId());
 
-        startActivityForResult(in,ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID);
+        startActivityForResult(in, ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
-        if( requestCode == ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID ||
-                requestCode == ActivityIDs.NEWSIMPLEEXERCISE_ID )
-            if( resultCode == RESULT_OK )
+        if (requestCode == ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID ||
+                requestCode == ActivityIDs.NEWSIMPLEEXERCISE_ID ||
+                requestCode == ActivityIDs.NEW_TEMPLATE_ACTIVITY_ID)
+            if (resultCode == RESULT_OK)
             {
                 try
                 {
@@ -166,7 +183,7 @@ public class MainActivity extends AppCompatActivity
         b.setView(view);
 
         EditText ed = view.findViewById(R.id.edName);
-        ed.setText( res.getName());
+        ed.setText(res.getName());
 
         b.setPositiveButton(R.string.isSave, new DialogInterface.OnClickListener()
         {
@@ -265,8 +282,8 @@ public class MainActivity extends AppCompatActivity
     private Result getLatestResult(ForeignCollection<Result> results)
     {
         List<Result> lst = new ArrayList<>();
-        results.forEach( item -> lst.add( item ) );
-        Collections.sort( lst, comparator);
+        results.forEach(item -> lst.add(item));
+        Collections.sort(lst, comparator);
         Result res = lst.get(results.size() - 1);
         return res;
     }
