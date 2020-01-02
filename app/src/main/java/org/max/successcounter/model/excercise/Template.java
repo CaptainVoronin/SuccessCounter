@@ -111,10 +111,46 @@ public class Template
         return list;
     }
 
-    public void addOption(OptionDescription ops)
+    public List<OptionDescription> getOptionsAsList()
     {
-        ops.setParent(this);
-        options.add(ops);
+        List<OptionDescription> list = new ArrayList<>();
+        options.forEach(item -> list.add(item));
+        return list;
+    }
+
+    public void addOption(OptionDescription op )
+    {
+        op.setParent(this);
+        List<OptionDescription> list = getOptionsAsList();
+
+        if( op.getFirstDefault() || op.getLastDefault() )
+            list.add( op );
+        else if( list.size() != 0 )
+            list.add( list.size() - 1, op );
+        else
+            list.add( op );
+
+        options.clear();
+        options.addAll( list );
+    }
+
+    public void setFullSuccessOptionPoints()
+    {
+        int count = 0;
+        OptionDescription last = null;
+
+        for( OptionDescription op : options )
+        {
+            if( !op.getLastDefault() )
+                count += op.getPoints();
+            else
+                last = op;
+        }
+
+        if( last != null )
+            last.setPoints( count );
+        else
+            throw new IndexOutOfBoundsException();
     }
 
     public OptionDescription getFirstDefault()
@@ -132,4 +168,6 @@ public class Template
                 return op;
         return null;
     }
+
+
 }

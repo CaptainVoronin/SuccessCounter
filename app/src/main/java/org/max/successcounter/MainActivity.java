@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity
         b.setView(view);
         b.setTitle(title);
         b.setCancelable(true);
-        //EditText ed = view.findViewById(R.id.edName);
+        //EditText ed = table.findViewById(R.id.edName);
         return b;
     }
 

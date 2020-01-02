@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ViewSwitcher
+        android:id="@+id/swcDescription"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.7">
+
+        <TextView
+            android:id="@+id/lbStepName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:clickable="true"
+            android:text="Miss. Poins" />
+
+        <EditText
+            android:id="@+id/edStepDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textSize="14sp"
+            android:theme="@style/AppTheme"
+            android:visibility="gone" />
+    </ViewSwitcher>
+
+    <ViewSwitcher
+        android:id="@+id/swcPoints"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.2">
+
+        <TextView
+            android:id="@+id/lbStepPoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:clickable="true"
+            android:text="0" />
+
+        <EditText
+            android:id="@+id/edStepPoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:inputType="number"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+    </ViewSwitcher>
+
+    <ImageButton
+        android:id="@+id/btnSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:srcCompat="@android:drawable/ic_menu_save"
+        tools:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/btnRemoveStep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/ic_menu_delete" />
+</TableRow>
