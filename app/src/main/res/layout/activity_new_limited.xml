@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.max.successcounter.NewSimpleExActivity">
+    tools:context="org.max.successcounter.NewLimitedActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -20,6 +20,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_new_simple_ex" />
+    <include layout="@layout/content_new_limited" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

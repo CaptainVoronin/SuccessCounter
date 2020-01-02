@@ -8,4 +8,6 @@
     <string name="title_activity_new_simple_ex">NewSimpleExActivity</string>
     <string name="title_new_simple_excercise">Новое простое упражнение</string>
     <string name="pref_file_name">application_prefs</string>
+    <string name="title_new_compound_template">Новое составное упражнение</string>
+    <string name="title_new_limited_template">Новое упражениение с ограничением ударов</string>
 </resources>

@@ -6,6 +6,30 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "options")
 public class OptionDescription
 {
+    Boolean isFirstDefault;
+
+    Boolean isLastDefault;
+
+    public Boolean getFirstDefault()
+    {
+        return isFirstDefault != null ? isFirstDefault : false;
+    }
+
+    public void setFirstDefault(Boolean firstDefault)
+    {
+        isFirstDefault = firstDefault;
+    }
+
+    public Boolean getLastDefault()
+    {
+        return isLastDefault != null ? isLastDefault : false;
+    }
+
+    public void setLastDefault(Boolean lastDefault)
+    {
+        isLastDefault = lastDefault;
+    }
+
     @DatabaseField( generatedId = true, allowGeneratedIdInsert = true )
     Integer id;
 

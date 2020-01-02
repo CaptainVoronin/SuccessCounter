@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity
 
     private void addNewSimpleExercise()
     {
-        Intent in = new Intent(this, NewSimpleExActivity.class);
+        Intent in = new Intent(this, NewLimitedActivity.class);
         startActivityForResult(in, ActivityIDs.NEWSIMPLEEXERCISE_ID);
     }
 
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity
                 dialog.dismiss();
                 try
                 {
-                    //exTemplateDao.delete(set);
+                    exTemplateDao.delete( template );
                     fillList();
                 } catch (SQLException e)
                 {
@@ -299,77 +299,6 @@ public class MainActivity extends AppCompatActivity
         //EditText ed = view.findViewById(R.id.edName);
         return b;
     }
-
-/*
-    class ResultAdapter extends BaseAdapter
-    {
-        List<Result> items;
-
-        public ResultAdapter(List<Result> items)
-        {
-            this.items = items;
-        }
-
-        @Override
-        public int getCount()
-        {
-            return items.size();
-        }
-
-        @Override
-        public Object getItem(int position)
-        {
-            return items.get(position);
-        }
-
-        @Override
-        public long getItemId(int position)
-        {
-            return items.get(position).getId();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup container)
-        {
-            if (convertView == null)
-            {
-                convertView = getLayoutInflater().inflate(R.layout.exsetrowview, container, false);
-            }
-
-            Template result = (Template) getItem(position);
-            TextView tv = (TextView) convertView.findViewById(R.id.lbAttempts);
-
-            tv.setText(result.getName());
-            tv.setOnClickListener(new OnExSetClick(result));
-
-            tv.setTag(result);
-            tv.setOnLongClickListener(new ExSetLongClickListener(tv));
-
-            TextView tvPercent = (TextView) convertView.findViewById(R.id.lbPercent);
-            TextView tvDate = (TextView) convertView.findViewById(R.id.lbDate);
-            if (result.getResults() != null && result.getResults().size() > 0)
-            {
-                List<Result> lst = new ArrayList<>();
-                lst.addAll(result.getResults());
-                Result res = getLatestResult(lst);
-
-                tvPercent.setText( Result.getPercentString(res));
-                tvPercent.setOnClickListener(new OnExSetClick(result));
-                tvPercent.setOnLongClickListener(new ExSetLongClickListener(tv));
-
-                tvDate.setText(Exercise.getFormattedDate(res));
-                tvDate.setOnLongClickListener(new ExSetLongClickListener(tv));
-                tvDate.setOnClickListener(new OnExSetClick(result));
-            }
-            else
-            {
-                tvPercent.setText( "" );
-                tvDate.setText( "" );
-            }
-            return convertView;
-        }
-    }
-*/
 
     class ResultComparator implements Comparator<Result>
     {

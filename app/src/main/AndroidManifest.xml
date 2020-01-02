@@ -9,9 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".NewExerciseActivity"></activity>
         <activity
-            android:name=".NewSimpleExActivity"
+            android:name=".NewCompoundActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".NewExerciseActivity" />
+        <activity
+            android:name=".NewLimitedActivity"
             android:label="@string/title_activity_new_simple_ex"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ExerciseProgressActivity" />

@@ -27,6 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Простое без ограничений"
+            android:enabled="false"
             android:layout_marginTop="20pt"
             android:layout_marginBottom="10pt"/>
 
@@ -34,6 +35,7 @@
             android:id="@+id/btnSimpleLimited"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:text="Простое с ограничениями"
             android:layout_marginTop="10pt"
             android:layout_marginBottom="10pt"/>
@@ -42,6 +44,7 @@
             android:id="@+id/btnCompaund"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:text="Составное"
             android:layout_marginTop="10pt"
             android:layout_marginBottom="10pt"/>

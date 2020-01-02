@@ -4,38 +4,33 @@ import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @DatabaseTable(tableName = "template")
 public class Template
 {
-    @DatabaseField( generatedId = true, allowGeneratedIdInsert = true )
-    private Integer id;
-
-    @DatabaseField
-    private Integer limit;
-
-    @DatabaseField
-    private Boolean limited;
-
     @DatabaseField
     String name;
-
+    @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+    private Integer id;
+    @DatabaseField
+    private Integer limit;
+    @DatabaseField
+    private Boolean limited;
     @DatabaseField
     private Boolean compound;
 
-    @ForeignCollectionField( eager = true )
+    @ForeignCollectionField(eager = true)
     private ForeignCollection<OptionDescription> options;
 
-    @ForeignCollectionField( eager = true )
+    @ForeignCollectionField(eager = true)
     private ForeignCollection<Result> results;
 
     public Template()
     {
-        compound = new Boolean( false );
-        limited = new Boolean( false );
+        compound = new Boolean(false);
+        limited = new Boolean(false);
         limit = 0;
     }
 
@@ -112,7 +107,29 @@ public class Template
     public List<Result> getExercisesAsList()
     {
         List<Result> list = new ArrayList<>();
-        results.forEach( item -> list.add( item ) );
+        results.forEach(item -> list.add(item));
         return list;
+    }
+
+    public void addOption(OptionDescription ops)
+    {
+        ops.setParent(this);
+        options.add(ops);
+    }
+
+    public OptionDescription getFirstDefault()
+    {
+        for (OptionDescription op : options)
+            if (op.getFirstDefault())
+                return op;
+        return null;
+    }
+
+    public OptionDescription getLastDefault()
+    {
+        for (OptionDescription op : options)
+            if (op.getLastDefault())
+                return op;
+        return null;
     }
 }
