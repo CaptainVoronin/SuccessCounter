@@ -41,6 +41,11 @@ public class NewCompoundActivity extends AppCompatActivity
 
         template = new Template();
         template.setName(templateName);
+        String str = getString( R.string.missOptionName );
+        template.setMissOptionName( str );
+        str = getString( R.string.successOptionName );
+        template.setSuccessOptionName( str );
+
         try
         {
             templateDao = db.getDao(Template.class);
@@ -50,20 +55,10 @@ public class NewCompoundActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        template.setCompound(true);
-        template.setLimited(false);
-        template.setLimit(0);
-        OptionDescription op = new OptionDescription();
-        op.setDescription("Miss");
-        op.setPoints(0);
-        op.setFirstDefault(true);
-        template.addOption(op);
+        prepareNewExercise();
 
-        op = new OptionDescription();
-        op.setDescription("Full success");
-        op.setPoints(1);
-        op.setLastDefault(true);
-        template.addOption(op);
+        outcomes = new ExerciseOutcomes( this, R.id.partsTable, template );
+        outcomes.makeTable();
 
         TextView tv = findViewById(R.id.lbName);
         tv.setText(templateName);
@@ -78,8 +73,23 @@ public class NewCompoundActivity extends AppCompatActivity
             }
         } );
 
-        outcomes = new ExerciseOutcomes( this, R.id.partsTable, template );
-        outcomes.makeTable();
+    }
+
+    private void prepareNewExercise()
+    {
+        template.setCompound(true);
+        template.setLimited(false);
+        template.setLimit(0);
+
+        OptionDescription op = new OptionDescription();
+        op.setDescription("Outcome 1");
+        op.setPoints(1);
+        template.addOption(op);
+
+        op = new OptionDescription();
+        op.setDescription("Outcome 2");
+        op.setPoints(2);
+        template.addOption(op);
     }
 
     void save()

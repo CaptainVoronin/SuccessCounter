@@ -71,4 +71,5 @@ public abstract class AbstractTableAdapter<T>
     }
 
     protected abstract TableRow makeRow(T item);
+
 }

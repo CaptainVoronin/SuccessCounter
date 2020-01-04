@@ -2,7 +2,6 @@ package org.max.successcounter.model;
 
 import android.app.Activity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TableRow;
@@ -112,7 +111,7 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             btnSave.setOnClickListener( this );
 
             btnRemove = row.findViewById( R.id.btnRemoveStep );
-            btnRemove.setOnClickListener( this );
+            btnRemove.setOnClickListener( new RemoveRowListener( option ) );
         }
 
         @Override
@@ -140,8 +139,7 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             tvPoints.setText( option.getPoints().toString() );
 
             editorListener.onEditFinish( this );
-
-            template.setFullSuccessOptionPoints();
+            setItems( template.getOptionsAsList() );
             makeTable();
             inEditMode = false;
         }
@@ -179,7 +177,6 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             op.setPoints( 1 );
             op.setDescription( "Enter description" );
             template.addOption( op );
-            template.setFullSuccessOptionPoints();
             setItems( template.getOptionsAsList() );
             makeTable();
         }
@@ -200,6 +197,23 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         {
             if( current == editor )
                 current = null;
+        }
+    }
+
+    private class RemoveRowListener implements View.OnClickListener
+    {
+        OptionDescription option;
+        public RemoveRowListener(OptionDescription option)
+        {
+            this.option = option;
+        }
+
+        @Override
+        public void onClick(View v)
+        {
+            template.removeOption( option );
+            setItems( template.getOptionsAsList() );
+            makeTable();
         }
     }
 }

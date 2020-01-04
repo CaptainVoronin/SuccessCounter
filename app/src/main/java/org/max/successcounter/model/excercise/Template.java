@@ -27,6 +27,19 @@ public class Template
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Result> results;
 
+    String missOptionName;
+    String successOptionName;
+
+    public void setMissOptionName(String missOptionName)
+    {
+        this.missOptionName = missOptionName;
+    }
+
+    public void setSuccessOptionName(String successOptionName)
+    {
+        this.successOptionName = successOptionName;
+    }
+
     public Template()
     {
         compound = new Boolean(false);
@@ -115,59 +128,45 @@ public class Template
     {
         List<OptionDescription> list = new ArrayList<>();
         options.forEach(item -> list.add(item));
+        list.add( 0, getMissOption() );
+        list.add( getSuccessOption() );
         return list;
     }
 
     public void addOption(OptionDescription op )
     {
         op.setParent(this);
-        List<OptionDescription> list = getOptionsAsList();
-
-        if( op.getFirstDefault() || op.getLastDefault() )
-            list.add( op );
-        else if( list.size() != 0 )
-            list.add( list.size() - 1, op );
-        else
-            list.add( op );
-
-        options.clear();
-        options.addAll( list );
+        options.add( op );
     }
 
-    public void setFullSuccessOptionPoints()
+    public int getFullSuccessOptionPoints()
     {
         int count = 0;
-        OptionDescription last = null;
-
         for( OptionDescription op : options )
-        {
-            if( !op.getLastDefault() )
                 count += op.getPoints();
-            else
-                last = op;
-        }
-
-        if( last != null )
-            last.setPoints( count );
-        else
-            throw new IndexOutOfBoundsException();
+        return count;
     }
 
-    public OptionDescription getFirstDefault()
+    private OptionDescription getMissOption()
     {
-        for (OptionDescription op : options)
-            if (op.getFirstDefault())
-                return op;
-        return null;
+        OptionDescription op = new OptionDescription();
+        op.setDescription( missOptionName );
+        op.setPoints( 0 );
+        op.setFirstDefault( true );
+        return op;
     }
 
-    public OptionDescription getLastDefault()
+    private OptionDescription getSuccessOption()
     {
-        for (OptionDescription op : options)
-            if (op.getLastDefault())
-                return op;
-        return null;
+        OptionDescription op = new OptionDescription();
+        op.setDescription( successOptionName );
+        op.setPoints( getFullSuccessOptionPoints() );
+        op.setLastDefault( true );
+        return op;
     }
 
-
+    public void removeOption(OptionDescription option)
+    {
+        options.remove( option );
+    }
 }
