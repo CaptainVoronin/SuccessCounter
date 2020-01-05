@@ -1,7 +1,6 @@
 package org.max.successcounter;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -9,13 +8,6 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.j256.ormlite.dao.Dao;
 
 import org.max.successcounter.db.DatabaseHelper;
@@ -41,7 +33,6 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
     private DatabaseHelper db;
     private TextView lbPercent;
     private TextView lbAttempts;
-    private LineChart mChart;
     private ImageButton btnRollback;
     private View mContentView;
     private IExercise exercise;
@@ -85,58 +76,21 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         setResult(RESULT_CANCELED);
     }
 
-    private void prepareControls()
+    protected void prepareControls()
     {
         lbPercent = findViewById(R.id.lbPercent);
         lbAttempts = findViewById(R.id.lbAttempts);
-
-        ImageButton btn = findViewById(R.id.btnAttempt);
-
-        btn.setOnClickListener(e -> {
-            addStep( 0 );
-        });
-
-        btn = findViewById(R.id.btnSuccess);
-        btn.setOnClickListener(e -> {
-            addStep( 1 );
-        });
-
         btnRollback = findViewById(R.id.btnRollback);
         btnRollback.setOnClickListener(e -> {
             undo();
             updateUIResults();
             saveResult();
         });
-
         btnRollback.setEnabled(false);
-
-        int axisColor = Color.LTGRAY;
-
-        mChart = findViewById(R.id.chartHolder);
-        mChart.setDrawMarkers(false);
-        mChart.setDrawGridBackground(false);
-        YAxis y = mChart.getAxisLeft();
-        y.setAxisMinimum(0f);
-        y.setAxisMaximum(100f);
-        y.setTextColor(axisColor);
-        y.setGridColor(axisColor);
-        y.setAxisLineColor(axisColor);
-
-        y = mChart.getAxisRight();
-        y.setAxisMinimum(0f);
-        y.setAxisMaximum(100f);
-        y.setTextColor(axisColor);
-        y.setGridColor(axisColor);
-        y.setAxisLineColor(axisColor);
-
-        XAxis x = mChart.getXAxis();
-        x.setGridColor(axisColor);
-        x.setAxisLineColor(axisColor);
-        x.setTextColor(axisColor);
-
-        Legend legend = mChart.getLegend();
-        legend.setEnabled(false);
+        prepareChart();
     }
+
+    protected abstract void prepareChart();
 
     protected void addStep(int points)
     {
@@ -149,12 +103,12 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         }
     }
 
-    private void lockScreen()
+    protected void lockScreen()
     {
 
     }
 
-    private void saveResult()
+    protected void saveResult()
     {
         try
         {
@@ -170,19 +124,21 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         }
     }
 
-    void updateUIResults()
+    protected void updateUIResults()
     {
         IStep step = getExercise().getLastStep();
+        float percent = step.getPercent();
+
         if( step != null )
-            lbPercent.setText( step.getPercent() + "%");
+            lbPercent.setText( Result.getPercentString( percent ) );
         else
             lbPercent.setText( "0.0%");
 
         lbAttempts.setText("" + getExercise().getSuccessCount() + "(" + getExercise().getAttemptsCount() + ")");
-        drawCharts();
+        updateChart();
     }
 
-    void prepareObjects() throws SQLException
+    protected void prepareObjects() throws SQLException
     {
 
         Integer templateID = getIntent().getIntExtra( ExerciseProgressActivity.TEMPLATE_ID, -1);
@@ -195,6 +151,7 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
 
         // Make an exercise instance
         IExercise ex = ExerciseFactory.instance.makeExercise( et );
+        ex.setTemplate( et );
         setExerсise( ex );
         HistoryOperator.instance.init( getDb(), getExercise() );
 
@@ -255,21 +212,7 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         return exercise;
     }
 
-    private void drawCharts()
-    {
-        mChart.clear();
-        LineData data = new LineData();
-        int color = Color.rgb(0xDD, 0x88, 0x00);
-        LineDataSet set = new LineDataSet(getExercise().getPercentHistory(), "%");
-        set.setDrawCircleHole(false);
-        set.setDrawCircles(false);
-        set.setColor(color);
-        set.setValueFormatter(new EmptyValueFormatter());
-        data.setDrawValues(false);
-        data.addDataSet(set);
-        mChart.setData(data);
-        mChart.invalidate();
-    }
+    protected abstract void updateChart();
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState)
@@ -322,15 +265,6 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    private class EmptyValueFormatter extends ValueFormatter
-    {
-        @Override
-        public String getFormattedValue(float value)
-        {
-            return "";
-        }
-    }
-
     private final Runnable mShowPart2Runnable = new Runnable()
     {
         @Override
@@ -376,6 +310,8 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
     {
         Dao<Template, Integer> d = getDb().getDao( Template.class );
         Template et = d.queryForId( id );
+        et.setMissOptionName( getString( R.string.missOptionName ) );
+        et.setSuccessOptionName( getString( R.string.successOptionName ) );
         return et;
     }
 }

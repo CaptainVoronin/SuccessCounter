@@ -1,5 +1,5 @@
 #
-# generated on 2020/01/01 02:09:05
+# generated on 2020/01/06 01:47:37
 #
 # --table-start--
 dataClass=org.max.successcounter.model.excercise.Result
@@ -35,6 +35,9 @@ dataClass=org.max.successcounter.model.excercise.Template
 tableName=template
 # --table-fields-start--
 # --field-start--
+fieldName=name
+# --field-end--
+# --field-start--
 fieldName=id
 generatedId=true
 allowGeneratedIdInsert=true
@@ -44,9 +47,6 @@ fieldName=limit
 # --field-end--
 # --field-start--
 fieldName=limited
-# --field-end--
-# --field-start--
-fieldName=name
 # --field-end--
 # --field-start--
 fieldName=compound
@@ -86,6 +86,28 @@ foreign=true
 # --field-start--
 fieldName=templateID
 canBeNull=false
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=org.max.successcounter.model.excercise.OptionDescription
+tableName=options
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=points
+# --field-end--
+# --field-start--
+fieldName=description
+# --field-end--
+# --field-start--
+fieldName=parent
+columnName=parent_id
+foreign=true
 # --field-end--
 # --table-fields-end--
 # --table-end--

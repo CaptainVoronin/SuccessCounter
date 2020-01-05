@@ -25,6 +25,7 @@ public class NewCompoundActivity extends AppCompatActivity
     TableLayout table;
     Template template;
     Dao<Template, Integer> templateDao;
+    Dao<OptionDescription, Integer> optionDao;
     String templateName;
     ExerciseOutcomes outcomes;
 
@@ -50,6 +51,7 @@ public class NewCompoundActivity extends AppCompatActivity
         {
             templateDao = db.getDao(Template.class);
             templateDao.assignEmptyForeignCollection(template, "options");
+            optionDao = db.getDao( OptionDescription.class );
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -97,6 +99,10 @@ public class NewCompoundActivity extends AppCompatActivity
         try
         {
             templateDao.create(template);
+            for( OptionDescription op : template.getOptions() )
+                optionDao.create( op );
+
+
             setResult( RESULT_OK );
 
         } catch (SQLException e)

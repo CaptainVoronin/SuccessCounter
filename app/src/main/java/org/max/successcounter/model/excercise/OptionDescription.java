@@ -30,7 +30,7 @@ public class OptionDescription
         isLastDefault = lastDefault;
     }
 
-    @DatabaseField( generatedId = true, allowGeneratedIdInsert = true )
+    @DatabaseField( generatedId = true )
     Integer id;
 
     @DatabaseField

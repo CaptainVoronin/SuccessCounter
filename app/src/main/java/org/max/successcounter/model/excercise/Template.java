@@ -149,19 +149,23 @@ public class Template
 
     private OptionDescription getMissOption()
     {
-        OptionDescription op = new OptionDescription();
-        op.setDescription( missOptionName );
-        op.setPoints( 0 );
+        OptionDescription op = makeDefaultOption( missOptionName, 0 );
         op.setFirstDefault( true );
         return op;
     }
 
     private OptionDescription getSuccessOption()
     {
-        OptionDescription op = new OptionDescription();
-        op.setDescription( successOptionName );
-        op.setPoints( getFullSuccessOptionPoints() );
+        OptionDescription op = makeDefaultOption( successOptionName, getFullSuccessOptionPoints() );
         op.setLastDefault( true );
+        return op;
+    }
+
+    private OptionDescription makeDefaultOption( String description, Integer points )
+    {
+        OptionDescription op = new OptionDescription();
+        op.setDescription( description );
+        op.setPoints( points );
         return op;
     }
 

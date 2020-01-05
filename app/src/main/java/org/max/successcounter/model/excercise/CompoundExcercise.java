@@ -15,11 +15,6 @@ public class CompoundExcercise extends AExercise
         options = new ArrayList<>();
         maxResult = -1;
         attempts = 0;
-
-        Option opt = new Option();
-        opt.setDescription( "Miss" );
-        opt.setPoints( 0 );
-        options.add( opt );
     }
 
     public void addOption( Option opt )
@@ -27,19 +22,8 @@ public class CompoundExcercise extends AExercise
         options.add( opt );
     }
 
-    public List<Option> getOptions()
-    {
-        Integer[] cnt= {0};
-
-        List<Option> tmp = new ArrayList<>();
-        tmp.addAll( options );
-
-        options.stream().forEach( item-> cnt[0] += item.getPoints() );
-        Option opt = new Option();
-        opt.setDescription( "Complete" );
-        opt.setPoints( cnt[0] );
-        tmp.add( opt );
-        return tmp;
+    public List<Option> getOptions(){
+        return options;
     }
 
     @Override
@@ -59,20 +43,13 @@ public class CompoundExcercise extends AExercise
 
     private int getMaxResult()
     {
-        if( maxResult == -1 )
-        {
-            maxResult = 0;
-            for (Option option : options)
-                maxResult += option.getPoints();
-        }
-
-        return maxResult;
+        return options.get( options.size() - 1 ).getPoints();
     }
 
     @Override
     public int getAttemptsCount()
     {
-        return attempts * getMaxResult();
+        return attempts;
     }
 
     @Override

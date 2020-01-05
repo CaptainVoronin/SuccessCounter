@@ -11,12 +11,12 @@ import java.util.Date;
 public class Result
 {
 
-    final static SimpleDateFormat sdf = new SimpleDateFormat( "dd.MM.yyyy ");
+    final static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy ");
 
-    @DatabaseField( generatedId = true, allowGeneratedIdInsert = true )
+    @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     Integer id;
 
-    @DatabaseField( foreign = true, columnName = "parent_id" )
+    @DatabaseField(foreign = true, columnName = "parent_id")
     Template parent;
 
     @DatabaseField
@@ -31,6 +31,32 @@ public class Result
     @DatabaseField
     Integer points;
 
+    public Result()
+    {
+        date = Calendar.getInstance().getTime();
+    }
+
+    public static final String getPercentString(Result res)
+    {
+        if (res.getPercent() == null)
+            return "0.0%";
+
+        double d = Math.round(res.getPercent() * 10) / 10.0;
+        return String.format("%.1f%%", d);
+    }
+
+    public static final String getPercentString(float value)
+    {
+
+        double d = Math.round(value * 10) / 10.0;
+        return String.format("%.1f%%", d);
+    }
+
+    public static final String getFormattedDate(Result ex)
+    {
+        return sdf.format(ex.getDate());
+    }
+
     public Integer getPoints()
     {
         return points;
@@ -39,11 +65,6 @@ public class Result
     public void setPoints(Integer points)
     {
         this.points = points;
-    }
-
-    public Result()
-    {
-        date = Calendar.getInstance().getTime();
     }
 
     public Date getDate()
@@ -94,16 +115,5 @@ public class Result
     public void setShots(Integer shots)
     {
         this.shots = shots;
-    }
-
-    public static final String getPercentString( Result res )
-    {
-        double d = Math.round(res.getPercent() * 10) / 10.0;
-        return String.format( "%.1f%%", d);
-    }
-
-    public static final String getFormattedDate( Result ex )
-    {
-        return sdf.format( ex.getDate() );
     }
 }

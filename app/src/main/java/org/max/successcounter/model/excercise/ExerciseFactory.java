@@ -11,7 +11,7 @@ public enum ExerciseFactory
         if (template.getCompound() )
         {
             exs = new CompoundExcercise();
-            for( OptionDescription od : template.getOptions() )
+            for( OptionDescription od : template.getOptionsAsList() )
                 ((CompoundExcercise)exs).addOption( makeOption( od ) );
         }
         else
