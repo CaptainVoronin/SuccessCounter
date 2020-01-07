@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.j256.ormlite.dao.Dao;
@@ -43,7 +44,7 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
     {
         super.onCreate(savedInstanceState);
 
-        setContentView( getViewID() );
+        setContentView( R.layout.aexercise_layout );
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -64,10 +65,10 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
 
         try
         {
+            loadTemplate();
             prepareControls();
-            prepareObjects();
+            loadHistory();
             setTitle( getExercise().getName() );
-
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -78,6 +79,7 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
 
     protected void prepareControls()
     {
+        //TODO: Приделать кнопку "Назад", а то неудобно
         lbPercent = findViewById(R.id.lbPercent);
         lbAttempts = findViewById(R.id.lbAttempts);
         btnRollback = findViewById(R.id.btnRollback);
@@ -87,10 +89,17 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
             saveResult();
         });
         btnRollback.setEnabled(false);
-        prepareChart();
+
+        LinearLayout ll = findViewById( R.id.viewChartPlaceholder );
+        prepareChart( ll );
+
+        ll = findViewById( R.id.buttonsPlaceholder );
+        prepareControlButtons( ll );
     }
 
-    protected abstract void prepareChart();
+    protected abstract void prepareChart(LinearLayout placeholder);
+
+    protected abstract void prepareControlButtons(LinearLayout placeholder);
 
     protected void addStep(int points)
     {
@@ -99,13 +108,8 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         updateUIResults();
         if( getExercise().isFinished() )
         {
-            lockScreen();
+            onExerciseFinished();
         }
-    }
-
-    protected void lockScreen()
-    {
-
     }
 
     protected void saveResult()
@@ -138,9 +142,9 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         updateChart();
     }
 
-    protected void prepareObjects() throws SQLException
-    {
 
+    protected void loadTemplate() throws SQLException
+    {
         Integer templateID = getIntent().getIntExtra( ExerciseProgressActivity.TEMPLATE_ID, -1);
 
         if (templateID == -1)
@@ -153,6 +157,10 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         IExercise ex = ExerciseFactory.instance.makeExercise( et );
         ex.setTemplate( et );
         setExerсise( ex );
+    }
+
+    protected void loadHistory() throws SQLException
+    {
         HistoryOperator.instance.init( getDb(), getExercise() );
 
         // Check if it is the continue of an exercise
@@ -181,6 +189,7 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
 
     void undo()
     {
+        // TODO: Перестает работать отмена после того, как упражнение завершено
         try
         {
             IStep step = getExercise().getLastStep();

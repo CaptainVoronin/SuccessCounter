@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/border"
+        android:background="@drawable/dashed_border"
         android:paddingTop="10pt"
         android:paddingBottom="10pt"
         app:srcCompat="@android:drawable/ic_menu_add"

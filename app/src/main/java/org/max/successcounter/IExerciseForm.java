@@ -9,7 +9,6 @@ import java.sql.SQLException;
 
 interface IExerciseForm<T>
 {
-    int getViewID();
     void setExerсise( IExercise exercise );
     IExercise getExercise();
     <T> Dao<T,Integer> getDao( Class<T> exerciseClass, DatabaseHelper db ) throws SQLException;

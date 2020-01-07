@@ -30,7 +30,7 @@ public class CompoundExcercise extends AExercise
     public IStep addStepByPoints(Integer points)
     {
         attempts++;
-        int max = getMaxResult();
+        int max = getMaxPossiblePoints();
         Float percent = 100f * ( points + getSuccessCount() ) / ( max * attempts );
 
         IStep step = new Step();
@@ -41,7 +41,8 @@ public class CompoundExcercise extends AExercise
         return step;
     }
 
-    private int getMaxResult()
+    @Override
+    public int getMaxPossiblePoints()
     {
         return options.get( options.size() - 1 ).getPoints();
     }

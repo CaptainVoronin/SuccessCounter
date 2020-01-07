@@ -31,6 +31,19 @@ public class Result
     @DatabaseField
     Integer points;
 
+    @DatabaseField
+    String comment;
+
+    public String getComment()
+    {
+        return comment;
+    }
+
+    public void setComment(String comment)
+    {
+        this.comment = comment;
+    }
+
     public Result()
     {
         date = Calendar.getInstance().getTime();

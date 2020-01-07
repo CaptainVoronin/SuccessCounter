@@ -1,18 +1,18 @@
 package org.max.successcounter;
 
 import android.graphics.Color;
-import android.os.Bundle;
+import android.graphics.drawable.GradientDrawable;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-
 import org.max.successcounter.model.excercise.CompoundExcercise;
 
 public class CompoundExerciseActivity extends AExerciseActivity<CompoundExcercise>
@@ -20,32 +20,31 @@ public class CompoundExerciseActivity extends AExerciseActivity<CompoundExcercis
     private LineChart mChart;
 
     @Override
-    public int getViewID()
+    protected void prepareControlButtons(LinearLayout placeholder)
     {
-        return R.layout.activity_compound_exercise;
+        CompoundExcercise cx = ( CompoundExcercise ) getExercise();
+
+        LayoutInflater lif = getLayoutInflater();
+        LinearLayout ll = (LinearLayout) lif.inflate( R.layout.compound_exercise_buttons, placeholder, true );
+        ll.setOrientation( LinearLayout.VERTICAL );
+        ll.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL);
+        ll.setWeightSum( 0.5f );
+        cx.getOptions().forEach( item->{
+            ll.addView( makeButton( item ) );
+        } );
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    protected void prepareChart(LinearLayout placeholder)
     {
-        super.onCreate(savedInstanceState);
-            LinearLayout ll = findViewById( R.id.llOptionsLayout );
-            CompoundExcercise cx = ( CompoundExcercise ) getExercise();
-            cx.getOptions().forEach( item->{
-                ll.addView( makeButton( item ) );
-            } );
-
-        setResult(RESULT_CANCELED);
-    }
-
-    @Override
-    protected void prepareChart()
-    {
+        LayoutInflater lif = getLayoutInflater();
+        lif.inflate( R.layout.line_chart, placeholder, true );
         int axisColor = Color.LTGRAY;
-
-        mChart = findViewById(R.id.chartHolder);
+        mChart = placeholder.findViewById(R.id.chartHolder);
         mChart.setDrawMarkers(false);
         mChart.setDrawGridBackground(false);
+        mChart.setLayoutParams( new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT) );
+
         YAxis y = mChart.getAxisLeft();
         y.setAxisMinimum(0f);
         y.setAxisMaximum(100f);
@@ -106,10 +105,23 @@ public class CompoundExerciseActivity extends AExerciseActivity<CompoundExcercis
 
     Button makeButton( CompoundExcercise.Option option )
     {
+        GradientDrawable gdw = new GradientDrawable();
+        gdw.setColor( getColor( R.color.dark_blue));
+        gdw.setCornerRadius( 20 );
+        gdw.setStroke(3, getColor( R.color.secondAccent ));
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        lp.setMargins( 15, 10, 15, 10 );
+
         Button btn = new Button( this );
         btn.setText( option.getDescription() );
+        btn.setTextColor( getColor( R.color.secondAccent ) );
         btn.setTag( option );
         btn.setOnClickListener( new OnOptionClick() );
+        btn.setBackground( gdw );
+        btn.setLayoutParams( lp );
         return btn;
     }
 }

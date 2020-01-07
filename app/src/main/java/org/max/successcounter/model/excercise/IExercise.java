@@ -7,20 +7,31 @@ public interface IExercise
 {
     String getName();
     void setName( String name );
+
     void setTemplate( Template template );
     Template getTemplate(  );
+
     Integer getId();
     void setId( Integer id );
+
     List<IStep> getSteps();
+    void setSteps(List<IStep> steps);
+
     Float getPercentAtStep( int stepNum );
     IStep getLastStep( );
+
     IStep addStepByPoints( Integer points );
     void addStep( IStep step );
+
     int getAttemptsCount();
+
     IStep undo();
+
     List<Entry> getPercentHistory();
+
     boolean isFinished();
     Integer getSuccessCount();
     Result getResult();
-    void setSteps(List<IStep> steps);
+
+    int getMaxPossiblePoints();
 }

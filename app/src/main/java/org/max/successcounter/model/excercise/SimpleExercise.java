@@ -14,8 +14,15 @@ public class SimpleExercise extends AExercise
         return step;
     }
 
+    @Override
     public Integer getSuccessCount()
     {
         return (int) steps.stream().filter(step -> step.getPoints() != 0).count();
+    }
+
+    @Override
+    public int getMaxPossiblePoints()
+    {
+        return 1;
     }
 }

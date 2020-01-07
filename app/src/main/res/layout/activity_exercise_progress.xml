@@ -14,21 +14,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <TextView
-            android:id="@+id/lbNew"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0.5"
-            android:gravity="clip_horizontal|center_horizontal|center_vertical"
-            android:text="Новое..."
-            android:textAlignment="center"
-            android:textSize="12pt" />
-
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/chartHolder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10pt"
             android:layout_weight="1">
 
         </com.github.mikephil.charting.charts.LineChart>
@@ -36,7 +26,9 @@
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10pt"
             android:layout_weight="0.1"
+            android:gravity="center_vertical"
             android:paddingLeft="10pt"
             android:paddingTop="5pt"
             android:paddingRight="5pt">
@@ -110,5 +102,15 @@
             android:textSize="12pt" />
 
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnAddNew"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

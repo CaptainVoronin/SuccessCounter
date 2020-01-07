@@ -3,6 +3,7 @@ package org.max.successcounter.model.excercise;
 public class RunToExcercise extends SimpleExercise
 {
     boolean finished;
+    int limit;
 
     public RunToExcercise()
     {
@@ -10,10 +11,10 @@ public class RunToExcercise extends SimpleExercise
         finished = false;
     }
 
-    public RunToExcercise( int limit )
+    public RunToExcercise(int limit)
     {
         super();
-        setLimit( limit );
+        setLimit(limit);
         finished = false;
     }
 
@@ -27,28 +28,27 @@ public class RunToExcercise extends SimpleExercise
         this.limit = limit;
     }
 
-    int limit;
-
     @Override
     public IStep addStepByPoints(Integer points)
     {
+        // Prevent add points to a finished exercise
+        if (isFinished())
+            return null;
+
         // Упражнение с ограничением
         // выполняется до первого промаха
-        if( points == 0 )
+        if (points == 0)
         {
             finished = true;
             return null;
         }
 
-        if( isFinished() )
-            return null;
-
         IStep step = new Step();
-        step.setPoints( 1 );
-        steps.add( step );
-        step.setPercent( 100f * steps.size() / getLimit() );
+        step.setPoints(points);
+        steps.add(step);
+        step.setPercent(100f * steps.size() / getLimit());
 
-        if( steps.size() == getLimit() )
+        if (steps.size() == getLimit())
             finished = true;
 
         return step;
@@ -75,7 +75,11 @@ public class RunToExcercise extends SimpleExercise
     @Override
     public IStep undo()
     {
-        finished = false;
-        return super.undo();
+        if (isFinished())
+        {
+            finished = false;
+            return null;
+        } else
+            return super.undo();
     }
 }

@@ -1,26 +1,21 @@
 package org.max.successcounter;
 
 import android.graphics.Color;
+import android.view.LayoutInflater;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
-
 import org.max.successcounter.model.excercise.SimpleExercise;
 
 public class SimpleExerciseActivity extends AExerciseActivity<SimpleExercise>
 {
     private LineChart mChart;
-
-    @Override
-    public int getViewID()
-    {
-        return R.layout.activity_simple_exercise;
-    }
 
     @Override
     public void onExerciseFinished()
@@ -29,30 +24,17 @@ public class SimpleExerciseActivity extends AExerciseActivity<SimpleExercise>
     }
 
     @Override
-    protected void prepareControls()
+    protected void prepareChart(LinearLayout placeholder)
     {
-        super.prepareControls();
+        LayoutInflater lif = getLayoutInflater();
+        lif.inflate( R.layout.line_chart, placeholder, true );
 
-        ImageButton btn = findViewById(R.id.btnAttempt);
-
-        btn.setOnClickListener(e -> {
-            addStep( 0 );
-        });
-
-        btn = findViewById(R.id.btnSuccess);
-        btn.setOnClickListener(e -> {
-            addStep( 1 );
-        });
-    }
-
-    @Override
-    protected void prepareChart()
-    {
         int axisColor = Color.LTGRAY;
-
-        mChart = findViewById(R.id.chartHolder);
+        mChart = placeholder.findViewById(R.id.chartHolder);
         mChart.setDrawMarkers(false);
         mChart.setDrawGridBackground(false);
+        mChart.setLayoutParams( new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT) );
+
         YAxis y = mChart.getAxisLeft();
         y.setAxisMinimum(0f);
         y.setAxisMaximum(100f);
@@ -74,6 +56,25 @@ public class SimpleExerciseActivity extends AExerciseActivity<SimpleExercise>
 
         Legend legend = mChart.getLegend();
         legend.setEnabled(false);
+
+    }
+
+    @Override
+    protected void prepareControlButtons(LinearLayout placeholder)
+    {
+        LayoutInflater lif = getLayoutInflater();
+        LinearLayout ll = (LinearLayout) lif.inflate( R.layout.simple_exercise_buttons, placeholder, true );
+
+        ImageButton btn = placeholder.findViewById(R.id.btnAttempt);
+
+        btn.setOnClickListener(e -> {
+            addStep( 0 );
+        });
+
+        btn = findViewById(R.id.btnSuccess);
+        btn.setOnClickListener(e -> {
+            addStep( 1 );
+        });
     }
 
     @Override

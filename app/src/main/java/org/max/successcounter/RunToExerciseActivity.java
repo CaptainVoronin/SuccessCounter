@@ -1,7 +1,10 @@
 package org.max.successcounter;
 
 import android.graphics.Color;
+import android.view.LayoutInflater;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ViewSwitcher;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -17,49 +20,53 @@ import java.util.List;
 
 public class RunToExerciseActivity extends AExerciseActivity<RunToExcercise>
 {
-
     public static final int[] CHART_COLORS = {
-            Color.rgb( 255, 255, 255 ), Color.rgb( 0, 0x1C, 0x2B ) };
+            Color.rgb(255, 255, 255), Color.rgb(0, 0x1C, 0x2B)};
+    ViewSwitcher switcher;
+    int currentViewID;
 
     PieChart mChart;
-    @Override
-    public int getViewID()
-    {
-        return R.layout.activity_run_to_exercise;
-    }
 
     @Override
     public void onExerciseFinished()
     {
-        // TODO: implement
+        switcher.showNext();
+        currentViewID = switcher.getCurrentView().getId();
     }
 
     @Override
-    protected void prepareControls()
+    protected void prepareControlButtons(LinearLayout placeholder)
     {
-        super.prepareControls();
+        LayoutInflater lif = getLayoutInflater();
+        LinearLayout ll = (LinearLayout) lif.inflate(R.layout.run_to_exercise_buttons, placeholder, true);
+        switcher = ll.findViewById(R.id.btnSwitcher);
 
-        ImageButton btn = findViewById(R.id.btnAttempt);
+        ImageButton btn = placeholder.findViewById(R.id.btnAttempt);
 
         btn.setOnClickListener(e -> {
-            addStep( 0 );
+            addStep(0);
         });
 
         btn = findViewById(R.id.btnSuccess);
         btn.setOnClickListener(e -> {
-            addStep( 1 );
+            addStep(1);
         });
+
     }
 
     @Override
-    protected void prepareChart()
+    protected void prepareChart(LinearLayout placeholder)
     {
-        mChart = findViewById( R.id.chartHolder );
+        LayoutInflater lif = getLayoutInflater();
+        LinearLayout ll = (LinearLayout) lif.inflate(R.layout.pie_chart, placeholder, true);
+
+        mChart = ll.findViewById(R.id.chartHolder);
+        mChart.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         mChart.getDescription().setEnabled(false);
         mChart.setDrawHoleEnabled(false);
         mChart.setRotationAngle(-90);
         mChart.setDrawEntryLabels(false);
-        mChart.setBackgroundColor( Color.rgb( 0, 0x1C, 0x2B ) );
+        mChart.setBackgroundColor(Color.rgb(0, 0x1C, 0x2B));
     }
 
     @Override
@@ -69,14 +76,22 @@ public class RunToExerciseActivity extends AExerciseActivity<RunToExcercise>
         Float percent1 = 100f * ex.getSuccessCount() / ex.getTemplate().getLimit();
         Float percent2 = 100 - percent1;
         List<PieEntry> entries = new ArrayList<>();
-        entries.add( new PieEntry( percent1 ) );
-        entries.add( new PieEntry( percent2 ) );
+        entries.add(new PieEntry(percent1));
+        entries.add(new PieEntry(percent2));
         PieDataSet dataSet = new PieDataSet(entries, "%");
         dataSet.setColors(CHART_COLORS);
-        dataSet.setValueFormatter( new BlankValueFormatter() );
-        PieData data = new PieData( dataSet );
-        mChart.setData( data );
+        dataSet.setValueFormatter(new BlankValueFormatter());
+        PieData data = new PieData(dataSet);
+        mChart.setData(data);
         mChart.invalidate();
+    }
+
+    @Override
+    void undo()
+    {
+        super.undo();
+        if (currentViewID == R.id.viewFinishMessage)
+            switcher.showNext();
     }
 
     class BlankValueFormatter extends ValueFormatter

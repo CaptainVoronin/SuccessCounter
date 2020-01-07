@@ -40,51 +40,20 @@
             android:textColor="@android:color/white"
             android:textSize="10pt" />
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/chartHolder"
+        <LinearLayout
+            android:id="@+id/viewChartPlaceholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.4"
-            android:background="@color/dark_blue">
-        </com.github.mikephil.charting.charts.PieChart>
+            android:orientation="vertical"></LinearLayout>
 
         <LinearLayout
+            android:id="@+id/buttonsPlaceholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:gravity="center_vertical|center_horizontal"
             android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/btnAttempt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/dark_blue"
-                    app:srcCompat="@drawable/fail075" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/btnSuccess"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/dark_blue"
-                    app:srcCompat="@drawable/success075" />
-            </LinearLayout>
-
         </LinearLayout>
 
         <ImageButton
@@ -96,16 +65,5 @@
             app:srcCompat="@drawable/undo075" />
 
     </LinearLayout>
-
-    <!--    <TextView
-        android:id="@+id/fullscreen_content_controls"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:text="@string/dummy_content"
-        android:textColor="#33b5e5"
-        android:textSize="50sp"
-        android:textStyle="bold" /> -->
 
 </FrameLayout>

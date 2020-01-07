@@ -12,4 +12,5 @@
     <string name="title_new_limited_template">Новое упражениение с ограничением ударов</string>
     <string name="missOptionName">Промах</string>
     <string name="successOptionName">Выполнено полностью</string>
+    <string name="exerciseFinishedMessage">Finished</string>
 </resources>

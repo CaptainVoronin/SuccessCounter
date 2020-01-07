@@ -16,6 +16,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.j256.ormlite.dao.Dao;
 
 import org.max.successcounter.db.DatabaseHelper;
@@ -59,10 +60,10 @@ public class ExerciseProgressActivity extends AppCompatActivity
 
             setTitle( template.getName() );
 
-            TextView tv = findViewById( R.id.lbNew );
-            tv.setOnClickListener( e->{gotoExercise();} );
+            FloatingActionButton btn = findViewById( R.id.btnAddNew );
+            btn.setOnClickListener( e->{gotoExercise();} );
 
-            tv = findViewById( R.id.lbHistory );
+            TextView tv = findViewById( R.id.lbHistory );
             tv.setOnClickListener( e->{gotoHistory();} );
 
             makeChart( );
