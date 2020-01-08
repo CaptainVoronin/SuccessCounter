@@ -139,4 +139,9 @@ public abstract class AExercise implements IExercise
         this.steps.forEach( step -> step.setExercise( this ) );
     }
 
+    @Override
+    public boolean hasSummaryStep()
+    {
+        return false;
+    }
 }

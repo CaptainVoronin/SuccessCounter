@@ -8,6 +8,7 @@ public class CompoundExcercise extends AExercise
     List<Option> options;
     int maxResult;
     int attempts;
+    boolean hasSummaryStep;
 
     public CompoundExcercise()
     {
@@ -15,6 +16,7 @@ public class CompoundExcercise extends AExercise
         options = new ArrayList<>();
         maxResult = -1;
         attempts = 0;
+        hasSummaryStep = true;
     }
 
     public void addOption( Option opt )
@@ -93,5 +95,16 @@ public class CompoundExcercise extends AExercise
         {
             this.points = points;
         }
+    }
+
+    @Override
+    public boolean hasSummaryStep()
+    {
+        return hasSummaryStep;
+    }
+
+    public void setHasSummaryStep( boolean value )
+    {
+        hasSummaryStep = value;
     }
 }

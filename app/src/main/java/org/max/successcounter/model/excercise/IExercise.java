@@ -34,4 +34,6 @@ public interface IExercise
     Result getResult();
 
     int getMaxPossiblePoints();
+
+    boolean hasSummaryStep();
 }
