@@ -13,4 +13,5 @@
     <string name="missOptionName">Промах</string>
     <string name="successOptionName">Выполнено полностью</string>
     <string name="exerciseFinishedMessage">Finished</string>
+    <string name="trend">тренд</string>
 </resources>

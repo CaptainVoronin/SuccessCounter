@@ -1,15 +1,11 @@
 package org.max.successcounter;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
-
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -19,13 +15,17 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.j256.ormlite.dao.Dao;
 
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.excercise.Result;
 import org.max.successcounter.model.excercise.Template;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ExerciseProgressActivity extends AppCompatActivity
 {
@@ -41,34 +41,38 @@ public class ExerciseProgressActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise_progress);
-        mPrefs = getPreferences( Context.MODE_PRIVATE );
-        DatabaseHelper db = new DatabaseHelper( this );
+        mPrefs = getPreferences(Context.MODE_PRIVATE);
+        DatabaseHelper db = new DatabaseHelper(this);
         try
         {
             Intent in = getIntent();
-            templateId = in.getIntExtra(TEMPLATE_ID, -1 );
-            if( templateId == -1 )
+            templateId = in.getIntExtra(TEMPLATE_ID, -1);
+            if (templateId == -1)
             {
-                templateId  = savedInstanceState.getInt( TEMPLATE_ID );
-                templateId = mPrefs.getInt( TEMPLATE_ID , -1);
-                if( templateId == -1 )
+                templateId = savedInstanceState.getInt(TEMPLATE_ID);
+                templateId = mPrefs.getInt(TEMPLATE_ID, -1);
+                if (templateId == -1)
                     throw new IllegalArgumentException();
             }
 
-            exsetDao = db.getDao( Template.class );
+            exsetDao = db.getDao(Template.class);
             template = exsetDao.queryForId(templateId);
 
-            setTitle( template.getName() );
+            setTitle(template.getName());
 
-            FloatingActionButton btn = findViewById( R.id.btnAddNew );
-            btn.setOnClickListener( e->{gotoExercise();} );
+            FloatingActionButton btn = findViewById(R.id.btnAddNew);
+            btn.setOnClickListener(e -> {
+                gotoExercise();
+            });
 
-            TextView tv = findViewById( R.id.lbHistory );
-            tv.setOnClickListener( e->{gotoHistory();} );
+            TextView tv = findViewById(R.id.lbHistory);
+            tv.setOnClickListener(e -> {
+                gotoHistory();
+            });
 
-            makeChart( );
+            makeChart();
             fillStats();
-            setTitle( template.getName() );
+            setTitle(template.getName());
 
         } catch (SQLException e)
         {
@@ -78,57 +82,74 @@ public class ExerciseProgressActivity extends AppCompatActivity
 
     private void fillStats()
     {
-        TextView tv = findViewById( R.id.lbTotalExercises );
+        TextView tv = findViewById(R.id.lbTotalExercises);
         int count = 0;
 
-        tv.setText( "" + template.getResults().size() );
+        tv.setText("" + template.getResults().size());
 
-        for( Result res : template.getResults() )
+        for (Result res : template.getResults())
             count += res.getPoints();
 
-        tv = findViewById( R.id.lbTotalSuccess );
-        tv.setText( "" + count );
+        tv = findViewById(R.id.lbTotalSuccess);
+        tv.setText("" + count);
 
-        for( Result res : template.getResults() )
+        for (Result res : template.getResults())
             count += res.getShots();
 
-        tv = findViewById( R.id.lbTotalShots );
-        tv.setText( "" + count );
+        tv = findViewById(R.id.lbTotalShots);
+        tv.setText("" + count);
     }
 
     private void gotoHistory()
     {
-        Intent in = new Intent( this, HistoryActivity.class );
+        Intent in = new Intent(this, HistoryActivity.class);
         in.putExtra(TEMPLATE_ID, templateId);
-        startActivityForResult( in, ActivityIDs.HISTORYACTIVITY_ID );
+        startActivityForResult(in, ActivityIDs.HISTORYACTIVITY_ID);
     }
 
     private void makeChart() throws SQLException
     {
         prepareChart();
-        fillChart( );
+        fillChart();
     }
 
-    private void fillChart( ) throws SQLException
+    private void fillChart() throws SQLException
     {
         List<Result> items = new ArrayList<>();
         template = exsetDao.queryForId(templateId);
 
-        items.addAll( template.getResults() );
+        items.addAll(template.getResults());
         List<Entry> exes = new ArrayList<>();
-        for( int i = 0; i < items.size(); i++  )
-            exes.add( new Entry( (float) i, new Float( items.get(i).getPercent() ) ) );
+        for (int i = 0; i < items.size(); i++)
+            exes.add(new Entry((float) i, new Float(items.get(i).getPercent())));
+
 
         mChart.clear();
         LineData data = new LineData();
         int color = Color.rgb(0xDD, 0x88, 0x00);
-        LineDataSet set= new LineDataSet( exes, "%" );
-        set.setDrawCircleHole( false );
-        set.setDrawCircles( false );
+
+        LineDataSet set = new LineDataSet(exes, "%");
+        set.setDrawCircleHole(false);
+        set.setDrawCircles(false);
         set.setColor(color);
-        data.setDrawValues( false );
-        data.addDataSet( set );
-        data.setValueTextSize( 10 );
+        data.setDrawValues(false);
+        data.addDataSet(set);
+
+        if (items.size() > 2)
+        {
+            List<Entry> trend = makeTrend(items);
+            color = getColor(android.R.color.holo_red_light);
+            set = new LineDataSet(trend, getString( R.string.trend) );
+            set.setDrawCircleHole(false);
+            set.setDrawCircles(false);
+            set.setColor(color);
+            set.setLineWidth(2f);
+            set.setValueFormatter( new EmptyValueFormatter() );
+            data.setDrawValues(false);
+            data.addDataSet(set);
+        }
+
+        data.setValueTextSize(10);
         mChart.setData(data);
         mChart.invalidate();
     }
@@ -137,54 +158,53 @@ public class ExerciseProgressActivity extends AppCompatActivity
     {
         int axisColor = Color.LTGRAY;
 
-        mChart = findViewById( R.id.chartHolder );
+        mChart = findViewById(R.id.chartHolder);
         YAxis y = mChart.getAxisLeft();
-        y.setAxisMinimum( 0f );
-        y.setAxisMaximum( 100f );
-        y.setTextColor( axisColor  );
-        y.setGridColor( axisColor  );
-        y.setAxisLineColor( axisColor  );
+        y.setAxisMinimum(0f);
+        y.setAxisMaximum(100f);
+        y.setTextColor(axisColor);
+        y.setGridColor(axisColor);
+        y.setAxisLineColor(axisColor);
 
         y = mChart.getAxisRight();
-        y.setAxisMinimum( 0f );
-        y.setAxisMaximum( 100f );
-        y.setTextColor( axisColor  );
-        y.setGridColor( axisColor  );
-        y.setAxisLineColor( axisColor  );
+        y.setAxisMinimum(0f);
+        y.setAxisMaximum(100f);
+        y.setTextColor(axisColor);
+        y.setGridColor(axisColor);
+        y.setAxisLineColor(axisColor);
 
         XAxis x = mChart.getXAxis();
-        x.setGridColor( axisColor  );
-        x.setAxisLineColor( axisColor  );
-        x.setTextColor( axisColor  );
+        x.setGridColor(axisColor);
+        x.setAxisLineColor(axisColor);
+        x.setTextColor(axisColor);
     }
 
     private void gotoExercise()
     {
         Intent in;
 
-        if( !template.getCompound()  )
+        if (!template.getCompound())
         {
-            if( template.getLimited() )
-                in = new Intent( this, RunToExerciseActivity.class );
+            if (template.getLimited())
+                in = new Intent(this, RunToExerciseActivity.class);
             else
-                in = new Intent( this, SimpleExerciseActivity.class );
-        }
-        else
-            in = new Intent( this, CompoundExerciseActivity.class );
+                in = new Intent(this, SimpleExerciseActivity.class);
+        } else
+            in = new Intent(this, CompoundExerciseActivity.class);
 
         in.putExtra(TEMPLATE_ID, template.getId());
-        startActivityForResult( in, ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID);
+        startActivityForResult(in, ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if( requestCode == ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID ||
-            requestCode == ActivityIDs.HISTORYACTIVITY_ID )
-            if( resultCode == RESULT_OK )
+        if (requestCode == ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID ||
+                requestCode == ActivityIDs.HISTORYACTIVITY_ID)
+            if (resultCode == RESULT_OK)
             {
-                setResult( RESULT_OK );
+                setResult(RESULT_OK);
                 try
                 {
                     fillChart();
@@ -198,10 +218,25 @@ public class ExerciseProgressActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
         super.onSaveInstanceState(savedInstanceState);
-        SharedPreferences.Editor ed =  mPrefs.edit();
+        SharedPreferences.Editor ed = mPrefs.edit();
         ed.putInt("templateID", templateId);
         ed.commit();
+    }
+
+    private List<Entry> makeTrend(List<Result> items)
+    {
+        ArrayList<Entry> trendData = new ArrayList<>();
+
+        SimpleRegression sr = new SimpleRegression();
+
+        for (int i = 1; i <= items.size(); i++)
+            sr.addData(i, items.get(i-1).getPercent());
+
+        trendData.add(new Entry(0f, (float) sr.predict(1)));
+        trendData.add(new Entry(items.size() - 1, (float) sr.predict(items.size())));
+        return trendData;
     }
 }
