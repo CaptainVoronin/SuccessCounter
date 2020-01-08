@@ -1,5 +1,5 @@
 #
-# generated on 2020/01/08 02:54:19
+# generated on 2020/01/08 10:37:34
 #
 # --table-start--
 dataClass=org.max.successcounter.model.excercise.Result
@@ -53,6 +53,9 @@ fieldName=limited
 # --field-end--
 # --field-start--
 fieldName=compound
+# --field-end--
+# --field-start--
+fieldName=hasSummaryStep
 # --field-end--
 # --field-start--
 fieldName=options

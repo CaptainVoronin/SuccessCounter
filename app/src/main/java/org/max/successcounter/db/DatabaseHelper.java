@@ -17,7 +17,7 @@ import org.max.successcounter.model.excercise.Template;
 public final class DatabaseHelper extends OrmLiteSqliteOpenHelper
 {
     private static final String DATABASE_NAME = "scounter.db";
-    private static final int DATABASE_VERSION = 24;
+    private static final int DATABASE_VERSION = 25;
 
     public DatabaseHelper(Context context)
     {
@@ -47,14 +47,14 @@ public final class DatabaseHelper extends OrmLiteSqliteOpenHelper
             TableUtils.dropTable(connectionSource, Template.class, false);
             TableUtils.createTable(connectionSource, Template.class);
 
-            TableUtils.dropTable(connectionSource, OptionDescription.class, false);
+           /* TableUtils.dropTable(connectionSource, OptionDescription.class, false);
             TableUtils.createTable(connectionSource, OptionDescription.class);
 
             TableUtils.dropTable(connectionSource, Result.class, false);
             TableUtils.createTable(connectionSource, Result.class);
 
             TableUtils.dropTable(connectionSource, HistoryItem.class, false);
-            TableUtils.createTable(connectionSource, HistoryItem.class);
+            TableUtils.createTable(connectionSource, HistoryItem.class); */
 
         } catch (java.sql.SQLException e)
         {

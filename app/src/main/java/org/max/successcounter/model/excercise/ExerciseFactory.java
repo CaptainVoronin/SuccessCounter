@@ -11,8 +11,13 @@ public enum ExerciseFactory
         if (template.getCompound() )
         {
             exs = new CompoundExcercise();
+            ((CompoundExcercise) exs ).setHasSummaryStep( template.isHasSummaryStep() );
             for( OptionDescription od : template.getOptionsAsList() )
                 ((CompoundExcercise)exs).addOption( makeOption( od ) );
+
+            // If the template doesn't have the summary option then remove it (it's the last one)
+            if( !template.isHasSummaryStep() )
+                ((CompoundExcercise)exs).getOptions().remove( ((CompoundExcercise)exs).getOptions().size() - 1 );
         }
         else
         {

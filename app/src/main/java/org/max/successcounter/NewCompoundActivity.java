@@ -22,7 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class NewCompoundActivity extends AppCompatActivity
 {
-    TableLayout table;
     Template template;
     Dao<Template, Integer> templateDao;
     Dao<OptionDescription, Integer> optionDao;
@@ -101,7 +100,6 @@ public class NewCompoundActivity extends AppCompatActivity
             templateDao.create(template);
             for( OptionDescription op : template.getOptions() )
                 optionDao.create( op );
-
 
             setResult( RESULT_OK );
 

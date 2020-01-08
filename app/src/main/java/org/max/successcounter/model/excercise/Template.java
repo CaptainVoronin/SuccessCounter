@@ -22,11 +22,11 @@ public class Template
     private Boolean compound;
 
     @DatabaseField
-    private boolean hasSummaryStep;
+    private Boolean hasSummaryStep;
 
     public boolean isHasSummaryStep()
     {
-        return hasSummaryStep;
+        return hasSummaryStep != null ? hasSummaryStep : true;
     }
 
     public void setHasSummaryStep(boolean hasSummaryStep)
@@ -39,8 +39,6 @@ public class Template
 
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Result> results;
-
-
 
     String missOptionName;
     String successOptionName;
@@ -60,6 +58,7 @@ public class Template
         compound = new Boolean(false);
         limited = new Boolean(false);
         limit = 0;
+        hasSummaryStep = new Boolean( true );
     }
 
     public ForeignCollection<Result> getResults()
@@ -145,6 +144,7 @@ public class Template
         options.forEach(item -> list.add(item));
         list.add( 0, getMissOption() );
         list.add( getSuccessOption() );
+
         return list;
     }
 

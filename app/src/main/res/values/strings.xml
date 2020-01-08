@@ -14,4 +14,5 @@
     <string name="successOptionName">Выполнено полностью</string>
     <string name="exerciseFinishedMessage">Finished</string>
     <string name="trend">тренд</string>
+    <string name="messageRestoreSummaryStep">Восстановить \"полный успех\"</string>
 </resources>

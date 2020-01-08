@@ -34,10 +34,58 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
     @Override
     protected TableRow makeRow(OptionDescription item)
     {
-        if( item.getFirstDefault() || item.getLastDefault() )
+        if( item.getFirstDefault() )
             return makeUneditableRow( item );
+        else if( item.getLastDefault() )
+            return makeSummaryRow( item );
         else
             return makeGeneralRow( item );
+    }
+
+    private TableRow makeSummaryRow(OptionDescription item)
+    {
+        TextView tvStepName;
+        TextView tvStepPoints;
+        ImageButton btnRemove;
+
+        TableRow row = ( TableRow ) getContext().getLayoutInflater().inflate( getRow_layout_id(), null, false );
+        tvStepName = row.findViewById(R.id.lbStepName);
+        tvStepPoints = row.findViewById(R.id.lbStepPoints);
+        btnRemove = row.findViewById(R.id.btnRemoveStep);
+        btnRemove.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                template.setHasSummaryStep( false );
+                makeTable();
+            }
+        });
+
+        if( template.isHasSummaryStep() )
+        {
+            tvStepName.setText(item.getDescription());
+            tvStepPoints.setVisibility( View.VISIBLE );
+            tvStepPoints.setText(item.getPoints().toString());
+            btnRemove.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            tvStepPoints.setVisibility( View.INVISIBLE );
+            tvStepName.setText( getContext().getString( R.string.messageRestoreSummaryStep ));
+            tvStepName.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    template.setHasSummaryStep( true );
+                    makeTable();
+                }
+            });
+            btnRemove.setVisibility(View.INVISIBLE);
+        }
+
+        return row;
     }
 
     private TableRow makeUneditableRow(OptionDescription item)
