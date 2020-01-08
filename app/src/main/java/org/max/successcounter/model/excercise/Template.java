@@ -21,11 +21,26 @@ public class Template
     @DatabaseField
     private Boolean compound;
 
+    @DatabaseField
+    private boolean hasSummaryStep;
+
+    public boolean isHasSummaryStep()
+    {
+        return hasSummaryStep;
+    }
+
+    public void setHasSummaryStep(boolean hasSummaryStep)
+    {
+        this.hasSummaryStep = hasSummaryStep;
+    }
+
     @ForeignCollectionField(eager = true)
     private ForeignCollection<OptionDescription> options;
 
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Result> results;
+
+
 
     String missOptionName;
     String successOptionName;
