@@ -67,6 +67,9 @@ public class RunToExerciseActivity extends AExerciseActivity<RunToExcercise>
         mChart.setRotationAngle(-90);
         mChart.setDrawEntryLabels(false);
         mChart.setBackgroundColor(Color.rgb(0, 0x1C, 0x2B));
+        mChart.getLegend().setEnabled(false);
+        mChart.setDescription( null );
+
     }
 
     @Override

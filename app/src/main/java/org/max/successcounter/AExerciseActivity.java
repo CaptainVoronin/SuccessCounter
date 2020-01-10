@@ -38,6 +38,7 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
     private View mContentView;
     private IExercise exercise;
     private Dao<Result, Integer> daoResult;
+    private ImageButton btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -89,6 +90,16 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
             saveResult();
         });
         btnRollback.setEnabled(false);
+
+        btnBack = findViewById( R.id.btnBack );
+        btnBack.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                finish();
+            }
+        });
 
         LinearLayout ll = findViewById( R.id.viewChartPlaceholder );
         prepareChart( ll );

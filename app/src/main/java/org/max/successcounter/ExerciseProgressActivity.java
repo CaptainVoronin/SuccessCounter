@@ -177,6 +177,9 @@ public class ExerciseProgressActivity extends AppCompatActivity
         x.setGridColor(axisColor);
         x.setAxisLineColor(axisColor);
         x.setTextColor(axisColor);
+
+        mChart.getLegend().setEnabled(false);
+        mChart.setDescription( null );
     }
 
     private void gotoExercise()

@@ -66,6 +66,7 @@ public class CompoundExerciseActivity extends AExerciseActivity<CompoundExcercis
 
         Legend legend = mChart.getLegend();
         legend.setEnabled(false);
+        mChart.setDescription( null );
 
     }
 
@@ -106,7 +107,7 @@ public class CompoundExerciseActivity extends AExerciseActivity<CompoundExcercis
     Button makeButton( CompoundExcercise.Option option )
     {
         GradientDrawable gdw = new GradientDrawable();
-        gdw.setColor( getColor( R.color.dark_blue));
+        gdw.setColor( getColor( R.color.dark_blue )  );
         gdw.setCornerRadius( 20 );
         gdw.setStroke(3, getColor( R.color.secondAccent ));
 
