@@ -18,7 +18,9 @@ import org.max.successcounter.model.excercise.Template;
 
 import java.sql.SQLException;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 public class NewCompoundActivity extends AppCompatActivity
 {
@@ -33,7 +35,10 @@ public class NewCompoundActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_compound);
-        setTitle(R.string.title_new_compound_template);
+        setTitle( R.string.title_new_compound_template );
+        ActionBar toolBar = getSupportActionBar();
+        toolBar.setTitle( R.string.title_new_compound_template );
+
         Intent in = getIntent();
         templateName = in.getStringExtra(NewExerciseActivity.TEMPLATE_NAME);
 
@@ -111,3 +116,18 @@ public class NewCompoundActivity extends AppCompatActivity
         finish();
     }
 }
+
+/*
+<?--    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout> -->
+* */

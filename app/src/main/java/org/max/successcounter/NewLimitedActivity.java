@@ -54,7 +54,7 @@ public class NewLimitedActivity extends AppCompatActivity
 
         edLimit = findViewById( R.id.edLimit );
         edLimit.addTextChangedListener( new LimitTextChangeListener () );
-
+        edLimit.requestFocus();
         //setResult( RESULT_CANCELED );
     }
 

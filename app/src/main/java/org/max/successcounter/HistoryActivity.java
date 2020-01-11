@@ -54,10 +54,7 @@ public class HistoryActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        makeToolbar();
 
         DatabaseHelper db = new DatabaseHelper(this);
         try
@@ -221,8 +218,12 @@ public class HistoryActivity extends AppCompatActivity
             in.putExtra( AExerciseActivity.RESULT_ID, id );
             in.putExtra( ExerciseProgressActivity.TEMPLATE_ID, template.getId() );
             startActivityForResult( in, ActivityIDs.EXERCISEACTIVITY_ID );
-
-            // TODO : Обновлять после OK
         }
+    }
+
+    public void makeToolbar()
+    {
+        TextView tv = findViewById( R.id.tvTitle );
+        tv.setText( R.string.msgHistoryActivityTitle );
     }
 }

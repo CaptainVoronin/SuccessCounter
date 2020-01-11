@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -30,6 +31,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        makeToolbar();
         comparator = new ResultComparator();
         table = findViewById(R.id.mainTable);
         dbHelper = new DatabaseHelper(this);
@@ -139,7 +142,7 @@ public class MainActivity extends AppCompatActivity
     {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
+        return false;
     }
 
     /**
@@ -298,6 +301,12 @@ public class MainActivity extends AppCompatActivity
         b.setCancelable(true);
         //EditText ed = table.findViewById(R.id.edName);
         return b;
+    }
+
+    public void makeToolbar()
+    {
+        TextView tv = findViewById( R.id.tvTitle );
+        tv.setText( "Упражнения" );
     }
 
     class ResultComparator implements Comparator<Result>

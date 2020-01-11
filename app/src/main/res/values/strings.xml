@@ -20,4 +20,6 @@
     <string name="msgNewSimpleLimExComment">Попадание/промах с ограничем по числу ударов. До первого промаха. Например, надо собрать позицию.</string>
     <string name="msgNewCompoundExTitle">Составное упражнение</string>
     <string name="msgNewCompoundExComment">Удар может принести разное число очков.</string>
+    <string name="msgNewExerciseActivityTitle">Новое упражнение</string>
+    <string name="msgHistoryActivityTitle">История</string>
 </resources>

@@ -3,9 +3,8 @@
     android:shape="rectangle">
 
     <stroke
-        android:width="1px"
-        android:color="@color/black_overlay"
-        >
+        android:width="3px"
+        android:color="@color/black_overlay">
 
     </stroke>
     <corners

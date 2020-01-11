@@ -6,22 +6,6 @@
     android:layout_height="match_parent"
     tools:context="org.max.successcounter.NewLimitedActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        android:background="@color/dark_blue">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/dark_blue"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-
     <include layout="@layout/content_new_compound" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

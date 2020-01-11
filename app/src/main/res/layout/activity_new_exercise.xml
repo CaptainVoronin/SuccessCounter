@@ -6,12 +6,46 @@
     android:layout_height="match_parent"
     tools:context=".NewExerciseActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/dark_blue"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3pt"
+                android:text="TextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@android:color/darker_gray" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <LinearLayout
-        android:layout_width="409dp"
-        android:layout_height="729dp"
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBar">
 
         <EditText
             android:id="@+id/edName"
@@ -19,34 +53,8 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:textStyle="italic"
-            android:text="*название" />
+            android:text="*название"
+            android:textStyle="italic" />
 
-        <Button
-            android:id="@+id/btnSimpleUnlim"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Простое без ограничений"
-            android:enabled="false"
-            android:layout_marginTop="20pt"
-            android:layout_marginBottom="10pt"/>
-
-        <Button
-            android:id="@+id/btnSimpleLimited"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="Простое с ограничениями"
-            android:layout_marginTop="10pt"
-            android:layout_marginBottom="10pt"/>
-
-        <Button
-            android:id="@+id/btnCompaund"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="Составное"
-            android:layout_marginTop="10pt"
-            android:layout_marginBottom="10pt"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

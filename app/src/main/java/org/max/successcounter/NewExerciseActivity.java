@@ -11,6 +11,9 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import com.j256.ormlite.dao.Dao;
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.excercise.Template;
@@ -23,9 +26,9 @@ public class NewExerciseActivity extends AppCompatActivity
     public final static String TEMPLATE_NAME = "TEMPLATE_NAME";
 
     EditText edName;
-    Button btnNewSimpleUnlimited;
-    Button btnNewSimpleLimited;
-    Button btnNewCompound;
+    ComplexButton btnNewSimpleUnlimited;
+    ComplexButton btnNewSimpleLimited;
+    ComplexButton btnNewCompound;
     Dao<Template, Integer> templateDao;
 
     @Override
@@ -34,6 +37,8 @@ public class NewExerciseActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView( R.layout.activity_new_exercise);
         boolean nameChanged = false;
+
+        LinearLayout ll = findViewById( R.id.container );
 
         edName = findViewById( R.id.edName );
         edName.setOnFocusChangeListener(new View.OnFocusChangeListener()
@@ -61,9 +66,8 @@ public class NewExerciseActivity extends AppCompatActivity
 
         edName.addTextChangedListener( new NameChangeListener() );
 
-        btnNewSimpleUnlimited = findViewById( R.id.btnSimpleUnlim);
-
-        btnNewSimpleUnlimited.setOnClickListener(new View.OnClickListener()
+        btnNewSimpleUnlimited = new ComplexButton( this, getString( R.string.msgNewSimpleUnlimExTitle ),
+                getString( R.string.msgNewSimpleUnlimExComment ), new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -83,14 +87,33 @@ public class NewExerciseActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
             }
-        });
+        } );
 
-        btnNewSimpleLimited = findViewById( R.id.btnSimpleLimited );
-        btnNewSimpleLimited.setOnClickListener( new OnBtnClickListener<NewLimitedActivity>( NewLimitedActivity.class ) );
+        ll.addView( btnNewSimpleUnlimited.inflate( ) );
+        btnNewSimpleUnlimited.setEnabled( false );
 
-        btnNewCompound = findViewById( R.id.btnCompaund );
-        btnNewCompound.setOnClickListener( new OnBtnClickListener<NewCompoundActivity>( NewCompoundActivity.class ) );
+
+        btnNewSimpleLimited = new ComplexButton( this, getString( R.string.msgNewSimpleLimExTitle ),
+                getString( R.string.msgNewSimpleLimExComment ), new OnBtnClickListener<NewLimitedActivity>( NewLimitedActivity.class ) );
+
+        ll.addView( btnNewSimpleLimited.inflate( ) );
+        btnNewSimpleLimited.setEnabled( false );
+
+        btnNewCompound = new ComplexButton( this, getString( R.string.msgNewCompoundExTitle ),
+                getString( R.string.msgNewCompoundExComment ), new OnBtnClickListener<NewCompoundActivity>( NewCompoundActivity.class ) );
+
+        ll.addView( btnNewCompound.inflate( ) );
+        btnNewCompound.setEnabled( false );
+
+        makeToolbar();
     }
+
+    public void makeToolbar()
+    {
+        TextView tv = findViewById( R.id.tvTitle );
+        tv.setText( R.string.msgNewExerciseActivityTitle );
+    }
+
 
     Typeface getItalicFont()
     {

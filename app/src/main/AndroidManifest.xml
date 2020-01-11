@@ -11,13 +11,17 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".NewCompoundActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".NewExerciseActivity" />
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".NewExerciseActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".NewLimitedActivity"
             android:label="@string/title_activity_new_simple_ex"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ExerciseProgressActivity" />
+        <activity
+            android:name=".ExerciseProgressActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".CompoundExerciseActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -36,15 +40,11 @@
         <activity
             android:name=".HistoryActivity"
             android:label="@string/title_activity_exercise_set"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.max.successcounter.ExerciseProgressActivity" />
-        </activity>
-        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

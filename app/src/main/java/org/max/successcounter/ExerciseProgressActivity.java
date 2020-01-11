@@ -58,7 +58,7 @@ public class ExerciseProgressActivity extends AppCompatActivity
             exsetDao = db.getDao(Template.class);
             template = exsetDao.queryForId(templateId);
 
-            setTitle(template.getName());
+            makeToolbar();
 
             FloatingActionButton btn = findViewById(R.id.btnAddNew);
             btn.setOnClickListener(e -> {
@@ -242,4 +242,11 @@ public class ExerciseProgressActivity extends AppCompatActivity
         trendData.add(new Entry(items.size() - 1, (float) sr.predict(items.size())));
         return trendData;
     }
+
+    public void makeToolbar()
+    {
+        TextView tv = findViewById( R.id.tvTitle );
+        tv.setText( template.getName() );
+    }
+
 }
