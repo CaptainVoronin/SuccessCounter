@@ -3,7 +3,6 @@
     <string name="isSave">Сохранить</string>
     <string name="idCancel">Закрыть</string>
     <string name="title_activity_exercise_set">История</string>
-
     <string name="title_activity_fullscreen">Упражнение</string>
     <string name="title_activity_new_simple_ex">NewSimpleExActivity</string>
     <string name="title_new_simple_excercise">Новое простое упражнение</string>
@@ -15,4 +14,10 @@
     <string name="exerciseFinishedMessage">Finished</string>
     <string name="trend">тренд</string>
     <string name="messageRestoreSummaryStep">Восстановить \"полный успех\"</string>
+    <string name="msgNewSimpleUnlimExTitle">Простое без ограничений</string>
+    <string name="msgNewSimpleUnlimExComment">Попадание/промах без ограничения по числу ударов</string>
+    <string name="msgNewSimpleLimExTitle">Простое с ограничением</string>
+    <string name="msgNewSimpleLimExComment">Попадание/промах с ограничем по числу ударов. До первого промаха. Например, надо собрать позицию.</string>
+    <string name="msgNewCompoundExTitle">Составное упражнение</string>
+    <string name="msgNewCompoundExComment">Удар может принести разное число очков.</string>
 </resources>
