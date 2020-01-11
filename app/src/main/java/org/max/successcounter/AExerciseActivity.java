@@ -80,7 +80,6 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
 
     protected void prepareControls()
     {
-        //TODO: Приделать кнопку "Назад", а то неудобно
         lbPercent = findViewById(R.id.lbPercent);
         lbAttempts = findViewById(R.id.lbAttempts);
         btnRollback = findViewById(R.id.btnRollback);
