@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
+
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -139,12 +140,12 @@ public class ExerciseProgressActivity extends AppCompatActivity
         {
             List<Entry> trend = makeTrend(items);
             color = getColor(android.R.color.holo_red_light);
-            set = new LineDataSet(trend, getString( R.string.trend) );
+            set = new LineDataSet(trend, getString(R.string.trend));
             set.setDrawCircleHole(false);
             set.setDrawCircles(false);
             set.setColor(color);
             set.setLineWidth(2f);
-            set.setValueFormatter( new EmptyValueFormatter() );
+            set.setValueFormatter(new EmptyValueFormatter());
             data.setDrawValues(false);
             data.addDataSet(set);
         }
@@ -179,22 +180,30 @@ public class ExerciseProgressActivity extends AppCompatActivity
         x.setTextColor(axisColor);
 
         mChart.getLegend().setEnabled(false);
-        mChart.setDescription( null );
+        mChart.setDescription(null);
     }
 
     private void gotoExercise()
     {
         Intent in;
 
-        if (!template.getCompound())
+        switch (template.getExType())
         {
-            if (template.getLimited())
-                in = new Intent(this, RunToExerciseActivity.class);
-            else
-                in = new Intent(this, SimpleExerciseActivity.class);
-        } else
-            in = new Intent(this, CompoundExerciseActivity.class);
-
+            case simple:
+                if (template.getLimited())
+                    in = new Intent(this, RunToExerciseActivity.class);
+                else
+                    in = new Intent(this, SimpleExerciseActivity.class);
+                break;
+            case compound:
+                in = new Intent(this, CompoundExerciseActivity.class);
+                break;
+            case series:
+                in = new Intent(this, SeriesExerciseActivity.class);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown template type");
+        }
         in.putExtra(TEMPLATE_ID, template.getId());
         startActivityForResult(in, ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID);
     }
@@ -236,7 +245,7 @@ public class ExerciseProgressActivity extends AppCompatActivity
         SimpleRegression sr = new SimpleRegression();
 
         for (int i = 1; i <= items.size(); i++)
-            sr.addData(i, items.get(i-1).getPercent());
+            sr.addData(i, items.get(i - 1).getPercent());
 
         trendData.add(new Entry(0f, (float) sr.predict(1)));
         trendData.add(new Entry(items.size() - 1, (float) sr.predict(items.size())));
@@ -245,8 +254,8 @@ public class ExerciseProgressActivity extends AppCompatActivity
 
     public void makeToolbar()
     {
-        TextView tv = findViewById( R.id.tvTitle );
-        tv.setText( template.getName() );
+        TextView tv = findViewById(R.id.tvTitle);
+        tv.setText(template.getName());
     }
 
 }

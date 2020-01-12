@@ -11,7 +11,7 @@ import java.util.List;
 @DatabaseTable(tableName = "template")
 public class Template
 {
-    enum Type{
+    public enum Type{
         simple,
         compound,
         series

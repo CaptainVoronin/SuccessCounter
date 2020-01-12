@@ -29,6 +29,8 @@ public class NewExerciseActivity extends AppCompatActivity
     ComplexButton btnNewSimpleUnlimited;
     ComplexButton btnNewSimpleLimited;
     ComplexButton btnNewCompound;
+    ComplexButton btnNewSeries;
+
     Dao<Template, Integer> templateDao;
 
     @Override
@@ -67,27 +69,7 @@ public class NewExerciseActivity extends AppCompatActivity
         edName.addTextChangedListener( new NameChangeListener() );
 
         btnNewSimpleUnlimited = new ComplexButton( this, getString( R.string.msgNewSimpleUnlimExTitle ),
-                getString( R.string.msgNewSimpleUnlimExComment ), new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Template t = new Template();
-                t.setLimited( false );
-                t.setName( edName.getText().toString() );
-                DatabaseHelper db = new DatabaseHelper( NewExerciseActivity.this);
-                try
-                {
-                    templateDao = db.getDao( Template.class );
-                    templateDao.create(t);
-                    setResult( RESULT_OK );
-                    finish();
-                } catch (SQLException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        } );
+                getString( R.string.msgNewSimpleUnlimExComment ), new JustSaveAndReturn( Template.Type.simple ) );
 
         ll.addView( btnNewSimpleUnlimited.inflate( ) );
         btnNewSimpleUnlimited.setEnabled( false );
@@ -105,6 +87,12 @@ public class NewExerciseActivity extends AppCompatActivity
         ll.addView( btnNewCompound.inflate( ) );
         btnNewCompound.setEnabled( false );
 
+        btnNewSeries = new ComplexButton( this, getString( R.string.msgNewSerisExTitle ),
+                getString( R.string.msgNewSerisExText ), new JustSaveAndReturn( Template.Type.series ) );
+        ll.addView( btnNewSeries.inflate( ) );
+
+        btnNewSeries.setEnabled( false );
+
         makeToolbar();
     }
 
@@ -113,7 +101,6 @@ public class NewExerciseActivity extends AppCompatActivity
         TextView tv = findViewById( R.id.tvTitle );
         tv.setText( R.string.msgNewExerciseActivityTitle );
     }
-
 
     Typeface getItalicFont()
     {
@@ -169,12 +156,14 @@ public class NewExerciseActivity extends AppCompatActivity
                 btnNewSimpleUnlimited.setEnabled( true );
                 btnNewSimpleLimited.setEnabled( true );
                 btnNewCompound.setEnabled( true );
+                btnNewSeries.setEnabled( true );
             }
             else
             {
                 btnNewSimpleUnlimited.setEnabled( false );
                 btnNewSimpleLimited.setEnabled( false );
                 btnNewCompound.setEnabled( false );
+                btnNewSeries.setEnabled( false   );
             }
         }
 
@@ -182,6 +171,36 @@ public class NewExerciseActivity extends AppCompatActivity
         public void afterTextChanged(Editable s)
         {
 
+        }
+    }
+
+    class JustSaveAndReturn implements View.OnClickListener{
+
+        Template.Type type;
+
+        public JustSaveAndReturn( Template.Type type )
+        {
+            this.type = type;
+        }
+
+        @Override
+        public void onClick(View v)
+        {
+            Template t = new Template();
+            t.setExType( type );
+            t.setLimited( false );
+            t.setName( edName.getText().toString() );
+            DatabaseHelper db = new DatabaseHelper( NewExerciseActivity.this);
+            try
+            {
+                templateDao = db.getDao( Template.class );
+                templateDao.create(t);
+                setResult( RESULT_OK );
+                finish();
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -83,7 +83,7 @@ public class NewCompoundActivity extends AppCompatActivity
 
     private void prepareNewExercise()
     {
-        template.setCompound(true);
+        template.setExType( Template.Type.compound );
         template.setLimited(false);
         template.setLimit(0);
 

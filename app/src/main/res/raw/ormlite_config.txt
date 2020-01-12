@@ -1,5 +1,5 @@
 #
-# generated on 2020/01/08 10:37:34
+# generated on 2020/01/12 11:30:20
 #
 # --table-start--
 dataClass=org.max.successcounter.model.excercise.Result
@@ -38,6 +38,9 @@ dataClass=org.max.successcounter.model.excercise.Template
 tableName=template
 # --table-fields-start--
 # --field-start--
+fieldName=exType
+# --field-end--
+# --field-start--
 fieldName=name
 # --field-end--
 # --field-start--
@@ -50,9 +53,6 @@ fieldName=limit
 # --field-end--
 # --field-start--
 fieldName=limited
-# --field-end--
-# --field-start--
-fieldName=compound
 # --field-end--
 # --field-start--
 fieldName=hasSummaryStep

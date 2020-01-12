@@ -22,4 +22,6 @@
     <string name="msgNewCompoundExComment">Удар может принести разное число очков.</string>
     <string name="msgNewExerciseActivityTitle">Новое упражнение</string>
     <string name="msgHistoryActivityTitle">История</string>
+    <string name="msgNewSerisExTitle">Бесконечная серия</string>
+    <string name="msgNewSerisExText">Бесконечная серия до первого промаха.</string>
 </resources>
