@@ -1,6 +1,7 @@
 package org.max.successcounter.model.excercise;
 
 import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -10,16 +11,26 @@ import java.util.List;
 @DatabaseTable(tableName = "template")
 public class Template
 {
+    enum Type{
+        simple,
+        compound,
+        series
+    }
+
+    @DatabaseField
+    Type exType;
+
     @DatabaseField
     String name;
+
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private Integer id;
+
     @DatabaseField
     private Integer limit;
+
     @DatabaseField
     private Boolean limited;
-    @DatabaseField
-    private Boolean compound;
 
     @DatabaseField
     private Boolean hasSummaryStep;
@@ -55,7 +66,7 @@ public class Template
 
     public Template()
     {
-        compound = new Boolean(false);
+        exType = Type.simple;
         limited = new Boolean(false);
         limit = 0;
         hasSummaryStep = new Boolean( true );
@@ -69,16 +80,6 @@ public class Template
     public void setResults(ForeignCollection<Result> results)
     {
         this.results = results;
-    }
-
-    public Boolean getCompound()
-    {
-        return compound == null ? false : compound;
-    }
-
-    public void setCompound(Boolean compound)
-    {
-        this.compound = compound;
     }
 
     public Integer getId()
@@ -188,4 +189,15 @@ public class Template
     {
         options.remove( option );
     }
+
+    public Type getExType()
+    {
+        return exType;
+    }
+
+    public void setExType(Type exType)
+    {
+        this.exType = exType;
+    }
+
 }
