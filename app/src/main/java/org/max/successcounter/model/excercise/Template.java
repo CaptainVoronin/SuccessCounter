@@ -1,12 +1,18 @@
 package org.max.successcounter.model.excercise;
 
+import com.github.mikephil.charting.data.Entry;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Math.abs;
 
 @DatabaseTable(tableName = "template")
 public class Template
@@ -200,4 +206,31 @@ public class Template
         this.exType = exType;
     }
 
+    /**
+     * 1 - upper trend
+     * 0 - almost horisontal
+     * -1 - down
+     * @param results
+     * @return
+     */
+    public static int regressionDirection( List<Result>  results )
+    {
+        if( results.size() < 3 )
+            return 0;
+
+        SimpleRegression sr = new SimpleRegression();
+
+        for (int i = 1; i <= results.size(); i++)
+            sr.addData(i, results.get(i - 1).getPercent());
+
+        float y1 = (float) sr.predict(1);
+        float y2 = (float) sr.predict(results.size());
+        float dy = y2 - y1;
+        float dx = results.size() - 1;
+        float tan = dy / dx;
+
+        if( 0 < tan ) return 1;
+        else if( 0.95 <= abs( tan ) && abs( tan ) <= 1.05 ) return 0;
+        else return -1;
+    }
 }
