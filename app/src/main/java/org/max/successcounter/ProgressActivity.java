@@ -28,7 +28,7 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ExerciseProgressActivity extends AppCompatActivity
+public class ProgressActivity extends AppCompatActivity
 {
     public final static String TEMPLATE_ID = "TEMPLATE_ID";
     Integer templateId;

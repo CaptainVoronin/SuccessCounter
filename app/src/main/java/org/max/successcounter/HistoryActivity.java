@@ -22,7 +22,6 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 public class HistoryActivity extends AppCompatActivity
 {
@@ -216,7 +215,7 @@ public class HistoryActivity extends AppCompatActivity
         {
             Intent in = new Intent( HistoryActivity.this, SimpleExerciseActivity.class );
             in.putExtra( AExerciseActivity.RESULT_ID, id );
-            in.putExtra( ExerciseProgressActivity.TEMPLATE_ID, template.getId() );
+            in.putExtra( ProgressActivity.TEMPLATE_ID, template.getId() );
             startActivityForResult( in, ActivityIDs.EXERCISEACTIVITY_ID );
         }
     }

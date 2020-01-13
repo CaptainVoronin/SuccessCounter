@@ -147,7 +147,7 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
 
     protected void loadTemplate() throws SQLException
     {
-        Integer templateID = getIntent().getIntExtra( ExerciseProgressActivity.TEMPLATE_ID, -1);
+        Integer templateID = getIntent().getIntExtra( ProgressActivity.TEMPLATE_ID, -1);
 
         if (templateID == -1)
             throw new IllegalArgumentException("Exercise result id is missing");

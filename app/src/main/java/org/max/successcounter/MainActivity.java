@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -31,7 +30,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity
@@ -96,6 +94,7 @@ public class MainActivity extends AppCompatActivity
         tv.setText(template.getName());
         tv.setOnClickListener(new OnExSetClick(template));
         tv.setOnLongClickListener(new ExSetLongClickListener(tv));
+        int direction = Template.regressionDirection( template.getResultAsList() );
 
         if (template.getResults() != null && template.getResults().size() > 0)
         {
@@ -112,6 +111,13 @@ public class MainActivity extends AppCompatActivity
             tv.setText(dateFormatter.format(res.getDate()));
             tv.setOnClickListener(new OnExSetClick(template));
             tv.setOnLongClickListener(new ExSetLongClickListener(tv));
+
+            tv = tr.findViewById(R.id.lbDirection);
+            tv.setTag(template);
+            tv.setText( "" + direction );
+            tv.setOnClickListener(new OnExSetClick(template));
+            tv.setOnLongClickListener(new ExSetLongClickListener(tv));
+
         }
 
         return tr;
@@ -152,9 +158,9 @@ public class MainActivity extends AppCompatActivity
      */
     private void gotoExercise(Template template)
     {
-        Intent in = new Intent(this, ExerciseProgressActivity.class);
+        Intent in = new Intent(this, ProgressActivity.class);
 
-        in.putExtra(ExerciseProgressActivity.TEMPLATE_ID, template.getId());
+        in.putExtra(ProgressActivity.TEMPLATE_ID, template.getId());
 
         startActivityForResult(in, ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID);
     }

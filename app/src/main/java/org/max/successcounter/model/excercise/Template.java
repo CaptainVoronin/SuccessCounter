@@ -155,6 +155,13 @@ public class Template
         return list;
     }
 
+    public List<Result> getResultAsList()
+    {
+        List<Result> res = new ArrayList<>( this.results.size() );
+        results.forEach( result -> res.add( result ) );
+        return res;
+    }
+
     public void addOption(OptionDescription op )
     {
         op.setParent(this);
@@ -229,8 +236,8 @@ public class Template
         float dx = results.size() - 1;
         float tan = dy / dx;
 
-        if( 0 < tan ) return 1;
-        else if( 0.95 <= abs( tan ) && abs( tan ) <= 1.05 ) return 0;
+        if( 0.75 <= abs( tan ) && abs( tan ) <= 1.25 ) return 0;
+        else if( dy >= 0  ) return 1;
         else return -1;
     }
 }
