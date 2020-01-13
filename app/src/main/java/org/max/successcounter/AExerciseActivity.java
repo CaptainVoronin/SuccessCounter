@@ -140,18 +140,10 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
 
     protected void updateUIResults()
     {
-        IStep step = getExercise().getLastStep();
-        float percent = step.getPercent();
-
-        if( step != null )
-            lbPercent.setText( Result.getPercentString( percent ) );
-        else
-            lbPercent.setText( "0.0%");
-
-        lbAttempts.setText("" + getExercise().getSuccessCount() + "(" + getExercise().getAttemptsCount() + ")");
+        lbPercent.setText( getEfficiencyString() );
+        lbAttempts.setText( getAttemptsString() );
         updateChart();
     }
-
 
     protected void loadTemplate() throws SQLException
     {
@@ -333,4 +325,27 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         et.setSuccessOptionName( getString( R.string.successOptionName ) );
         return et;
     }
+
+    @Override
+    public String getEfficiencyString()
+    {
+        String buff;
+
+        IStep step = getExercise().getLastStep();
+        float percent = step.getPercent();
+
+        if( step != null )
+            buff = Result.getPercentString( percent );
+        else
+            buff = "0.0%";
+
+        return buff;
+    }
+
+    @Override
+    public String getAttemptsString()
+    {
+        return "" + getExercise().getSuccessCount() + "(" + getExercise().getAttemptsCount() + ")";
+    }
+
 }

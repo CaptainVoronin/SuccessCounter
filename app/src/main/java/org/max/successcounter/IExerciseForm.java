@@ -13,4 +13,6 @@ interface IExerciseForm<T>
     IExercise getExercise();
     <T> Dao<T,Integer> getDao( Class<T> exerciseClass, DatabaseHelper db ) throws SQLException;
     void onExerciseFinished();
+    String getEfficiencyString();
+    String getAttemptsString();
 }
