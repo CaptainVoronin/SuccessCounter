@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity
         tv.setText(template.getName());
         tv.setOnClickListener(new OnExSetClick(template));
         tv.setOnLongClickListener(new ExSetLongClickListener(tv));
-        int direction = Template.regressionDirection( template.getResultAsList() );
+
 
         if (template.getResults() != null && template.getResults().size() > 0)
         {
@@ -112,9 +113,18 @@ public class MainActivity extends AppCompatActivity
             tv.setOnClickListener(new OnExSetClick(template));
             tv.setOnLongClickListener(new ExSetLongClickListener(tv));
 
-            tv = tr.findViewById(R.id.lbDirection);
-            tv.setTag(template);
-            tv.setText( "" + direction );
+            int direction = Template.regressionDirection( template.getResultAsList() );
+            int drawableID;
+
+            if( direction == 1 )
+                drawableID = R.drawable.up_arrow_green_1;
+            else if( direction == 0 )
+                drawableID = R.drawable.right_arrow_1;
+            else
+                drawableID = R.drawable.down_arrow_red_1;
+
+            ImageView img = tr.findViewById(R.id.imgTrendArrow );
+            img.setImageDrawable( getDrawable( drawableID ) );
             tv.setOnClickListener(new OnExSetClick(template));
             tv.setOnLongClickListener(new ExSetLongClickListener(tv));
 

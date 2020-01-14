@@ -24,6 +24,7 @@ import java.util.List;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import butterknife.BindView;
 
 public abstract class AExerciseActivity<T> extends AppCompatActivity implements IExerciseForm<T>
 {
@@ -34,6 +35,8 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
     private DatabaseHelper db;
     private TextView lbPercent;
     private TextView lbAttempts;
+    private TextView lbExName;
+
     private ImageButton btnRollback;
     private View mContentView;
     private IExercise exercise;
@@ -82,6 +85,9 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
     {
         lbPercent = findViewById(R.id.lbPercent);
         lbAttempts = findViewById(R.id.lbAttempts);
+        lbExName = findViewById(R.id.tvExName);
+
+        lbExName.setText( getExercise().getName()  );
         btnRollback = findViewById(R.id.btnRollback);
         btnRollback.setOnClickListener(e -> {
             undo();
