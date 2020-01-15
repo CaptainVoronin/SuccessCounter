@@ -113,21 +113,23 @@ public class MainActivity extends AppCompatActivity
             tv.setOnClickListener(new OnExSetClick(template));
             tv.setOnLongClickListener(new ExSetLongClickListener(tv));
 
-            int direction = Template.regressionDirection( template.getResultAsList() );
-            int drawableID;
+            if( template.getResults().size() > 2 )
+            {
+                int direction = Template.regressionDirection(template.getResultAsList());
+                int drawableID;
 
-            if( direction == 1 )
-                drawableID = R.drawable.up_arrow_green_1;
-            else if( direction == 0 )
-                drawableID = R.drawable.right_arrow_1;
-            else
-                drawableID = R.drawable.down_arrow_red_1;
+                if (direction == 1)
+                    drawableID = R.drawable.up_arrow_green_1;
+                else if (direction == 0)
+                    drawableID = R.drawable.right_arrow_1;
+                else
+                    drawableID = R.drawable.down_arrow_red_1;
 
-            ImageView img = tr.findViewById(R.id.imgTrendArrow );
-            img.setImageDrawable( getDrawable( drawableID ) );
-            tv.setOnClickListener(new OnExSetClick(template));
-            tv.setOnLongClickListener(new ExSetLongClickListener(tv));
-
+                ImageView img = tr.findViewById(R.id.imgTrendArrow);
+                img.setImageDrawable(getDrawable(drawableID));
+                tv.setOnClickListener(new OnExSetClick(template));
+                tv.setOnLongClickListener(new ExSetLongClickListener(tv));
+            }
         }
 
         return tr;
