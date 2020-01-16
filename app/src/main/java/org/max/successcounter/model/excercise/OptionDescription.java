@@ -12,10 +12,9 @@ import lombok.Setter;
 @DatabaseTable(tableName = "options")
 public class OptionDescription
 {
+    Boolean firstDefault;
 
-    Boolean isFirstDefault;
-
-    Boolean isLastDefault;
+    Boolean lastDefault;
 
     @DatabaseField( generatedId = true )
     Integer id;
