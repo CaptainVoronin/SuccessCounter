@@ -3,11 +3,19 @@ package org.max.successcounter.model.excercise;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class CompoundExcercise extends AExercise
 {
+    @Getter
+    @Setter
     List<Option> options;
+
     int maxResult;
     int attempts;
+
+    @Getter @Setter
     boolean hasSummaryStep;
 
     public CompoundExcercise()
@@ -24,9 +32,6 @@ public class CompoundExcercise extends AExercise
         options.add( opt );
     }
 
-    public List<Option> getOptions(){
-        return options;
-    }
 
     @Override
     public IStep addStepByPoints(Integer points)
@@ -97,14 +102,4 @@ public class CompoundExcercise extends AExercise
         }
     }
 
-    @Override
-    public boolean hasSummaryStep()
-    {
-        return hasSummaryStep;
-    }
-
-    public void setHasSummaryStep( boolean value )
-    {
-        hasSummaryStep = value;
-    }
 }

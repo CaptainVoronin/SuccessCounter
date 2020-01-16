@@ -6,13 +6,14 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
-
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import lombok.Getter;
+import lombok.Setter;
 import static java.lang.Math.abs;
+
+//TODO: There is some problem with the math library dependency
 
 @DatabaseTable(tableName = "template")
 public class Template
@@ -23,18 +24,24 @@ public class Template
         series
     }
 
+    @Getter
+    @Setter
     @DatabaseField
     Type exType;
 
+    @Getter @Setter
     @DatabaseField
     String name;
 
+    @Getter @Setter
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private Integer id;
 
+    @Getter @Setter
     @DatabaseField
     private Integer limit;
 
+    @Getter @Setter
     @DatabaseField
     private Boolean limited;
 
@@ -51,9 +58,11 @@ public class Template
         this.hasSummaryStep = hasSummaryStep;
     }
 
+    @Getter @Setter
     @ForeignCollectionField(eager = true)
     private ForeignCollection<OptionDescription> options;
 
+    @Getter @Setter
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Result> results;
 
@@ -76,66 +85,6 @@ public class Template
         limited = new Boolean(false);
         limit = 0;
         hasSummaryStep = new Boolean( true );
-    }
-
-    public ForeignCollection<Result> getResults()
-    {
-        return results;
-    }
-
-    public void setResults(ForeignCollection<Result> results)
-    {
-        this.results = results;
-    }
-
-    public Integer getId()
-    {
-        return id;
-    }
-
-    public void setId(Integer id)
-    {
-        this.id = id;
-    }
-
-    public Integer getLimit()
-    {
-        return limit == null ? 0 : limit;
-    }
-
-    public void setLimit(Integer limit)
-    {
-        this.limit = limit;
-    }
-
-    public Boolean getLimited()
-    {
-        return limited == null ? false : limited;
-    }
-
-    public void setLimited(Boolean limited)
-    {
-        this.limited = limited;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    public ForeignCollection<OptionDescription> getOptions()
-    {
-        return options;
-    }
-
-    public void setOptions(ForeignCollection<OptionDescription> options)
-    {
-        this.options = options;
     }
 
     public List<Result> getExercisesAsList()
@@ -201,16 +150,6 @@ public class Template
     public void removeOption(OptionDescription option)
     {
         options.remove( option );
-    }
-
-    public Type getExType()
-    {
-        return exType;
-    }
-
-    public void setExType(Type exType)
-    {
-        this.exType = exType;
     }
 
     /**

@@ -1,8 +1,13 @@
 package org.max.successcounter.model.excercise;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class RunToExcercise extends SimpleExercise
 {
     boolean finished;
+
+    @Getter @Setter
     int limit;
 
     public RunToExcercise()
@@ -16,16 +21,6 @@ public class RunToExcercise extends SimpleExercise
         super();
         setLimit(limit);
         finished = false;
-    }
-
-    public int getLimit()
-    {
-        return limit;
-    }
-
-    public void setLimit(int limit)
-    {
-        this.limit = limit;
     }
 
     @Override

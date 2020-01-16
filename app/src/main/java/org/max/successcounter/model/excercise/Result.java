@@ -7,42 +7,43 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @DatabaseTable(tableName = "result")
 public class Result
 {
 
     final static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy ");
 
+    @Getter
+    @Setter
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     Integer id;
 
+    @Getter @Setter
     @DatabaseField(foreign = true, columnName = "parent_id")
     Template parent;
 
+    @Getter @Setter
     @DatabaseField
     Float percent;
 
+    @Getter @Setter
     @DatabaseField
     Integer shots;
 
+    @Getter @Setter
     @DatabaseField
     Date date;
 
+    @Getter @Setter
     @DatabaseField
     Integer points;
 
+    @Getter @Setter
     @DatabaseField
     String comment;
-
-    public String getComment()
-    {
-        return comment;
-    }
-
-    public void setComment(String comment)
-    {
-        this.comment = comment;
-    }
 
     public Result()
     {
@@ -70,63 +71,4 @@ public class Result
         return sdf.format(ex.getDate());
     }
 
-    public Integer getPoints()
-    {
-        return points;
-    }
-
-    public void setPoints(Integer points)
-    {
-        this.points = points;
-    }
-
-    public Date getDate()
-    {
-        return date;
-    }
-
-    public void setDate(Date date)
-    {
-        this.date = date;
-    }
-
-    public Integer getId()
-    {
-        return id;
-    }
-
-    public void setId(Integer id)
-    {
-        this.id = id;
-    }
-
-    public Template getParent()
-    {
-        return parent;
-    }
-
-    public void setParent(Template parent)
-    {
-        this.parent = parent;
-    }
-
-    public Float getPercent()
-    {
-        return percent;
-    }
-
-    public void setPercent(Float percent)
-    {
-        this.percent = percent;
-    }
-
-    public Integer getShots()
-    {
-        return shots;
-    }
-
-    public void setShots(Integer shots)
-    {
-        this.shots = shots;
-    }
 }

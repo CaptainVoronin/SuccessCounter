@@ -4,52 +4,29 @@ import com.github.mikephil.charting.data.Entry;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public abstract class AExercise implements IExercise
 {
+    @Getter
+    @Setter
     String name;
+
+    @Getter @Setter
     Integer id;
+
+    @Getter @Setter
     List<IStep> steps;
+
+    @Getter @Setter
     Template template;
+
     Result result;
-
-    @Override
-    public void setTemplate(Template template)
-    {
-        this.template = template;
-    }
-
-    @Override
-    public Template getTemplate()
-    {
-        return template;
-    }
-
-    @Override
-    public void setName(String name)
-    {
-        this.name = name;
-    }
 
     public AExercise()
     {
         steps = new ArrayList<>();
-    }
-
-    @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
-    public Integer getId()
-    {
-        return id;
-    }
-
-    public void setId( Integer id )
-    {
-        this.id = id;
     }
 
     @Override
