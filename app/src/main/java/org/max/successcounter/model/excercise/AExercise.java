@@ -16,7 +16,7 @@ public abstract class AExercise implements IExercise
     @Getter @Setter
     Integer id;
 
-    @Getter @Setter
+    @Getter
     List<IStep> steps;
 
     @Getter @Setter
@@ -27,12 +27,6 @@ public abstract class AExercise implements IExercise
     public AExercise()
     {
         steps = new ArrayList<>();
-    }
-
-    @Override
-    public List<IStep> getSteps()
-    {
-        return steps;
     }
 
     @Override
