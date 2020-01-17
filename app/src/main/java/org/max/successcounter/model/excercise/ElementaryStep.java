@@ -1,8 +1,10 @@
 package org.max.successcounter.model.excercise;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class ElementaryStep implements IStep
 {
     Integer points;

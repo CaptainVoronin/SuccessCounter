@@ -11,8 +11,6 @@ import lombok.Getter;
 import lombok.Setter;
 import static java.lang.Math.abs;
 
-//TODO: There is some problem with the math library dependency
-
 @DatabaseTable(tableName = "template")
 public class Template
 {

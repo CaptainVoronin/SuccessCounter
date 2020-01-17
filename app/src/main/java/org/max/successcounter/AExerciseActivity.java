@@ -26,6 +26,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 
+//TODO: The functionality which turns off the fullscreen must be removed
+
 public abstract class AExerciseActivity<T> extends AppCompatActivity implements IExerciseForm<T>
 {
     public final static String RESULT_ID = "RESULT_ID";
