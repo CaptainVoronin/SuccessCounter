@@ -24,4 +24,6 @@
     <string name="msgHistoryActivityTitle">История</string>
     <string name="msgNewSerisExTitle">Бесконечная серия</string>
     <string name="msgNewSerisExText">Бесконечная серия до первого промаха.</string>
+    <string name="menuAbout">О программе...</string>
+    <string name="msgAboutTitle" >О программе</string>
 </resources>

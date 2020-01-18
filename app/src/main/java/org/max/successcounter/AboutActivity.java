@@ -17,7 +17,7 @@ public class AboutActivity extends AppCompatActivity
         tv.setText( getString( R.string.app_name ) );
 
         tv = findViewById( R.id.tvVersion );
-        tv.setText( "" + Version.MAJOR + "." + Version.MINOR + "." + Version.BUILD );
+        tv.setText( "v " + Version.MAJOR + "." + Version.MINOR + "." + Version.BUILD );
 
         tv = findViewById( R.id.tvYear );
         tv.setText( "2020" );
