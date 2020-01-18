@@ -36,4 +36,6 @@ public interface IExercise
     int getMaxPossiblePoints();
 
     boolean hasSummaryStep();
+
+    boolean isMinOrMax( int index, float value );
 }

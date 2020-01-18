@@ -16,6 +16,42 @@ public abstract class AExercise implements IExercise
     @Getter @Setter
     Integer id;
 
+    @Override
+    public boolean isMinOrMax(int index, float value)
+    {
+        boolean isMax = false;
+        boolean isMin = false;
+        float min = 100f;
+        float max = 0f;
+        int indexMin = 0;
+        int indexMax = 0;
+
+        int i = 0;
+        for( IStep step : steps )
+        {
+            if( step.getPercent() >= max )
+            {
+                max = step.getPercent();
+                indexMax = i;
+            }
+            if( step.getPercent() <= min )
+            {
+                min = step.getPercent();
+                indexMin = i;
+            }
+
+            i++;
+        }
+
+        if( ( value <= min ) && ( index == indexMin ) )
+            isMin = true;
+
+        if( ( value >= max ) && ( index == indexMax) )
+            isMax = true;
+
+        return isMin || isMax;
+    }
+
     @Getter
     List<IStep> steps;
 
