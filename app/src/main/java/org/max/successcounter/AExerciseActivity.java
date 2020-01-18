@@ -1,6 +1,5 @@
 package org.max.successcounter;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -8,9 +7,7 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.j256.ormlite.dao.Dao;
-
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.HistoryOperator;
 import org.max.successcounter.model.excercise.ExerciseFactory;
@@ -18,14 +15,11 @@ import org.max.successcounter.model.excercise.Result;
 import org.max.successcounter.model.excercise.Template;
 import org.max.successcounter.model.excercise.IExercise;
 import org.max.successcounter.model.excercise.IStep;
-
 import java.sql.SQLException;
 import java.util.List;
-
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-//TODO: The functionality which turns off the fullscreen must be removed
+
 
 public abstract class AExerciseActivity<T> extends AppCompatActivity implements IExerciseForm<T>
 {
