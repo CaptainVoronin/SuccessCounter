@@ -35,9 +35,9 @@ public class NewCompoundActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_compound);
-        setTitle( R.string.title_new_compound_template );
-        ActionBar toolBar = getSupportActionBar();
-        toolBar.setTitle( R.string.title_new_compound_template );
+
+        Toolbar tb = findViewById( R.id.toolBar);
+        tb.setTitle( R.string.title_new_compound_template );
 
         Intent in = getIntent();
         templateName = in.getStringExtra(NewExerciseActivity.TEMPLATE_NAME);

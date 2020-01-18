@@ -16,6 +16,7 @@ public abstract class AExercise implements IExercise
     @Getter @Setter
     Integer id;
 
+    // TODO: It doesn't work for min values in compund exercises
     @Override
     public boolean isMinOrMax(int index, float value)
     {

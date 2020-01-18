@@ -11,11 +11,14 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+
 import org.max.successcounter.model.excercise.SimpleExercise;
 
 public class SimpleExerciseActivity extends AExerciseActivity<SimpleExercise>
 {
     private LineChart mChart;
+    MinMaxValueFormatter formatter;
+
 
     @Override
     public void onExerciseFinished()
@@ -56,7 +59,7 @@ public class SimpleExerciseActivity extends AExerciseActivity<SimpleExercise>
 
         Legend legend = mChart.getLegend();
         legend.setEnabled(false);
-
+        formatter = new MinMaxValueFormatter( getExercise() );
     }
 
     @Override
@@ -87,11 +90,14 @@ public class SimpleExerciseActivity extends AExerciseActivity<SimpleExercise>
         set.setDrawCircleHole(false);
         set.setDrawCircles(false);
         set.setColor(color);
+        set.setValueTextColor( getColor( android.R.color.white ));
         set.setValueFormatter(new EmptyValueFormatter());
         data.setDrawValues(false);
         data.addDataSet(set);
+        data.setValueFormatter( formatter );
         mChart.setData(data);
         mChart.invalidate();
     }
+
 
 }

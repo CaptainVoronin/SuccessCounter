@@ -13,6 +13,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.j256.ormlite.dao.Dao;
 
@@ -181,6 +182,7 @@ public class ProgressActivity extends AppCompatActivity
 
         mChart.getLegend().setEnabled(false);
         mChart.setDescription(null);
+
     }
 
     private void gotoExercise()

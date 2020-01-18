@@ -13,11 +13,14 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+
+import org.apache.commons.math3.analysis.function.Min;
 import org.max.successcounter.model.excercise.CompoundExcercise;
 
 public class CompoundExerciseActivity extends AExerciseActivity<CompoundExcercise>
 {
     private LineChart mChart;
+    MinMaxValueFormatter formatter;
 
     @Override
     protected void prepareControlButtons(LinearLayout placeholder)
@@ -67,7 +70,7 @@ public class CompoundExerciseActivity extends AExerciseActivity<CompoundExcercis
         Legend legend = mChart.getLegend();
         legend.setEnabled(false);
         mChart.setDescription( null );
-
+        formatter = new MinMaxValueFormatter( getExercise() );
     }
 
     @Override
@@ -79,8 +82,9 @@ public class CompoundExerciseActivity extends AExerciseActivity<CompoundExcercis
         LineDataSet set = new LineDataSet(getExercise().getPercentHistory(), "%");
         set.setDrawCircleHole(false);
         set.setDrawCircles(false);
+        set.setValueTextColor( getColor( android.R.color.white ));
         set.setColor(color);
-        set.setValueFormatter(new EmptyValueFormatter());
+        set.setValueFormatter( formatter );
         data.setDrawValues(false);
         data.addDataSet(set);
         mChart.setData(data);
