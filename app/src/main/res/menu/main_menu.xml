@@ -3,9 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/idAddNew"
-        android:title="Новое простое" />
-    <item
-        android:id="@+id/idNewCompound"
-        android:title="Новое составное" />
+        android:id="@+id/idAbout"
+        android:title="@string/menuAbout" />
 </menu>

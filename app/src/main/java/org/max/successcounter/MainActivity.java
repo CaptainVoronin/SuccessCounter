@@ -15,6 +15,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
@@ -32,6 +33,7 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -113,7 +115,7 @@ public class MainActivity extends AppCompatActivity
             tv.setOnClickListener(new OnExSetClick(template));
             tv.setOnLongClickListener(new ExSetLongClickListener(tv));
 
-            if( template.getResults().size() > 2 )
+            if (template.getResults().size() > 2)
             {
                 int direction = Template.regressionDirection(template.getResultAsList());
                 int drawableID;
@@ -133,26 +135,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         return tr;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        int id = item.getItemId();
-        switch (id)
-        {
-            case R.id.idAddNew:
-                addNewSimpleExercise();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void addNewSimpleExercise()
-    {
-        Intent in = new Intent(this, NewLimitedActivity.class);
-        startActivityForResult(in, ActivityIDs.NEWSIMPLEEXERCISE_ID);
     }
 
     @Override
@@ -250,7 +232,7 @@ public class MainActivity extends AppCompatActivity
                 dialog.dismiss();
                 try
                 {
-                    exTemplateDao.delete( template );
+                    exTemplateDao.delete(template);
                     fillList();
                 } catch (SQLException e)
                 {
@@ -323,8 +305,33 @@ public class MainActivity extends AppCompatActivity
 
     public void makeToolbar()
     {
-        TextView tv = findViewById( R.id.tvTitle );
-        tv.setText( "Упражнения" );
+
+        Toolbar tb = findViewById( R.id.tooBar);
+        tb.inflateMenu( R.menu.main_menu );
+        tb.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener()
+        {
+            @Override
+            public boolean onMenuItemClick(MenuItem item)
+            {
+                switch (item.getItemId())
+                {
+                    case R.id.idAbout:
+                        showAbout();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+
+        TextView tv = findViewById(R.id.tvTitle);
+        tv.setText("Упражнения");
+    }
+
+    private void showAbout()
+    {
+        Intent in = new Intent( this, AboutActivity.class );
+        startActivity( in );
     }
 
     class ResultComparator implements Comparator<Result>
@@ -367,4 +374,5 @@ public class MainActivity extends AppCompatActivity
             return showPopup(v);
         }
     }
+
 }
