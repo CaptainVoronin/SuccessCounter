@@ -1,6 +1,5 @@
 package org.max.successcounter;
 
-import butterknife.BindView;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.ImageButton;

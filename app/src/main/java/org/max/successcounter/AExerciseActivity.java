@@ -24,7 +24,6 @@ import java.util.List;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import butterknife.BindView;
 
 //TODO: The functionality which turns off the fullscreen must be removed
 

@@ -17,9 +17,9 @@ android {
     }
 
     def versionArray = incrementBuild()
-    writeVersionClassFile( versionArray )
+    writeVersionClassFile(versionArray)
 
-    def verName = '' + versionArray[0].toString() + '.' + versionArray[1] + '.' + versionArray[2]
+    def verName = versionArray[0].toString() + '.' + versionArray[1] + '.' + versionArray[2]
 
     compileSdkVersion 28
     defaultConfig {
@@ -62,56 +62,51 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
     compileOnly "org.projectlombok:lombok:1.18.10"
 
-    implementation  group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.1'
-    implementation  group: 'com.j256.ormlite', name: 'ormlite-core', version: '5.1'
+    implementation group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.1'
+    implementation group: 'com.j256.ormlite', name: 'ormlite-core', version: '5.1'
     implementation 'com.mysugr.MPAndroidChart:MPAndroidChart:3.1.0-mysugr-1'
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
 }
 
-def incrementBuild()
-{
+def incrementBuild() {
     def minor = 0
     def major = 0
     def build = 1
     def props = new Properties()
 
-    def versionFile = file( "version.properties" )
+    def versionFile = file("version.properties")
 
-    if( versionFile.canRead()  )
-    {
-        props.load( new FileInputStream( versionFile ) )
-        major = props["MAJOR" ].toInteger()
-        minor = props["MINOR" ].toInteger()
-        build = props["BUILD" ].toInteger() + 1
+    if (versionFile.canRead()) {
+        props.load(new FileInputStream(versionFile))
+        major = props["MAJOR"].toInteger()
+        minor = props["MINOR"].toInteger()
+        build = props["BUILD"].toInteger() + 1
 
-        props["MAJOR" ] = major.toString()
-        props["MINOR" ] = minor.toString()
-        props["BUILD" ] = build.toString()
+        props["MAJOR"] = major.toString()
+        props["MINOR"] = minor.toString()
+        props["BUILD"] = build.toString()
 
-        props.store(  versionFile.newWriter(), null )
+        props.store(versionFile.newWriter(), null)
 
-        //return "$major.$minor.$buil"
-        return [major, minor, build ]
-    }
-    else
-        throw new FileNotFoundException( "File version.properties not found")
+        return [major, minor, build]
+    } else
+        throw new FileNotFoundException("File version.properties not found")
 }
 
-def writeVersionClassFile( verArray  )
-{
+def writeVersionClassFile(verArray) {
     def fileName = "src\\main\\java\\org\\max\\successcounter\\Version.java"
 
-    def versionClassFile = file( fileName )
+    def versionClassFile = file(fileName)
 
-    if( !versionClassFile.canRead() )
-        throw new FileNotFoundException( "Version class file not found" )
+    if (!versionClassFile.canRead())
+        throw new FileNotFoundException("Version class file not found")
 
     String buff = versionClassFile.text
 
-    buff = buff.replaceAll( 'MAJOR\\s*=\\s*\\d\\s*;', 'MAJOR=' + verArray[0].toString() + ';' )
-    buff = buff.replaceAll( 'MINOR\\s*=\\s*\\d\\s*;', 'MINOR=' + verArray[1].toString() + ';' )
-    buff = buff.replaceAll( 'BUILD=\\s*\\d\\s*;', 'BUILD=' + verArray[2].toString() + ';' )
+    buff = buff.replaceAll('MAJOR\\s*=\\s*\\d\\s*;', 'MAJOR=' + verArray[0].toString() + ';')
+    buff = buff.replaceAll('MINOR\\s*=\\s*\\d\\s*;', 'MINOR=' + verArray[1].toString() + ';')
+    buff = buff.replaceAll('BUILD=\\s*\\d\\s*;', 'BUILD=' + verArray[2].toString() + ';')
 
-    versionClassFile.write( buff );
+    versionClassFile.write(buff);
 
 }
