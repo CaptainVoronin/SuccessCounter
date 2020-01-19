@@ -29,9 +29,7 @@ public class NewLimitedActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_limited);
-        Toolbar toolbar = findViewById(R.id.toolBar);
-        setSupportActionBar(toolbar);
-        setTitle( R.string.title_new_simple_excercise );
+        makeToolbar();
 
         Intent in = getIntent();
         templateName = in.getStringExtra( NewExerciseActivity.TEMPLATE_NAME );
@@ -56,6 +54,12 @@ public class NewLimitedActivity extends AppCompatActivity
         edLimit.addTextChangedListener( new LimitTextChangeListener () );
         edLimit.requestFocus();
         //setResult( RESULT_CANCELED );
+    }
+
+    private void makeToolbar()
+    {
+        TextView tv = findViewById(R.id.tvTitle);
+        tv.setText("Упражнения");
     }
 
     private void save()
