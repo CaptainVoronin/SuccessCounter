@@ -124,8 +124,9 @@ public class ProgressActivity extends AppCompatActivity
         items.addAll(template.getResults());
         List<Entry> exes = new ArrayList<>();
         for (int i = 0; i < items.size(); i++)
+        {
             exes.add(new Entry((float) i, new Float(items.get(i).getPercent())));
-
+        }
 
         mChart.clear();
         LineData data = new LineData();
@@ -168,6 +169,7 @@ public class ProgressActivity extends AppCompatActivity
         y.setTextColor(axisColor);
         y.setGridColor(axisColor);
         y.setAxisLineColor(axisColor);
+        y.setDrawLabels( false );
 
         y = mChart.getAxisRight();
         y.setAxisMinimum(0f);
@@ -175,6 +177,7 @@ public class ProgressActivity extends AppCompatActivity
         y.setTextColor(axisColor);
         y.setGridColor(axisColor);
         y.setAxisLineColor(axisColor);
+        y.setDrawLabels( false );
 
         XAxis x = mChart.getXAxis();
         x.setGridColor(axisColor);
