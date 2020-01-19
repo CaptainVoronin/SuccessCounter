@@ -17,6 +17,16 @@
         android:text="лорлор"
         android:textSize="8pt" />
 
+    <ImageView
+        android:id="@+id/imgTrendArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="6pt"
+        android:layout_marginBottom="6pt"
+        android:layout_marginLeft="5pt"
+        app:srcCompat="@drawable/right_arrow_1" />
+
     <TextView
         android:id="@+id/lbPercent"
         android:layout_width="wrap_content"
@@ -37,16 +47,7 @@
         android:layout_marginBottom="6pt"
         android:layout_weight="1"
         android:textAlignment="textEnd"
+        android:layout_marginRight="5pt"
         android:textSize="8pt" />
 
-    <ImageView
-        android:id="@+id/imgTrendArrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="6pt"
-        android:layout_marginBottom="6pt"
-        android:layout_marginRight="5pt"
-        android:layout_marginLeft="5pt"
-        app:srcCompat="@drawable/right_arrow_1" />
 </TableRow>
