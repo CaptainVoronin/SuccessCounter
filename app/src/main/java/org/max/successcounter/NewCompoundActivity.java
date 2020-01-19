@@ -36,8 +36,7 @@ public class NewCompoundActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_compound);
 
-        Toolbar tb = findViewById( R.id.toolBar);
-        tb.setTitle( R.string.title_new_compound_template );
+        makeToolbar();
 
         Intent in = getIntent();
         templateName = in.getStringExtra(NewExerciseActivity.TEMPLATE_NAME);
@@ -81,6 +80,12 @@ public class NewCompoundActivity extends AppCompatActivity
 
     }
 
+    private void makeToolbar()
+    {
+        TextView tv = findViewById(R.id.tvTitle);
+        tv.setText(R.string.title_new_compound_template);
+    }
+
     private void prepareNewExercise()
     {
         template.setExType( Template.Type.compound );
@@ -116,18 +121,3 @@ public class NewCompoundActivity extends AppCompatActivity
         finish();
     }
 }
-
-/*
-<?--    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </com.google.android.material.appbar.AppBarLayout> -->
-* */
