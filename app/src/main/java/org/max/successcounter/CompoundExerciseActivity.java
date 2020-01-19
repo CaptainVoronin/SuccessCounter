@@ -87,6 +87,7 @@ public class CompoundExerciseActivity extends AExerciseActivity<CompoundExcercis
         set.setValueFormatter( formatter );
         data.setDrawValues(false);
         data.addDataSet(set);
+        data.setValueTextSize(12);
         mChart.setData(data);
         mChart.invalidate();
     }
