@@ -19,7 +19,6 @@ public class SimpleExerciseActivity extends AExerciseActivity<SimpleExercise>
     private LineChart mChart;
     MinMaxValueFormatter formatter;
 
-
     @Override
     public void onExerciseFinished()
     {
@@ -95,9 +94,8 @@ public class SimpleExerciseActivity extends AExerciseActivity<SimpleExercise>
         data.setDrawValues(false);
         data.addDataSet(set);
         data.setValueFormatter( formatter );
+        data.setValueTextSize(12);
         mChart.setData(data);
         mChart.invalidate();
     }
-
-
 }
