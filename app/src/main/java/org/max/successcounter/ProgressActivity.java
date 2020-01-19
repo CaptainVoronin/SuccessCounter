@@ -25,6 +25,7 @@ import org.max.successcounter.model.excercise.Template;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.SimpleFormatter;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -134,7 +135,8 @@ public class ProgressActivity extends AppCompatActivity
         set.setDrawCircleHole(false);
         set.setDrawCircles(false);
         set.setColor(color);
-        data.setDrawValues(false);
+        set.setValueTextColor( getColor( android.R.color.black ));
+        data.setValueTextSize(12);
         data.addDataSet(set);
 
         if (items.size() > 2)
@@ -147,11 +149,10 @@ public class ProgressActivity extends AppCompatActivity
             set.setColor(color);
             set.setLineWidth(2f);
             set.setValueFormatter(new EmptyValueFormatter());
-            data.setDrawValues(false);
             data.addDataSet(set);
         }
 
-        data.setValueTextSize(10);
+        data.setValueTextSize(12);
         mChart.setData(data);
         mChart.invalidate();
     }
@@ -182,7 +183,6 @@ public class ProgressActivity extends AppCompatActivity
 
         mChart.getLegend().setEnabled(false);
         mChart.setDescription(null);
-
     }
 
     private void gotoExercise()
