@@ -190,9 +190,10 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         // TODO: Перестает работать отмена после того, как упражнение завершено
         try
         {
-            IStep step = getExercise().getLastStep();
-            HistoryOperator.instance.deleteStep(step);
-            getExercise().undo();
+            IStep step = getExercise().undo();
+            if( step != null )
+                HistoryOperator.instance.deleteStep(step);
+
             btnRollback.setEnabled( getExercise().getSteps().size() != 0);
         }
         catch (SQLException e)
@@ -236,10 +237,9 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         String buff;
 
         IStep step = getExercise().getLastStep();
-        float percent = step.getPercent();
 
         if( step != null )
-            buff = Result.getPercentString( percent );
+            buff = Result.getPercentString( step.getPercent() );
         else
             buff = "0.0%";
 

@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity
     public void makeToolbar()
     {
 
-        Toolbar tb = findViewById( R.id.tooBar);
+        Toolbar tb = findViewById( R.id.tooBar );
         tb.inflateMenu( R.menu.main_menu );
         tb.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener()
         {

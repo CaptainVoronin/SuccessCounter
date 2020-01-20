@@ -13,8 +13,6 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import org.max.successcounter.model.excercise.IExercise;
-import org.max.successcounter.model.excercise.IStep;
-import org.max.successcounter.model.excercise.Result;
 import org.max.successcounter.model.excercise.RunToExcercise;
 
 import java.util.ArrayList;
@@ -71,7 +69,7 @@ public class RunToExerciseActivity extends AExerciseActivity<RunToExcercise>
         mChart.setDrawEntryLabels(false);
         mChart.setBackgroundColor(Color.rgb(0, 0x1C, 0x2B));
         mChart.getLegend().setEnabled(false);
-        mChart.setDescription( null );
+        mChart.setDescription(null);
 
     }
 
@@ -96,8 +94,12 @@ public class RunToExerciseActivity extends AExerciseActivity<RunToExcercise>
     void undo()
     {
         super.undo();
+
         if (currentViewID == R.id.viewFinishMessage)
+        {
             switcher.showNext();
+            currentViewID = switcher.getCurrentView().getId();
+        }
     }
 
     class BlankValueFormatter extends ValueFormatter

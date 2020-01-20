@@ -71,10 +71,7 @@ public class RunToExcercise extends SimpleExercise
     public IStep undo()
     {
         if (isFinished())
-        {
             finished = false;
-            return null;
-        } else
-            return super.undo();
+        return super.undo();
     }
 }
