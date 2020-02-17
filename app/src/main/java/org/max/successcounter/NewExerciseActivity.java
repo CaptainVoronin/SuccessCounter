@@ -83,13 +83,13 @@ public class NewExerciseActivity extends AppCompatActivity
 
 
         btnNewSimpleLimited = new ComplexButton( this, getString( R.string.msgNewSimpleLimExTitle ),
-                getString( R.string.msgNewSimpleLimExComment ), new OnBtnClickListener<NewLimitedActivity>( NewLimitedActivity.class ) );
+                getString( R.string.msgNewSimpleLimExComment ), new OnBtnClickListener( NewLimitedActivity.class ) );
 
         ll.addView( btnNewSimpleLimited.inflate( ) );
         btnNewSimpleLimited.setEnabled( false );
 
         btnNewCompound = new ComplexButton( this, getString( R.string.msgNewCompoundExTitle ),
-                getString( R.string.msgNewCompoundExComment ), new OnBtnClickListener<NewCompoundActivity>( NewCompoundActivity.class ) );
+                getString( R.string.msgNewCompoundExComment ), new OnBtnClickListener( NewCompoundActivity.class ) );
 
         ll.addView( btnNewCompound.inflate( ) );
         btnNewCompound.setEnabled( false );
@@ -119,11 +119,11 @@ public class NewExerciseActivity extends AppCompatActivity
         return Typeface.create( "serif", Typeface.NORMAL );
     }
 
-    class OnBtnClickListener<T> implements View.OnClickListener
+    class OnBtnClickListener implements View.OnClickListener
     {
-        Class<T> clazz;
+        Class clazz;
 
-        public OnBtnClickListener( Class<T> clazz )
+        public OnBtnClickListener( Class clazz )
         {
             this.clazz = clazz;
         }
@@ -133,6 +133,7 @@ public class NewExerciseActivity extends AppCompatActivity
         {
             Intent in = new Intent( NewExerciseActivity.this, clazz );
             in.putExtra( TEMPLATE_NAME, edName.getText().toString()  );
+            // TODO : What is 10?
             startActivityForResult( in, 10 );
         }
     }
