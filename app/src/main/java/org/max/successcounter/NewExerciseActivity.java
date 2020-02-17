@@ -2,6 +2,10 @@ package org.max.successcounter;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import io.reactivex.Observable;
+import io.reactivex.ObservableConverter;
+import io.reactivex.functions.Predicate;
+import io.reactivex.subjects.PublishSubject;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -36,6 +40,8 @@ public class NewExerciseActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        PublishSubject mFocusChangeSubject = PublishSubject.create();
+
         super.onCreate(savedInstanceState);
         setContentView( R.layout.activity_new_exercise);
         boolean nameChanged = false;
@@ -43,26 +49,27 @@ public class NewExerciseActivity extends AppCompatActivity
         LinearLayout ll = findViewById( R.id.container );
 
         edName = findViewById( R.id.edName );
-        edName.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        edName.setOnFocusChangeListener( (View v, boolean hasFocus )->
         {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus)
+            mFocusChangeSubject.onNext( hasFocus );
+        });
+
+        Observable<Boolean> oHasFocus =  mFocusChangeSubject.filter(o -> (Boolean)o == true );
+
+        oHasFocus.subscribe( o->{
+            edName.setTypeface( getRegularFont() );
+            if( !nameChanged )
+                edName.setText("");
+            else
+                edName.setTypeface( getItalicFont() );
+        } );
+
+        Observable<Boolean> oNoFocus =  mFocusChangeSubject.filter(o -> (Boolean)o == false );
+        oNoFocus.subscribe( o -> {
+            if( edName.getText().length() == 0 )
             {
-                if( hasFocus )
-                {
-                    edName.setTypeface( getRegularFont() );
-                    if( !nameChanged )
-                        edName.setText("");
-                    else
-                        edName.setTypeface( getItalicFont() );
-                } else
-                {
-                    if( edName.getText().length() == 0 )
-                    {
-                        edName.setText( DEFAULT_TEXT );
-                        edName.setTypeface( getItalicFont() );
-                    }
-                }
+                edName.setText( DEFAULT_TEXT );
+                edName.setTypeface( getItalicFont() );
             }
         });
 
