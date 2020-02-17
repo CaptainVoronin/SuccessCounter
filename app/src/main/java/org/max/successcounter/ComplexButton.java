@@ -40,9 +40,16 @@ public class ComplexButton
 
     public void setEnabled(boolean enabled)
     {
+        tvTitle.setEnabled( enabled );
+        tvText.setEnabled( enabled );
+/*
         if (enabled)
-            tvTitle.setTextColor(ctx.getColor(android.R.color.black));
+        {
+            //tvTitle.setTextColor(ctx.getColor(android.R.color.black));
+            tvTitle.setEnabled( enabled );
+        }
         else
             tvTitle.setTextColor(ctx.getColor(android.R.color.darker_gray));
+*/
     }
 }
