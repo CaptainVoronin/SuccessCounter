@@ -162,9 +162,9 @@ public class Template
         float y2 = (float) sr.predict(results.size());
         float dy = y2 - y1;
         float dx = results.size() - 1;
-        float tan = dy / dx;
+        float tan = dy / dx / 10;
 
-        if( 0.75 <= abs( tan ) && abs( tan ) <= 1.25 ) return 0;
+        if( -0.087 <= abs( tan ) && abs( tan ) <= 0.087 ) return 0;
         else if( dy >= 0  ) return 1;
         else return -1;
     }
