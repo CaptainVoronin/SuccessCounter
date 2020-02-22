@@ -131,6 +131,9 @@ public class NewExerciseActivity extends AppCompatActivity
         @Override
         public void onClick(View v)
         {
+            if( !isNameCorrect() )
+                return;
+
             Intent in = new Intent( NewExerciseActivity.this, clazz );
             in.putExtra( TEMPLATE_NAME, edName.getText().toString()  );
             // TODO : What is 10?
@@ -194,6 +197,9 @@ public class NewExerciseActivity extends AppCompatActivity
         @Override
         public void onClick(View v)
         {
+            if( !isNameCorrect() )
+                return;
+
             Template t = new Template();
             t.setExType( type );
             t.setLimited( false );
@@ -211,4 +217,18 @@ public class NewExerciseActivity extends AppCompatActivity
             }
         }
     }
+
+    private boolean isNameCorrect()
+    {
+        String name = edName.getText().toString();
+
+        if( name.length() == 0 )
+            return false;
+
+        if( name.equals( DEFAULT_TEXT ) )
+            return false;
+
+        return true;
+    }
+
 }
