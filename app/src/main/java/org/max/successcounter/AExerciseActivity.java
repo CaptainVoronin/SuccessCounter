@@ -19,8 +19,6 @@ import java.sql.SQLException;
 import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 
-
-
 public abstract class AExerciseActivity<T> extends AppCompatActivity implements IExerciseForm<T>
 {
     public final static String RESULT_ID = "RESULT_ID";
@@ -187,7 +185,6 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
 
     void undo()
     {
-        // TODO: Перестает работать отмена после того, как упражнение завершено
         try
         {
             IStep step = getExercise().undo();
