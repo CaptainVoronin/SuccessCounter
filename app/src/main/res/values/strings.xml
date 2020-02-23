@@ -26,4 +26,7 @@
     <string name="msgNewSerisExText">Бесконечная серия до первого промаха.</string>
     <string name="menuAbout">О программе...</string>
     <string name="msgAboutTitle" >О программе</string>
+    <string name="txtSuccessLimit">числа попаданий</string>
+    <string name="txtTotalShots">числа попыток</string>
+    <string name="txtLimitWord">Ограничение</string>
 </resources>
