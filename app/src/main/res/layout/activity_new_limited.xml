@@ -6,8 +6,9 @@
     android:layout_height="match_parent"
     tools:context="org.max.successcounter.AboutActivity">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/stdtoobar"/>
+    <include
+        android:id="@+id/stdtoobar"
+        layout="@layout/toolbar" />
 
     <TextView
         android:id="@+id/lbName"
@@ -24,17 +25,39 @@
         app:layout_constraintTop_toBottomOf="@id/stdtoobar" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/lbLimitStaticText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="72dp"
-        android:text="Максимальное число ударов"
+        android:gravity="center_horizontal"
+        android:text="@string/txtLimitWord"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbName"
-        />
+        app:layout_constraintTop_toBottomOf="@id/lbName" />
+
+    <RadioGroup
+        android:id="@+id/rgLimitType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checkedButton="@id/rbSuccess"
+        app:layout_constraintTop_toBottomOf="@id/lbLimitStaticText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <RadioButton
+            android:id="@+id/rbSuccess"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txtSuccessLimit"
+            app:layout_constraintTop_toBottomOf="@id/lbLimitStaticText"/>
+
+        <RadioButton
+            android:id="@+id/rbTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txtTotalShots"
+            app:layout_constraintTop_toBottomOf="@id/rbSuccess"/>
+
+    </RadioGroup>
 
     <EditText
         android:id="@+id/edLimit"
@@ -48,10 +71,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@id/rgLimitType" />
 
     <Button
         android:id="@+id/btnSave"
+        android:background="@color/dark_blue"
+        android:textColor="@color/secondAccent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Сохранить"
