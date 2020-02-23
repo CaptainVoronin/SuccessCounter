@@ -41,6 +41,10 @@ public class Template
     @DatabaseField
     private Boolean limited;
 
+    @Getter @Setter
+    @DatabaseField
+    private Boolean succesLimited;
+
     @DatabaseField
     private Boolean hasSummaryStep;
 
