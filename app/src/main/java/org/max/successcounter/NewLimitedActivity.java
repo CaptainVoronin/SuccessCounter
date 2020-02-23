@@ -7,6 +7,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.j256.ormlite.dao.Dao;
@@ -68,6 +69,13 @@ public class NewLimitedActivity extends AppCompatActivity
         template.setLimited( true );
         template.setName( templateName );
         template.setLimit( Integer.parseInt( edLimit.getText().toString() ) );
+
+        RadioGroup rg = findViewById( R.id.rgLimitType );
+
+        if( rg.getCheckedRadioButtonId() == R.id.rbSuccess )
+            template.setSuccesLimited( true );
+        else
+            template.setSuccesLimited( false );
 
         DatabaseHelper dbHelper = new DatabaseHelper(this);
 
