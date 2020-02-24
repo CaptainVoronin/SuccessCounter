@@ -30,6 +30,11 @@ import java.util.logging.SimpleFormatter;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+// TODO: Подвинуть кнопку влево и вниз
+// TODO: Увелить шрифт в таблице результатов
+// TODO: Сжать график с боков
+// TODO: Кнопка "История" не в дугу
+
 public class ProgressActivity extends AppCompatActivity
 {
     public final static String TEMPLATE_ID = "TEMPLATE_ID";

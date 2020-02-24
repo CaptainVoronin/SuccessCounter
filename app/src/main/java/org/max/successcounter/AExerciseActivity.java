@@ -1,7 +1,6 @@
 package org.max.successcounter;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -23,8 +22,6 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
 {
     public final static String RESULT_ID = "RESULT_ID";
 
-    private static final int UI_ANIMATION_DELAY = 300;
-    private final Handler mHideHandler = new Handler();
     private DatabaseHelper db;
     private TextView lbPercent;
     private TextView lbAttempts;
@@ -122,7 +119,8 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         {
             Result res = exercise.getResult();
             daoResult.createOrUpdate( res );
-            HistoryOperator.instance.saveStep( getExercise().getLastStep() );
+            List<IStep> steps = getExercise().getSteps();
+            HistoryOperator.instance.saveStep( steps.get( steps.size() - 1 ) );
 
             btnRollback.setEnabled(getExercise().getSteps().size() != 0);
             setResult(RESULT_OK);
@@ -232,11 +230,10 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
     public String getEfficiencyString()
     {
         String buff;
+        List<IStep> steps = getExercise().getSteps();
 
-        IStep step = getExercise().getLastStep();
-
-        if( step != null )
-            buff = Result.getPercentString( step.getPercent() );
+        if( steps.size() != 0 )
+            buff = Result.getPercentString( steps.get( steps.size() - 1 ).getPercent() );
         else
             buff = "0.0%";
 
@@ -246,7 +243,7 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
     @Override
     public String getAttemptsString()
     {
-        return "" + getExercise().getSuccessCount() + "(" + getExercise().getAttemptsCount() + ")";
+        return "" + getExercise().getTotalPoints() + "(" + getExercise().getAttemptsCount() + ")";
     }
 
 }

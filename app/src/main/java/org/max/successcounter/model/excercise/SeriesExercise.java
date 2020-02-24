@@ -27,7 +27,7 @@ public class SeriesExercise extends AExercise
     }
 
     @Override
-    public Integer getSuccessCount()
+    public Integer getTotalPoints()
     {
         return steps.size();
     }

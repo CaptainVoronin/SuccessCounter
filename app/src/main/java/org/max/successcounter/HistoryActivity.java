@@ -23,6 +23,10 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+// TODO: Таблица истории не в дугу
+// TODO: Нужна сортировка таблицы
+// TODO: Нужна очистка результатов
+
 public class HistoryActivity extends AppCompatActivity
 {
     public final static String TEMPLATE_ID = "TEMPLATE_ID";
@@ -65,7 +69,6 @@ public class HistoryActivity extends AppCompatActivity
             templateId = in.getIntExtra(TEMPLATE_ID, -1);
             if (templateId == -1)
                 throw new IllegalArgumentException();
-
 
             fillList();
             setTitle( template.getName() );

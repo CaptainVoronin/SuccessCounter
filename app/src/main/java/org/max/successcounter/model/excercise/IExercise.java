@@ -17,8 +17,8 @@ public interface IExercise
     List<IStep> getSteps();
     void setSteps(List<IStep> steps);
 
-    Float getPercentAtStep( int stepNum );
-    IStep getLastStep( );
+//    Float getPercentAtStep( int stepNum );
+//    IStep getLastStep( );
 
     IStep addStepByPoints( Integer points );
     void addStep( IStep step );
@@ -30,7 +30,7 @@ public interface IExercise
     List<Entry> getPercentHistory();
 
     boolean isFinished();
-    Integer getSuccessCount();
+    Integer getTotalPoints();
     Result getResult();
 
     int getMaxPossiblePoints();

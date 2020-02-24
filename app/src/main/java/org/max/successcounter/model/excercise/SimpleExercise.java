@@ -9,13 +9,13 @@ public class SimpleExercise extends AExercise
         step.setPoints(points);
         step.setExercise(this);
         addStep(step);
-        Float p = 100F * getSuccessCount() / getSteps().size();
+        Float p = 100F * getTotalPoints() / getSteps().size();
         step.setPercent(p);
         return step;
     }
 
     @Override
-    public Integer getSuccessCount()
+    public Integer getTotalPoints()
     {
         return (int) steps.stream().filter(step -> step.getPoints() != 0).count();
     }

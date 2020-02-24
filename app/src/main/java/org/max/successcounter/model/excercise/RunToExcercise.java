@@ -1,5 +1,6 @@
 package org.max.successcounter.model.excercise;
 
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,7 +8,8 @@ public class RunToExcercise extends SimpleExercise
 {
     boolean finished;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     int limit;
 
     public RunToExcercise()
@@ -26,25 +28,32 @@ public class RunToExcercise extends SimpleExercise
     @Override
     public IStep addStepByPoints(Integer points)
     {
+        IStep step = null;
+
         // Prevent add points to a finished exercise
         if (isFinished())
             return null;
 
-        // Упражнение с ограничением
-        // выполняется до первого промаха
-        if (points == 0)
-        {
-            finished = true;
-            return null;
-        }
-
-        IStep step = new Step();
+        step = new Step();
         step.setPoints(points);
         steps.add(step);
-        step.setPercent(100f * steps.size() / getLimit());
+        step.setPercent(100f * getTotalPoints() / getAttemptsCount());
 
-        if (steps.size() == getLimit())
-            finished = true;
+        if (template.getSuccesLimited())
+        {
+            // This is the case
+            // when a player must pocket exact number of balls
+            // and may miss any number of shots
+            if (getTotalPoints() == getLimit())
+                // the limit of successful shots is reached
+                finished = true;
+        }
+        else
+        {
+
+            if( steps.size() == getLimit() )
+                finished = true;
+        }
 
         return step;
     }
@@ -56,15 +65,15 @@ public class RunToExcercise extends SimpleExercise
     }
 
     @Override
-    public Integer getSuccessCount()
+    public Integer getTotalPoints()
     {
-        return steps.size();
+        return steps.stream().collect( Collectors.summingInt( IStep::getPoints )).intValue();
     }
 
     @Override
     public int getAttemptsCount()
     {
-        return limit;
+        return steps.size();
     }
 
     @Override

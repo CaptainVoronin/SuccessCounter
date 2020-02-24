@@ -38,7 +38,7 @@ public class CompoundExcercise extends AExercise
     {
         attempts++;
         int max = getMaxPossiblePoints();
-        Float percent = 100f * ( points + getSuccessCount() ) / ( max * attempts );
+        Float percent = 100f * ( points + getTotalPoints() ) / ( max * attempts );
 
         IStep step = new Step();
         step.setPercent( percent );
@@ -70,7 +70,7 @@ public class CompoundExcercise extends AExercise
         return super.undo();
     }
 
-    public Integer getSuccessCount()
+    public Integer getTotalPoints()
     {
         final Integer[] count = {0};
         steps.forEach( item -> { count[0] += item.getPoints(); } );

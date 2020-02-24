@@ -1,6 +1,7 @@
 package org.max.successcounter.model.excercise;
 
 import com.github.mikephil.charting.data.Entry;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +14,20 @@ public abstract class AExercise implements IExercise
     @Setter
     String name;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     Integer id;
+    @Getter
+    List<IStep> steps;
+    @Getter
+    @Setter
+    Template template;
+    Result result;
+
+    public AExercise()
+    {
+        steps = new ArrayList<>();
+    }
 
     @Override
     public boolean isMinOrMax(int index, float value)
@@ -27,14 +40,14 @@ public abstract class AExercise implements IExercise
         int indexMax = 0;
 
         int i = 0;
-        for( IStep step : steps )
+        for (IStep step : steps)
         {
-            if( step.getPercent() >= max )
+            if (step.getPercent() >= max)
             {
                 max = step.getPercent();
                 indexMax = i;
             }
-            if( step.getPercent() <= min )
+            if (step.getPercent() <= min)
             {
                 min = step.getPercent();
                 indexMin = i;
@@ -43,41 +56,32 @@ public abstract class AExercise implements IExercise
             i++;
         }
 
-        if( ( value <= min ) && ( index == indexMin ) )
+        if ((value <= min) && (index == indexMin))
             isMin = true;
 
-        if( ( value >= max ) && ( index == indexMax) )
+        if ((value >= max) && (index == indexMax))
             isMax = true;
 
         return isMin || isMax;
     }
 
-    @Getter
-    List<IStep> steps;
-
-    @Getter @Setter
-    Template template;
-
-    Result result;
-
-    public AExercise()
-    {
-        steps = new ArrayList<>();
-    }
-
     @Override
     public void addStep(IStep step)
     {
-        steps.add( step );
+        steps.add(step);
     }
 
     @Override
     public IStep undo()
     {
-        IStep step = getLastStep();
-        if( step != null )
-            steps.remove( step );
-        return  step;
+        IStep step = null;
+
+        if (steps.size() != 0)
+        {
+            step = steps.get(steps.size() - 1);
+            steps.remove(step);
+        }
+        return step;
     }
 
     public List<Entry> getPercentHistory()
@@ -85,22 +89,13 @@ public abstract class AExercise implements IExercise
         List<IStep> steps = getSteps();
         List<Entry> items = new ArrayList<>();
         int i = 0;
-        for( IStep step : steps )
+        for (IStep step : steps)
         {
-            items.add( new Entry( i, step.getPercent() ) );
+            items.add(new Entry(i, step.getPercent()));
             i++;
         }
 
         return items;
-    }
-
-    @Override
-    public IStep getLastStep()
-    {
-        if( steps.size() != 0 )
-            return steps.get( steps.size() - 1 );
-        else
-            return null;
     }
 
     @Override
@@ -126,15 +121,15 @@ public abstract class AExercise implements IExercise
     @Override
     public Result getResult()
     {
-        if( result == null )
+        if (result == null)
         {
             result = new Result();
-            result.setParent( getTemplate() );
+            result.setParent(getTemplate());
         }
 
-        result.setShots( getAttemptsCount() );
-        result.setPercent( getLastStep().getPercent() );
-        result.setPoints( getSuccessCount() );
+        result.setShots(getAttemptsCount());
+        result.setPercent(steps.get(steps.size() - 1).getPercent());
+        result.setPoints(getTotalPoints());
 
         return result;
     }
@@ -143,7 +138,7 @@ public abstract class AExercise implements IExercise
     public void setSteps(List<IStep> steps)
     {
         this.steps = steps;
-        this.steps.forEach( step -> step.setExercise( this ) );
+        this.steps.forEach(step -> step.setExercise(this));
     }
 
     @Override

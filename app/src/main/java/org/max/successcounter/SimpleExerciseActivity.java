@@ -14,6 +14,8 @@ import com.github.mikephil.charting.data.LineDataSet;
 
 import org.max.successcounter.model.excercise.SimpleExercise;
 
+import io.reactivex.subjects.BehaviorSubject;
+
 public class SimpleExerciseActivity extends AExerciseActivity<SimpleExercise>
 {
     private LineChart mChart;
@@ -64,6 +66,7 @@ public class SimpleExerciseActivity extends AExerciseActivity<SimpleExercise>
     @Override
     protected void prepareControlButtons(LinearLayout placeholder)
     {
+
         LayoutInflater lif = getLayoutInflater();
         LinearLayout ll = (LinearLayout) lif.inflate( R.layout.simple_exercise_buttons, placeholder, true );
 

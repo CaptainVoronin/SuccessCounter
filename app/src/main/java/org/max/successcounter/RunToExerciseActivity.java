@@ -76,9 +76,22 @@ public class RunToExerciseActivity extends AExerciseActivity<RunToExcercise>
     @Override
     protected void updateChart()
     {
+        Float percent1 = 0f;
+        Float percent2 = 0f;
+
         IExercise ex = getExercise();
-        Float percent1 = 100f * ex.getSuccessCount() / ex.getTemplate().getLimit();
-        Float percent2 = 100 - percent1;
+
+        if( !ex.getTemplate().getSuccesLimited() )
+        {
+            percent1 = 100f * ex.getAttemptsCount() / ex.getTemplate().getLimit();
+            percent2 = 100 - percent1;
+        }
+        else
+        {
+            percent1 = 100f * ex.getTotalPoints() / ex.getTemplate().getLimit();
+            percent2 = 100 - percent1;
+        }
+
         List<PieEntry> entries = new ArrayList<>();
         entries.add(new PieEntry(percent1));
         entries.add(new PieEntry(percent2));
