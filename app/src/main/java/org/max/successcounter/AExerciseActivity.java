@@ -18,7 +18,7 @@ import java.sql.SQLException;
 import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 
-public abstract class AExerciseActivity<T> extends AppCompatActivity implements IExerciseForm<T>
+public abstract class AExerciseActivity<T extends IExercise> extends AppCompatActivity implements IExerciseForm<T>
 {
     public final static String RESULT_ID = "RESULT_ID";
 
@@ -29,7 +29,7 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
 
     private ImageButton btnRollback;
     private View mContentView;
-    private IExercise exercise;
+    private T exercise;
     private Dao<Result, Integer> daoResult;
     private ImageButton btnBack;
 
@@ -144,11 +144,11 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
         if (templateID == -1)
             throw new IllegalArgumentException("Exercise result id is missing");
 
-        // Load the execercise template
+        // Load the exercise template
         Template et = getTemplate( templateID );
 
         // Make an exercise instance
-        IExercise ex = ExerciseFactory.instance.makeExercise( et );
+        T ex = ( T ) ExerciseFactory.instance.makeExercise( et );
         ex.setTemplate( et );
         setExerсise( ex );
     }
@@ -204,13 +204,13 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
     }
 
     @Override
-    public void setExerсise( IExercise exercise )
+    public void setExerсise( T exercise )
     {
         this.exercise = exercise;
     }
 
     @Override
-    public IExercise getExercise()
+    public T getExercise()
     {
         return exercise;
     }
@@ -244,6 +244,11 @@ public abstract class AExerciseActivity<T> extends AppCompatActivity implements 
     public String getAttemptsString()
     {
         return "" + getExercise().getTotalPoints() + "(" + getExercise().getAttemptsCount() + ")";
+    }
+
+    public void onExerciseFinished()
+    {
+
     }
 
 }
