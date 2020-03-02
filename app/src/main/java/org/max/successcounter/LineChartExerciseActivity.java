@@ -31,7 +31,7 @@ public class LineChartExerciseActivity<T extends IExercise> extends AExerciseAct
         mChart.setDrawMarkers(false);
         mChart.setDrawGridBackground(false);
         mChart.setLayoutParams( new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT) );
-
+        mChart.setNoDataText( getString( R.string.no_data_text ) );
         YAxis y = mChart.getAxisLeft();
         y.setAxisMinimum(0f);
         y.setAxisMaximum(100f);
