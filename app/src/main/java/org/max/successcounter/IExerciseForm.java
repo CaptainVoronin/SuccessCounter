@@ -7,9 +7,9 @@ import org.max.successcounter.model.excercise.IExercise;
 
 import java.sql.SQLException;
 
-interface IExerciseForm<T>
+interface IExerciseForm<T extends IExercise>
 {
-    void setExerсise( IExercise exercise );
+    void setExerсise( T exercise );
     IExercise getExercise();
     <T> Dao<T,Integer> getDao( Class<T> exerciseClass, DatabaseHelper db ) throws SQLException;
     void onExerciseFinished();
