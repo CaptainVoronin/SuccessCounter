@@ -20,6 +20,6 @@ public class AboutActivity extends AppCompatActivity
         tv.setText( "v " + Version.MAJOR + "." + Version.MINOR + "." + Version.BUILD );
 
         tv = findViewById( R.id.tvYear );
-        tv.setText( "2020" );
+        tv.setText( Version.BUILD_DATE );
     }
 }
