@@ -8,7 +8,7 @@ import android.widget.ViewSwitcher;
 
 import org.max.successcounter.model.excercise.SeriesExercise;
 
-public class SeriesExerciseActivity extends AExerciseActivity<SeriesExercise>
+public class SeriesExerciseActivity extends LineChartExerciseActivity<SeriesExercise>
 {
     ViewSwitcher switcher;
 
@@ -19,12 +19,6 @@ public class SeriesExerciseActivity extends AExerciseActivity<SeriesExercise>
     }
 
     @Override
-    protected void prepareChart(LinearLayout placeholder)
-    {
-
-    }
-
-    @Override
     protected void prepareControlButtons(LinearLayout placeholder)
     {
         LayoutInflater lif = getLayoutInflater();
@@ -32,21 +26,15 @@ public class SeriesExerciseActivity extends AExerciseActivity<SeriesExercise>
         switcher = ll.findViewById(R.id.btnSwitcher);
 
         ImageButton btn = placeholder.findViewById(R.id.btnAttempt);
+
         btn.setOnClickListener(e -> {
-            addStep(0);
+            addStep( 0 );
         });
 
         btn = findViewById(R.id.btnSuccess);
         btn.setOnClickListener(e -> {
-            addStep(1);
+            addStep( 1 );
         });
-
-    }
-
-    @Override
-    protected void updateChart()
-    {
-
     }
 
     @Override
@@ -55,21 +43,4 @@ public class SeriesExerciseActivity extends AExerciseActivity<SeriesExercise>
         switcher.showNext();
         switcher.getCurrentView().getId();
     }
-
-    @Override
-    public String getEfficiencyString()
-    {
-        String buff;
-
-        buff = "" + getExercise().getAttemptsCount();
-
-        return buff;
-    }
-
-    @Override
-    public String getAttemptsString()
-    {
-        return "";
-    }
-
 }
