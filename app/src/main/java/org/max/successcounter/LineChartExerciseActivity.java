@@ -12,18 +12,13 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
+import org.max.successcounter.model.excercise.IExercise;
 import org.max.successcounter.model.excercise.SimpleExercise;
 
-public class LineChartExerciseActivity<T> extends AExerciseActivity<T>
+public class LineChartExerciseActivity<T extends IExercise> extends AExerciseActivity<T>
 {
     private LineChart mChart;
     MinMaxValueFormatter formatter;
-
-    @Override
-    public void onExerciseFinished()
-    {
-
-    }
 
     @Override
     protected void prepareChart(LinearLayout placeholder)
