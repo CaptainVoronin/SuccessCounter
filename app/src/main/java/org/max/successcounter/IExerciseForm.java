@@ -10,7 +10,7 @@ import java.sql.SQLException;
 interface IExerciseForm<T extends IExercise>
 {
     void setExerсise( T exercise );
-    IExercise getExercise();
+    T getExercise();
     <T> Dao<T,Integer> getDao( Class<T> exerciseClass, DatabaseHelper db ) throws SQLException;
     void onExerciseFinished();
     String getEfficiencyString();
