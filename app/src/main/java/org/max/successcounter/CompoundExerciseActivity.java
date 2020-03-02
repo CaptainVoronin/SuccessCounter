@@ -17,10 +17,8 @@ import com.github.mikephil.charting.data.LineDataSet;
 import org.apache.commons.math3.analysis.function.Min;
 import org.max.successcounter.model.excercise.CompoundExcercise;
 
-public class CompoundExerciseActivity extends AExerciseActivity<CompoundExcercise>
+public class CompoundExerciseActivity extends LineChartExerciseActivity<CompoundExcercise>
 {
-    private LineChart mChart;
-    MinMaxValueFormatter formatter;
 
     @Override
     protected void prepareControlButtons(LinearLayout placeholder)
@@ -35,67 +33,6 @@ public class CompoundExerciseActivity extends AExerciseActivity<CompoundExcercis
         cx.getOptions().forEach( item->{
             ll.addView( makeButton( item ) );
         } );
-    }
-
-    @Override
-    protected void prepareChart(LinearLayout placeholder)
-    {
-        LayoutInflater lif = getLayoutInflater();
-        lif.inflate( R.layout.line_chart, placeholder, true );
-        int axisColor = Color.LTGRAY;
-        mChart = placeholder.findViewById(R.id.chartHolder);
-        mChart.setDrawMarkers(false);
-        mChart.setDrawGridBackground(false);
-        mChart.setLayoutParams( new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT) );
-
-        YAxis y = mChart.getAxisLeft();
-        y.setAxisMinimum(0f);
-        y.setAxisMaximum(100f);
-        y.setTextColor(axisColor);
-        y.setGridColor(axisColor);
-        y.setAxisLineColor(axisColor);
-
-        y = mChart.getAxisRight();
-        y.setAxisMinimum(0f);
-        y.setAxisMaximum(100f);
-        y.setTextColor(axisColor);
-        y.setGridColor(axisColor);
-        y.setAxisLineColor(axisColor);
-
-        XAxis x = mChart.getXAxis();
-        x.setGridColor(axisColor);
-        x.setAxisLineColor(axisColor);
-        x.setTextColor(axisColor);
-
-        Legend legend = mChart.getLegend();
-        legend.setEnabled(false);
-        mChart.setDescription( null );
-        formatter = new MinMaxValueFormatter( getExercise() );
-    }
-
-    @Override
-    protected void updateChart()
-    {
-        mChart.clear();
-        LineData data = new LineData();
-        int color = Color.rgb(0xDD, 0x88, 0x00);
-        LineDataSet set = new LineDataSet(getExercise().getPercentHistory(), "%");
-        set.setDrawCircleHole(false);
-        set.setDrawCircles(false);
-        set.setValueTextColor( getColor( android.R.color.white ));
-        set.setColor(color);
-        set.setValueFormatter( formatter );
-        data.setDrawValues(false);
-        data.addDataSet(set);
-        data.setValueTextSize(12);
-        mChart.setData(data);
-        mChart.invalidate();
-    }
-
-    @Override
-    public void onExerciseFinished()
-    {
-
     }
 
     public class OnOptionClick implements Button.OnClickListener
