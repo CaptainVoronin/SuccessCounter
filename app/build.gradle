@@ -66,12 +66,15 @@ dependencies {
     implementation group: 'com.j256.ormlite', name: 'ormlite-core', version: '5.1'
     implementation 'com.mysugr.MPAndroidChart:MPAndroidChart:3.1.0-mysugr-1'
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
+    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.17'
 }
 
 def incrementBuild() {
     def minor = 0
     def major = 0
     def build = 1
+    def date = Calendar.getInstance()
+    def build_date
     def props = new Properties()
 
     def versionFile = file("version.properties")
@@ -85,10 +88,12 @@ def incrementBuild() {
         props["MAJOR"] = major.toString()
         props["MINOR"] = minor.toString()
         props["BUILD"] = build.toString()
+        props["BUILD_DATE"] = date.format( "dd MMMM yyyy" )
+        build_date = props["BUILD_DATE"]
 
         props.store(versionFile.newWriter(), null)
 
-        return [major, minor, build]
+        return [major, minor, build, build_date]
     } else
         throw new FileNotFoundException("File version.properties not found")
 }
@@ -103,9 +108,10 @@ def writeVersionClassFile(verArray) {
 
     String buff = versionClassFile.text
 
-    buff = buff.replaceAll('MAJOR\\s*=\\s*\\d\\s*;', 'MAJOR=' + verArray[0].toString() + ';')
-    buff = buff.replaceAll('MINOR\\s*=\\s*\\d\\s*;', 'MINOR=' + verArray[1].toString() + ';')
-    buff = buff.replaceAll('BUILD=\\s*\\d\\s*;', 'BUILD=' + verArray[2].toString() + ';')
+    buff = buff.replaceAll('MAJOR\\s*=\\s*\\d+\\s*;', 'MAJOR=' + verArray[0].toString() + ';')
+    buff = buff.replaceAll('MINOR\\s*=\\s*\\d+\\s*;', 'MINOR=' + verArray[1].toString() + ';')
+    buff = buff.replaceAll('BUILD\\s*=\\s*\\d+\\s*;', 'BUILD=' + verArray[2].toString() + ';')
+    buff = buff.replaceAll('BUILD_DATE=\\"[a-zA-Z0-9\\s]+\\";', 'BUILD_DATE=\"' + verArray[3].toString() + '\";')
 
     versionClassFile.write(buff);
 
