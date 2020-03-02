@@ -13,19 +13,18 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.j256.ormlite.dao.Dao;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.excercise.Result;
+import org.max.successcounter.model.excercise.RunToExcercise;
 import org.max.successcounter.model.excercise.Template;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.SimpleFormatter;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -141,7 +140,7 @@ public class ProgressActivity extends AppCompatActivity
         set.setDrawCircleHole(false);
         set.setDrawCircles(false);
         set.setColor(color);
-        set.setValueTextColor( getColor( android.R.color.black ));
+        set.setValueTextColor(getColor(android.R.color.black));
         data.setValueTextSize(12);
         data.addDataSet(set);
 
@@ -174,7 +173,7 @@ public class ProgressActivity extends AppCompatActivity
         y.setTextColor(axisColor);
         y.setGridColor(axisColor);
         y.setAxisLineColor(axisColor);
-        y.setDrawLabels( false );
+        y.setDrawLabels(false);
 
         y = mChart.getAxisRight();
         y.setAxisMinimum(0f);
@@ -182,7 +181,7 @@ public class ProgressActivity extends AppCompatActivity
         y.setTextColor(axisColor);
         y.setGridColor(axisColor);
         y.setAxisLineColor(axisColor);
-        y.setDrawLabels( false );
+        y.setDrawLabels(false);
 
         XAxis x = mChart.getXAxis();
         x.setGridColor(axisColor);
@@ -200,8 +199,13 @@ public class ProgressActivity extends AppCompatActivity
         switch (template.getExType())
         {
             case simple:
-                if (template.getLimited())
-                    in = new Intent(this, RunToExerciseActivity.class);
+                if (template.getLimited() )
+                {
+                    if (template.getSuccesLimited())
+                        in = new Intent(this, SeriesExerciseActivity.class);
+                    else
+                        in = new Intent(this, RunToExerciseActivity.class);
+                }
                 else
                     in = new Intent(this, SimpleExerciseActivity.class);
                 break;
