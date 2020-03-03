@@ -320,7 +320,7 @@ public class ProgressActivity extends AppCompatActivity
     private void deselectValue()
     {
         TextView tv = findViewById( R.id.tvResultDate );
-        tv.setText( "" );
+        tv.setText( getString( R.string.txtExerciseNotSelected ) );
 
         tv = findViewById( R.id.tvPercent);
         tv.setText( "" );

@@ -82,7 +82,8 @@
                     android:id="@+id/tvResultDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:text="@string/txtExerciseNotSelected"/>
 
             </TableRow>
 
