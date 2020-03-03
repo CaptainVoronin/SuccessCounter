@@ -10,19 +10,49 @@
         android:id="@+id/stdtoobar"/>
 
     <LinearLayout
+        android:id="@+id/layoutDates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10pt"
+        android:layout_marginBottom="5pt"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/stdtoobar">
+
+        <TextView
+            android:id="@+id/tvDateStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text=""
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvDateEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text=""
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stdtoobar"
+        app:layout_constraintTop_toBottomOf="@id/layoutDates"
         app:layout_constraintVertical_bias="0.0">
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/chartHolder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10pt"
             android:layout_marginTop="10pt"
+            android:layout_marginRight="10pt"
             android:layout_weight="1">
 
         </com.github.mikephil.charting.charts.LineChart>
@@ -30,7 +60,6 @@
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10pt"
             android:layout_weight="0.1"
             android:gravity="center_vertical"
             android:paddingLeft="10pt"

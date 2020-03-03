@@ -1,10 +1,13 @@
 package org.max.successcounter;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -19,19 +22,25 @@ import com.j256.ormlite.dao.Dao;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.excercise.Result;
-import org.max.successcounter.model.excercise.RunToExcercise;
 import org.max.successcounter.model.excercise.Template;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-// TODO: Подвинуть кнопку влево и вниз
 // TODO: Увелить шрифт в таблице результатов
-// TODO: Сжать график с боков
 // TODO: Кнопка "История" не в дугу
 
 public class ProgressActivity extends AppCompatActivity
@@ -42,6 +51,10 @@ public class ProgressActivity extends AppCompatActivity
     Dao<Template, Integer> exsetDao;
     Template template;
     SharedPreferences mPrefs;
+    List<Result> results;
+    Predicate<Result> currentFilter;
+    Date startDate;
+    Date endDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -63,7 +76,11 @@ public class ProgressActivity extends AppCompatActivity
             }
 
             exsetDao = db.getDao(Template.class);
-            template = exsetDao.queryForId(templateId);
+            readResultsFromDB();
+
+            currentFilter = new ZeroFilter();
+            startDate = getMinDate();
+            endDate = getMaxDate();
 
             makeToolbar();
 
@@ -77,7 +94,9 @@ public class ProgressActivity extends AppCompatActivity
                 gotoHistory();
             });
 
-            makeChart();
+            prepareChart();
+            fillChart();
+
             fillStats();
             setTitle(template.getName());
 
@@ -87,8 +106,17 @@ public class ProgressActivity extends AppCompatActivity
         }
     }
 
+    private void readResultsFromDB() throws SQLException
+    {
+        results = new ArrayList<>();
+        template = exsetDao.queryForId(templateId);
+        results.addAll(template.getResults());
+    }
+
     private void fillStats()
     {
+        SimpleDateFormat dt = new SimpleDateFormat("dd MMMM yyyy");
+
         TextView tv = findViewById(R.id.lbTotalExercises);
         int count = 0;
 
@@ -105,6 +133,90 @@ public class ProgressActivity extends AppCompatActivity
 
         tv = findViewById(R.id.lbTotalShots);
         tv.setText("" + count);
+
+        tv = findViewById(R.id.tvDateStart);
+
+        if (startDate != null)
+            tv.setText(dt.format(startDate));
+
+        tv.setOnClickListener((View v) -> setDateStart());
+
+        tv = findViewById(R.id.tvDateEnd);
+
+        if (endDate != null)
+            tv.setText(dt.format(endDate));
+
+        tv.setOnClickListener((View v) -> setDateEnd());
+    }
+
+    private void setDateEnd()
+    {
+        getDate(endDate, new Function<Date, Date>()
+        {
+            @Override
+            public Date apply(Date date)
+            {
+                if (date.before(startDate))
+                    return null;
+
+                endDate = date;
+                SimpleDateFormat dt = new SimpleDateFormat("dd MMMM yyyy");
+                TextView tv = findViewById(R.id.tvDateEnd);
+                tv.setText(dt.format(endDate));
+                applyDateFilter();
+                return null;
+            }
+        });
+    }
+
+    private void setDateStart()
+    {
+        getDate(startDate, new Function<Date, Date>()
+        {
+            @Override
+            public Date apply(Date date)
+            {
+                if (date.after(endDate))
+                    return null;
+
+                startDate = date;
+                SimpleDateFormat dt = new SimpleDateFormat("dd MMMM yyyy");
+                TextView tv = findViewById(R.id.tvDateStart);
+                tv.setText(dt.format(startDate));
+                applyDateFilter();
+                return null;
+            }
+        });
+    }
+
+    void applyDateFilter()
+    {
+        DateIntervalFilter f = new DateIntervalFilter();
+        f.setStart(startDate);
+        f.setEnd(endDate);
+        currentFilter = f;
+        fillChart();
+    }
+
+    private void getDate(Date date, Function<Date, Date> callback)
+    {
+        Calendar c = Calendar.getInstance();
+
+        if (date != null)
+            c.setTime(date);
+
+        DatePickerDialog dlg = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener()
+        {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
+            {
+                Calendar c = Calendar.getInstance();
+                c.set(year, month, dayOfMonth);
+                callback.apply(c.getTime());
+            }
+        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+
+        dlg.show();
     }
 
     private void gotoHistory()
@@ -114,23 +226,13 @@ public class ProgressActivity extends AppCompatActivity
         startActivityForResult(in, ActivityIDs.HISTORYACTIVITY_ID);
     }
 
-    private void makeChart() throws SQLException
+    private void fillChart()
     {
-        prepareChart();
-        fillChart();
-    }
-
-    private void fillChart() throws SQLException
-    {
-        List<Result> items = new ArrayList<>();
-        template = exsetDao.queryForId(templateId);
-
-        items.addAll(template.getResults());
         List<Entry> exes = new ArrayList<>();
-        for (int i = 0; i < items.size(); i++)
-        {
-            exes.add(new Entry((float) i, new Float(items.get(i).getPercent())));
-        }
+        AtomicInteger i = new AtomicInteger();
+        i.set(-1);
+        List<Result> items = results.stream().filter(currentFilter).collect(Collectors.toList());
+        items.forEach(item -> exes.add(new Entry((float) i.incrementAndGet(), new Float(item.getPercent()))));
 
         mChart.clear();
         LineData data = new LineData();
@@ -199,14 +301,13 @@ public class ProgressActivity extends AppCompatActivity
         switch (template.getExType())
         {
             case simple:
-                if (template.getLimited() )
+                if (template.getLimited())
                 {
                     if (template.getSuccesLimited())
                         in = new Intent(this, SeriesExerciseActivity.class);
                     else
                         in = new Intent(this, RunToExerciseActivity.class);
-                }
-                else
+                } else
                     in = new Intent(this, SimpleExerciseActivity.class);
                 break;
             case compound:
@@ -233,6 +334,9 @@ public class ProgressActivity extends AppCompatActivity
                 setResult(RESULT_OK);
                 try
                 {
+                    readResultsFromDB();
+                    startDate = getMinDate();
+                    endDate = getMaxDate();
                     fillChart();
                     fillStats();
 
@@ -272,4 +376,82 @@ public class ProgressActivity extends AppCompatActivity
         tv.setText(template.getName());
     }
 
+    Date getMinDate()
+    {
+        List<Result> items = results.stream().filter(currentFilter).collect(Collectors.toList());
+        try
+        {
+            Result res = items.stream().min(new Comparator<Result>()
+            {
+                @Override
+                public int compare(Result o1, Result o2)
+                {
+                    return Long.compare(o1.getDate().getTime(), o2.getDate().getTime());
+                }
+            }).orElseThrow(NoSuchElementException::new);
+
+            return res.getDate();
+
+        } catch (Throwable throwable)
+        {
+            throwable.printStackTrace();
+            return null;
+        }
+    }
+
+    Date getMaxDate()
+    {
+        List<Result> items = results.stream().filter(currentFilter).collect(Collectors.toList());
+
+        try
+        {
+            Result res = items.stream().max(new Comparator<Result>()
+            {
+                @Override
+                public int compare(Result o1, Result o2)
+                {
+                    return Long.compare(o1.getDate().getTime(), o2.getDate().getTime());
+                }
+            }).orElseThrow(NoSuchElementException::new);
+
+            return res.getDate();
+
+        } catch (Throwable throwable)
+        {
+            throwable.printStackTrace();
+            return null;
+        }
+    }
+
+    class ZeroFilter implements Predicate<Result>
+    {
+
+        @Override
+        public boolean test(Result result)
+        {
+            return true;
+        }
+    }
+
+    class DateIntervalFilter implements Predicate<Result>
+    {
+        Date start;
+        Date end;
+
+        @Override
+        public boolean test(Result result)
+        {
+            return result.getDate().getTime() >= start.getTime() && result.getDate().getTime() <= end.getTime();
+        }
+
+        public void setStart(Date start)
+        {
+            this.start = start;
+        }
+
+        public void setEnd(Date end)
+        {
+            this.end = end;
+        }
+    }
 }
