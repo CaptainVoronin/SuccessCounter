@@ -325,8 +325,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // Set the title text
         TextView tv = findViewById(R.id.tvTitle);
-        tv.setText("Упражнения");
+        tv.setText( getString( R.string.txtMainActivityTitle ) );
     }
 
     private void showAbout()
