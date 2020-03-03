@@ -16,6 +16,8 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.j256.ormlite.dao.Dao;
 
@@ -31,6 +33,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -42,6 +45,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 // TODO: Увелить шрифт в таблице результатов
 // TODO: Кнопка "История" не в дугу
+// TODO: Сделать анимацию при выводе деталей упражнения
 
 public class ProgressActivity extends AppCompatActivity
 {
@@ -232,7 +236,12 @@ public class ProgressActivity extends AppCompatActivity
         AtomicInteger i = new AtomicInteger();
         i.set(-1);
         List<Result> items = results.stream().filter(currentFilter).collect(Collectors.toList());
-        items.forEach(item -> exes.add(new Entry((float) i.incrementAndGet(), new Float(item.getPercent()))));
+
+        items.forEach(item -> {
+            Entry e = new Entry((float) i.incrementAndGet(), new Float(item.getPercent()));
+            e.setData(item);
+            exes.add( e );
+        });
 
         mChart.clear();
         LineData data = new LineData();
@@ -276,6 +285,20 @@ public class ProgressActivity extends AppCompatActivity
         y.setGridColor(axisColor);
         y.setAxisLineColor(axisColor);
         y.setDrawLabels(false);
+        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener()
+        {
+            @Override
+            public void onValueSelected(Entry e, Highlight h)
+            {
+                onSelectValue( e, h );
+            }
+
+            @Override
+            public void onNothingSelected()
+            {
+                deselectValue();
+            }
+        });
 
         y = mChart.getAxisRight();
         y.setAxisMinimum(0f);
@@ -292,6 +315,48 @@ public class ProgressActivity extends AppCompatActivity
 
         mChart.getLegend().setEnabled(false);
         mChart.setDescription(null);
+    }
+
+    private void deselectValue()
+    {
+        TextView tv = findViewById( R.id.tvResultDate );
+        tv.setText( "" );
+
+        tv = findViewById( R.id.tvPercent);
+        tv.setText( "" );
+
+        tv = findViewById( R.id.tvPoints );
+        tv.setText( "" );
+
+        tv = findViewById( R.id.tvAttempts );
+        tv.setText( "" );
+    }
+
+    private void onSelectValue(Entry e, Highlight h)
+    {
+        Object o = e.getData();
+        if( o == null )
+            return;
+        Result res = ( Result ) o;
+
+        showResultDetails( res );
+    }
+
+    private void showResultDetails(Result res)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat( "dd MMMM yyyy" );
+
+        TextView tv = findViewById( R.id.tvResultDate );
+        tv.setText( sdf.format( res.getDate() ) );
+
+        tv = findViewById( R.id.tvPercent);
+        tv.setText( Result.getPercentString( res ));
+
+        tv = findViewById( R.id.tvPoints );
+        tv.setText( res.getPoints().toString() );
+
+        tv = findViewById( R.id.tvAttempts );
+        tv.setText( res.getShots().toString() );
     }
 
     private void gotoExercise()
