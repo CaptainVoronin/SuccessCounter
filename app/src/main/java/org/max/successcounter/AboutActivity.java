@@ -13,6 +13,7 @@ public class AboutActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+
         TextView tv = findViewById( R.id.tvProgramName );
         tv.setText( getString( R.string.app_name ) );
 
@@ -21,5 +22,9 @@ public class AboutActivity extends AppCompatActivity
 
         tv = findViewById( R.id.tvYear );
         tv.setText( Version.BUILD_DATE );
+
+        tv = findViewById(R.id.tvTitle);
+        tv.setText( getString( R.string.title_activity_about ) );
+
     }
 }

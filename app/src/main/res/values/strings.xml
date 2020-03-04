@@ -40,4 +40,5 @@
     <string name="txtButtonHistoryTitle">История</string>
     <string name="titleDeleteDialog">Удаление</string>
     <string name="txtDeleteResults">Подтвердите удаление результатов упражнения</string>
+    <string name="title_activity_about">О программе</string>
 </resources>
