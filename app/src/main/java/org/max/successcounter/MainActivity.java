@@ -15,7 +15,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
@@ -157,13 +156,13 @@ public class MainActivity extends AppCompatActivity
 
         in.putExtra(ProgressActivity.TEMPLATE_ID, template.getId());
 
-        startActivityForResult(in, ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID);
+        startActivityForResult(in, ActivityIDs.DO_EXERCISE_ACTIVITY_ID);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
-        if (requestCode == ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID ||
+        if (requestCode == ActivityIDs.DO_EXERCISE_ACTIVITY_ID ||
                 requestCode == ActivityIDs.NEWSIMPLEEXERCISE_ID ||
                 requestCode == ActivityIDs.NEW_TEMPLATE_ACTIVITY_ID)
             if (resultCode == RESULT_OK)
