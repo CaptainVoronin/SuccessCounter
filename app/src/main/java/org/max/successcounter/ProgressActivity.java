@@ -33,7 +33,6 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -385,14 +384,14 @@ public class ProgressActivity extends AppCompatActivity
                 throw new IllegalArgumentException("Unknown template type");
         }
         in.putExtra(TEMPLATE_ID, template.getId());
-        startActivityForResult(in, ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID);
+        startActivityForResult(in, ActivityIDs.DO_EXERCISE_ACTIVITY_ID);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ActivityIDs.EXERCISE_PROGRESS_ACTIVITY_ID ||
+        if (requestCode == ActivityIDs.DO_EXERCISE_ACTIVITY_ID ||
                 requestCode == ActivityIDs.HISTORYACTIVITY_ID)
             if (resultCode == RESULT_OK)
             {
