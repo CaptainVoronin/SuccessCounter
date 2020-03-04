@@ -2,22 +2,35 @@
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
+    <CheckBox
+        android:id="@+id/chbSelected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingTop="8pt"
+        android:textSize="6pt"
+        android:visibility="invisible" />
+
     <TextView
         android:id="@+id/lbDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:paddingTop="8pt"
+        android:paddingTop="4pt"
+        android:paddingBottom="4pt"
         android:paddingRight="5pt"
-        android:textAlignment="textEnd"
+        android:text="kjh"
         android:textSize="6pt" />
 
     <TextView
         android:id="@+id/lbPercent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:paddingTop="8pt"
+        android:paddingTop="4pt"
+        android:paddingBottom="4pt"
         android:textAlignment="textEnd"
         android:textSize="6pt" />
 
@@ -25,9 +38,11 @@
         android:id="@+id/lbCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:paddingLeft="5pt"
-        android:paddingTop="8pt"
+        android:paddingTop="4pt"
+        android:paddingBottom="4pt"
         android:textSize="6pt" />
 
 </TableRow>

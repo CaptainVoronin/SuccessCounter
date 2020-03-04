@@ -17,7 +17,6 @@
             android:text="TextView"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@android:color/darker_gray" />
-
     </androidx.appcompat.widget.Toolbar>
 
 </com.google.android.material.appbar.AppBarLayout>

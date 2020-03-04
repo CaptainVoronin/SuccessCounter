@@ -1,27 +1,28 @@
 package org.max.successcounter;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.PopupMenu;
+import android.widget.CheckBox;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
 import com.j256.ormlite.dao.Dao;
-
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.excercise.Result;
 import org.max.successcounter.model.excercise.Template;
-
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
+import androidx.appcompat.widget.Toolbar;
 
 // TODO: Таблица истории не в дугу
 // TODO: Нужна сортировка таблицы
@@ -33,12 +34,17 @@ public class HistoryActivity extends AppCompatActivity
     Dao<Template, Integer> templateDao;
     Dao<Result, Integer> resultDao;
     Integer templateId;
+    List<CheckBox> checks;
+    Template template;
+    Toolbar toolbar;
+    private MenuItem deleteActionMenuItem;
+    private ActionMode actionMode;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
-        if( requestCode == ActivityIDs.EXERCISEACTIVITY_ID )
-            if( resultCode == RESULT_OK )
+        if (requestCode == ActivityIDs.EXERCISEACTIVITY_ID)
+            if (resultCode == RESULT_OK)
             {
                 try
                 {
@@ -49,8 +55,6 @@ public class HistoryActivity extends AppCompatActivity
                 }
             }
     }
-
-    Template template;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -62,7 +66,7 @@ public class HistoryActivity extends AppCompatActivity
         DatabaseHelper db = new DatabaseHelper(this);
         try
         {
-            Dao<Result, Integer> resultDao = db.getDao(Result.class);
+            resultDao = db.getDao(Result.class);
 
             templateDao = db.getDao(Template.class);
             Intent in = getIntent();
@@ -71,7 +75,6 @@ public class HistoryActivity extends AppCompatActivity
                 throw new IllegalArgumentException();
 
             fillList();
-            setTitle( template.getName() );
 
         } catch (SQLException e)
         {
@@ -82,99 +85,94 @@ public class HistoryActivity extends AppCompatActivity
     private void fillList() throws SQLException
     {
         template = templateDao.queryForId(templateId);
-        TableLayout table = findViewById( R.id.historyTable );
+        TableLayout table = findViewById(R.id.historyTable);
         table.removeAllViews();
+        checks = new ArrayList<>();
 
-        for( Result res : template.getResults() )
-            table.addView( makeRow( res, isItLastExercise( res, template.getExercisesAsList() ) ) );
+        for (Result res : template.getResults())
+            table.addView(makeRow(res, isItLastExercise(res, template.getExercisesAsList())));
     }
 
     private View makeRow(Result res, boolean isLast)
     {
-        TableRow tr = (TableRow) getLayoutInflater().inflate( R.layout.historyrow, null );
-        TextView tv = tr.findViewById( R.id.lbDate );
-        tv.setText( Result.getFormattedDate( res ) );
-        tv.setOnLongClickListener( new ExLongClickListener( res.getId() ));
 
-        if( isLast )
-            tv.setOnClickListener( new ExClickListener( res.getId() ) );
+        TableRow tr = (TableRow) getLayoutInflater().inflate(R.layout.historyrow, null);
 
-        tv = tr.findViewById( R.id.lbPercent );
-        tv.setText( Result.getPercentString( res ) );
-        tv.setOnLongClickListener( new ExLongClickListener( res.getId() ));
+        CheckBox chb = tr.findViewById(R.id.chbSelected);
+        checks.add(chb);
+        chb.setVisibility(actionMode != null ? View.VISIBLE : View.INVISIBLE);
+        chb.setTag(res);
+        chb.setOnCheckedChangeListener((btn, isChecked) -> setDeleteActionState());
 
-        if( isLast )
-            tv.setOnClickListener( new ExClickListener( res.getId() ) );
+        TextView tv = tr.findViewById(R.id.lbDate);
+        String buff = Result.getFormattedDate(res);
+        tv.setText(buff);
 
-        tv = tr.findViewById( R.id.lbCount );
-        tv.setText( "" + res.getPoints() + "(" + res.getShots() + ")" );
-        tv.setOnLongClickListener( new ExLongClickListener( res.getId() ));
+        tv.setOnLongClickListener((View v) -> this.startActionMode());
 
-        if( isLast )
-            tv.setOnClickListener( new ExClickListener( res.getId() ) );
+        if (isLast)
+            tv.setOnClickListener(new ExClickListener(res.getId()));
+
+        tv = tr.findViewById(R.id.lbPercent);
+        tv.setText(Result.getPercentString(res));
+        tv.setOnLongClickListener((View v) -> this.startActionMode());
+
+        if (isLast)
+            tv.setOnClickListener(new ExClickListener(res.getId()));
+
+        tv = tr.findViewById(R.id.lbCount);
+        tv.setText("" + res.getPoints() + "(" + res.getShots() + ")");
+        tv.setOnLongClickListener((View v) -> this.startActionMode());
+
+        if (isLast)
+            tv.setOnClickListener(new ExClickListener(res.getId()));
 
         return tr;
     }
 
-    private void deleteResult(Object tag)
+    private void setDeleteActionState()
     {
-        Result res = (Result) tag;
-        AlertDialog.Builder builder = new AlertDialog.Builder(HistoryActivity.this);
-        builder.setTitle("Удаление");
-        builder.setMessage("Подтвердите удаление");
-        builder.setPositiveButton("Да", new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int id)
-            {
-                dialog.dismiss();
-                try
-                {
-                    resultDao.delete(res);
-                    setResult(RESULT_OK);
-                    fillList();
-                } catch (SQLException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        builder.setNegativeButton("Нет", new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int id)
-            {
-                dialog.dismiss();
-            }
-        });
-
-        builder.show();
+        long count = checks.stream().filter(CheckBox::isChecked).count();
+        deleteActionMenuItem.setEnabled( count != 0 );
     }
 
-    boolean showPopup(View v, long id)
+    private boolean startActionMode()
     {
-        PopupMenu popup = new PopupMenu(HistoryActivity.this, v);
-        //Inflating the Popup using xml file
-        popup.getMenuInflater()
-                .inflate(R.menu.ex_popup_menu, popup.getMenu());
-
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
-        {
-            public boolean onMenuItemClick(MenuItem item)
-            {
-                switch (item.getItemId())
-                {
-                    case R.id.idMenuDeleteExSet:
-                        deleteResult(v.getTag());
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-
-        });
-
-        popup.show();
+        checks.stream().forEach(item -> item.setVisibility(View.VISIBLE));
+        actionMode = startSupportActionMode( new ActionModeCallback() );
         return false;
+    }
+
+    private void beginDeleteResults() throws SQLException
+    {
+        AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+        dlg.setMessage( R.string.txtDeleteResults ).
+        setPositiveButton( android.R.string.ok, ( DialogInterface dialog, int id ) -> deleteResults() ).setNegativeButton(android.R.string.cancel, ( DialogInterface dialog, int id ) -> dialog.dismiss() ) .show();
+    }
+    private void deleteResults()
+    {
+        List<Result> results = checks.stream().filter(CheckBox::isChecked).map( CheckBox::getTag ).
+                map( item->(Result) item).collect(Collectors.toList());
+        try
+        {
+            resultDao.delete( results );
+            fillList();
+            if( actionMode != null )
+                finishActionMode();
+            
+            setResult( RESULT_OK );
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void finishActionMode()
+    {
+        checks.stream().forEach(item -> { item.setVisibility(View.INVISIBLE); item.setChecked(false);});
+        actionMode.finish();
+        actionMode = null;
     }
 
     boolean isItLastExercise(Result res, List<Result> items)
@@ -188,27 +186,20 @@ public class HistoryActivity extends AppCompatActivity
         return true;
     }
 
-    class ExLongClickListener implements View.OnLongClickListener
+    public void makeToolbar()
     {
-        private final long id;
-
-        public ExLongClickListener( long id )
-        {
-            this.id = id;
-        }
-
-        @Override
-        public boolean onLongClick(View v)
-        {
-            return showPopup(v, id);
-        }
+        toolbar = findViewById(R.id.tooBar);
+        TextView tv = findViewById(R.id.tvTitle);
+        tv.setText(R.string.msgHistoryActivityTitle);
+        setSupportActionBar(toolbar);
     }
 
-    class ExClickListener implements View.OnClickListener{
+    class ExClickListener implements View.OnClickListener
+    {
 
         private final Integer id;
 
-        public ExClickListener(Integer id )
+        public ExClickListener(Integer id)
         {
             this.id = id;
         }
@@ -216,16 +207,58 @@ public class HistoryActivity extends AppCompatActivity
         @Override
         public void onClick(View v)
         {
-            Intent in = new Intent( HistoryActivity.this, SimpleExerciseActivity.class );
-            in.putExtra( AExerciseActivity.RESULT_ID, id );
-            in.putExtra( ProgressActivity.TEMPLATE_ID, template.getId() );
-            startActivityForResult( in, ActivityIDs.EXERCISEACTIVITY_ID );
+            Intent in = new Intent(HistoryActivity.this, SimpleExerciseActivity.class);
+            in.putExtra(AExerciseActivity.RESULT_ID, id);
+            in.putExtra(ProgressActivity.TEMPLATE_ID, template.getId());
+            startActivityForResult(in, ActivityIDs.EXERCISEACTIVITY_ID);
         }
     }
 
-    public void makeToolbar()
+    class ActionModeCallback implements  androidx.appcompat.view.ActionMode.Callback
     {
-        TextView tv = findViewById( R.id.tvTitle );
-        tv.setText( R.string.msgHistoryActivityTitle );
+        @Override
+        public boolean onCreateActionMode(androidx.appcompat.view.ActionMode mode, Menu menu)
+        {
+            mode.getMenuInflater().inflate(R.menu.history_actions, menu);
+            deleteActionMenuItem = menu.findItem( R.id.itemActionDeleteResults );
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(androidx.appcompat.view.ActionMode mode, Menu menu)
+        {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(androidx.appcompat.view.ActionMode mode, MenuItem item)
+        {
+            if( item.getItemId() == R.id.itemActionDeleteResults )
+            {
+                try
+                {
+                    beginDeleteResults();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+            else if ( item.getItemId() == R.id.itemActionCheckAll )
+            {
+                checks.stream().forEach( chb->chb.setChecked( !chb.isChecked() ) );
+                return true;
+            }
+            else
+                return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(androidx.appcompat.view.ActionMode mode)
+        {
+            mode = null;
+            deleteActionMenuItem.setEnabled( false );
+            deleteActionMenuItem = null;
+        }
     }
 }

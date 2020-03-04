@@ -11,7 +11,7 @@
     <string name="title_new_limited_template">Новое упражениение с ограничением ударов</string>
     <string name="missOptionName">Промах</string>
     <string name="successOptionName">Выполнено полностью</string>
-    <string name="exerciseFinishedMessage">Finished</string>
+    <string name="exerciseFinishedMessage">Закончено</string>
     <string name="trend">тренд</string>
     <string name="messageRestoreSummaryStep">Восстановить \"полный успех\"</string>
     <string name="msgNewSimpleUnlimExTitle">Простое без ограничений</string>
@@ -29,4 +29,15 @@
     <string name="txtSuccessLimit">числа попаданий</string>
     <string name="txtTotalShots">числа попыток</string>
     <string name="txtLimitWord">Ограничение</string>
+    <string name="no_data_text">Начните упражнение</string>
+    <string name="txtAttempts">Всего ударов</string>
+    <string name="txtPercent">Эффективность</string>
+    <string name="txtPoints">Попадания/Очки</string>
+    <string name="txtResultDetailsHeader">Данные упражнения</string>
+    <string name="txtExetciseDetailsHeader">Общая статистика</string>
+    <string name="txtExerciseNotSelected">упражнение не выбрано</string>
+    <string name="txtMainActivityTitle">Каталог упражнений</string>
+    <string name="txtButtonHistoryTitle">История</string>
+    <string name="titleDeleteDialog">Удаление</string>
+    <string name="txtDeleteResults">Подтвердите удаление результатов упражнения</string>
 </resources>
