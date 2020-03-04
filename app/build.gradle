@@ -16,6 +16,10 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError false
+    }
+
     def versionArray = incrementBuild()
     writeVersionClassFile(versionArray)
 
@@ -88,7 +92,7 @@ def incrementBuild() {
         props["MAJOR"] = major.toString()
         props["MINOR"] = minor.toString()
         props["BUILD"] = build.toString()
-        props["BUILD_DATE"] = date.format( "dd MMMM yyyy" )
+        props["BUILD_DATE"] = date.format("dd MMMM yyyy")
         build_date = props["BUILD_DATE"]
 
         props.store(versionFile.newWriter(), null)

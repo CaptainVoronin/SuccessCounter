@@ -1,5 +1,6 @@
 package org.max.successcounter;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -103,10 +104,25 @@ public class ProgressActivity extends AppCompatActivity
             fillStats();
             setTitle(template.getName());
 
+            tv = findViewById( R.id.tvComment );
+            tv.setOnClickListener( (View v ) -> showComment( v ) );
+
         } catch (SQLException e)
         {
             e.printStackTrace();
         }
+    }
+
+    private void showComment(View v)
+    {
+        TextView tv = ( TextView ) v ;
+        String text = tv.getText().toString();
+
+        if( text == null || text.length() == 0 )
+            return;
+
+        AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+        dlg.setMessage( text ).setNegativeButton( android.R.string.cancel, ( d, id) -> d.dismiss() ).show();
     }
 
     private void readResultsFromDB() throws SQLException
@@ -356,6 +372,9 @@ public class ProgressActivity extends AppCompatActivity
 
         tv = findViewById( R.id.tvAttempts );
         tv.setText( res.getShots().toString() );
+
+        tv = findViewById( R.id.tvComment );
+        tv.setText( res.getComment() );
     }
 
     private void gotoExercise()

@@ -59,33 +59,25 @@
 
         </com.github.mikephil.charting.charts.LineChart>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10pt"
-            android:layout_marginTop="5pt"
-            android:text="@string/txtResultDetailsHeader"
-            android:textSize="10pt"
-            android:textStyle="bold" />
-
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10pt"
             android:layout_marginTop="5pt"
-            android:layout_marginRight="10pt">
+            android:layout_marginRight="10pt"
+            android:layout_weight="0.2">
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="10pt">
+                android:paddingBottom="5pt">
 
                 <TextView
                     android:id="@+id/tvResultDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="@string/txtExerciseNotSelected"/>
+                    android:text="@string/txtExerciseNotSelected"
+                    android:textStyle="bold" />
 
             </TableRow>
 
@@ -141,6 +133,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="5pt" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:id="@+id/tvComment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:singleLine="true" />
             </TableRow>
         </TableLayout>
 
@@ -230,7 +235,7 @@
             android:gravity="center_horizontal|center_vertical"
             android:textAlignment="center"
             android:textSize="11pt"
-            tools:text="@string/txtButtonHistoryTitle" />
+            android:text="@string/txtButtonHistoryTitle" />
 
     </LinearLayout>
 
