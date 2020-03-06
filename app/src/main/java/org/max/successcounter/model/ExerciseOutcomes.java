@@ -12,6 +12,8 @@ import org.max.successcounter.R;
 import org.max.successcounter.model.excercise.OptionDescription;
 import org.max.successcounter.model.excercise.Template;
 
+import java.util.List;
+
 public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
 {
     EditorListener editorListener;
@@ -19,7 +21,7 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
 
     public ExerciseOutcomes(Activity ctx, int view_id, Template template )
     {
-        super(ctx, view_id, R.layout.compound_default_outcome, template.getOptionsAsList());
+        super(ctx, view_id, R.layout.compound_default_outcome, template.getOptionsAsList() );
         editorListener = new EditorListener();
         this.template = template;
     }
@@ -259,7 +261,7 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         @Override
         public void onClick(View v)
         {
-            template.removeOption( option );
+            template.addOption( option );
             setItems( template.getOptionsAsList() );
             makeTable();
         }

@@ -21,27 +21,34 @@ public class Result
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     Integer id;
 
-    @Getter @Setter
-    @DatabaseField(foreign = true, columnName = "parent_id")
+    @Getter
+    @Setter
+    @DatabaseField(canBeNull = false, foreign = true, columnName = "parent_id",
+            columnDefinition = "INTEGER NOT NULL REFERENCES template(id) ON DELETE CASCADE")
     Template parent;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @DatabaseField
     Float percent;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @DatabaseField
     Integer shots;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @DatabaseField
     Date date;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @DatabaseField
     Integer points;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @DatabaseField
     String comment;
 

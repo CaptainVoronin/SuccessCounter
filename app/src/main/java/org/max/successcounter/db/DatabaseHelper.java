@@ -17,11 +17,18 @@ import org.max.successcounter.model.excercise.Template;
 public final class DatabaseHelper extends OrmLiteSqliteOpenHelper
 {
     private static final String DATABASE_NAME = "scounter.db";
-    private static final int DATABASE_VERSION = 27;
+    private static final int DATABASE_VERSION = 36;
 
     public DatabaseHelper(Context context)
     {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config); //
+        super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db)
+    {
+        super.onOpen(db);
+        db.execSQL("PRAGMA foreign_keys = ON");
     }
 
     @Override
@@ -47,7 +54,7 @@ public final class DatabaseHelper extends OrmLiteSqliteOpenHelper
             TableUtils.dropTable(connectionSource, Template.class, false);
             TableUtils.createTable(connectionSource, Template.class);
 
-            TableUtils.dropTable(connectionSource, OptionDescription.class, false);
+            TableUtils.dropTable(connectionSource, OptionDescription.class, true);
             TableUtils.createTable(connectionSource, OptionDescription.class);
 
             TableUtils.dropTable(connectionSource, Result.class, false);

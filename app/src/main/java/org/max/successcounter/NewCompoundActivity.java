@@ -17,6 +17,8 @@ import org.max.successcounter.model.excercise.OptionDescription;
 import org.max.successcounter.model.excercise.Template;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -107,8 +109,25 @@ public class NewCompoundActivity extends AppCompatActivity
     {
         try
         {
+            // The template and it's options must be saved separately
+            // because at the moment the template saves it doesn't have the id
+            // so it's options don't have parent id.
+            // Because of that reason we remove all the options
+            // from the template and save them in a list
+            List<OptionDescription> ops = new ArrayList<>();
+            template.getOptions().stream().forEach( item -> ops.add( item ));
+            template.getOptions().clear();
+
+            // Than the template is saved
             templateDao.create(template);
-            for( OptionDescription op : template.getOptions() )
+
+            // restore the options
+            // It is stupid, really
+            ops.stream().forEach( item -> item.setParent( template ) );
+
+            // Finally, I'd say OrmLite is crap
+
+            for( OptionDescription op : ops )
                 optionDao.create( op );
 
             setResult( RESULT_OK );

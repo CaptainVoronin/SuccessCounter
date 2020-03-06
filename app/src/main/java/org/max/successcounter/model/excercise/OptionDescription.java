@@ -11,7 +11,6 @@ import lombok.Setter;
 @DatabaseTable(tableName = "options")
 public class OptionDescription
 {
-
     Boolean firstDefault;
 
     Boolean lastDefault;
@@ -53,6 +52,7 @@ public class OptionDescription
 
     @Getter
     @Setter
-    @DatabaseField( foreign = true, columnName = "parent_id" )
-    Template parent;
+    @DatabaseField( canBeNull = false, foreign = true, columnName = "parent_id",
+        columnDefinition = "INTEGER REFERENCES template(id) ON DELETE CASCADE" )
+    Template    parent;
 }
