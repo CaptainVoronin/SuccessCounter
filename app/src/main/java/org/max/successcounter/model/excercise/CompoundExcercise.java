@@ -2,6 +2,7 @@ package org.max.successcounter.model.excercise;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -72,9 +73,8 @@ public class CompoundExcercise extends AExercise
 
     public Integer getTotalPoints()
     {
-        final Integer[] count = {0};
-        steps.forEach( item -> { count[0] += item.getPoints(); } );
-        return count[0];
+        long l = steps.stream().collect(Collectors.summarizingInt(IStep::getPoints)).getSum();
+        return ( int ) l;
     }
 
     public static class Option{
