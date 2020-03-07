@@ -24,6 +24,9 @@ public abstract class AExercise implements IExercise
     Template template;
     Result result;
 
+    @Getter @Setter
+    long duration;
+
     public AExercise()
     {
         steps = new ArrayList<>();

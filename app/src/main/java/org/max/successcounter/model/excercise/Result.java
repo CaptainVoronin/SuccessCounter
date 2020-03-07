@@ -52,6 +52,10 @@ public class Result
     @DatabaseField
     String comment;
 
+    @Getter @Setter
+    @DatabaseField
+    Long duration;
+
     public Result()
     {
         date = Calendar.getInstance().getTime();
