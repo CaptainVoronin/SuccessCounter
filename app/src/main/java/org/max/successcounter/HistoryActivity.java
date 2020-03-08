@@ -64,10 +64,10 @@ public class HistoryActivity extends AppCompatActivity
         makeToolbar();
 
         DatabaseHelper db = new DatabaseHelper(this);
+
         try
         {
             resultDao = db.getDao(Result.class);
-
             templateDao = db.getDao(Template.class);
             Intent in = getIntent();
             templateId = in.getIntExtra(TEMPLATE_ID, -1);
@@ -95,6 +95,9 @@ public class HistoryActivity extends AppCompatActivity
 
     private View makeRow(Result res, boolean isLast)
     {
+        TextView tvDate;
+        TextView tvPercent;
+        TextView tvCount;
 
         TableRow tr = (TableRow) getLayoutInflater().inflate(R.layout.historyrow, null);
 
@@ -104,28 +107,26 @@ public class HistoryActivity extends AppCompatActivity
         chb.setTag(res);
         chb.setOnCheckedChangeListener((btn, isChecked) -> setDeleteActionState());
 
-        TextView tv = tr.findViewById(R.id.lbDate);
+        tvDate = tr.findViewById(R.id.lbDate);
         String buff = Result.getFormattedDate(res);
-        tv.setText(buff);
+        tvDate.setText(buff);
+        tvDate.setOnLongClickListener((View v) -> this.startActionMode());
 
-        tv.setOnLongClickListener((View v) -> this.startActionMode());
+        tvPercent = tr.findViewById(R.id.lbPercent);
+        tvPercent.setText(Result.getPercentString(res));
+        tvPercent.setOnLongClickListener((View v) -> this.startActionMode());
 
-        if (isLast)
-            tv.setOnClickListener(new ExClickListener(res.getId()));
-
-        tv = tr.findViewById(R.id.lbPercent);
-        tv.setText(Result.getPercentString(res));
-        tv.setOnLongClickListener((View v) -> this.startActionMode());
-
-        if (isLast)
-            tv.setOnClickListener(new ExClickListener(res.getId()));
-
-        tv = tr.findViewById(R.id.lbCount);
-        tv.setText("" + res.getPoints() + "(" + res.getShots() + ")");
-        tv.setOnLongClickListener((View v) -> this.startActionMode());
+        tvCount = tr.findViewById(R.id.lbCount);
+        tvCount.setText("" + res.getPoints() + "(" + res.getShots() + ")");
+        tvCount.setOnLongClickListener((View v) -> this.startActionMode());
 
         if (isLast)
-            tv.setOnClickListener(new ExClickListener(res.getId()));
+        {
+            ExClickListener listener = new ExClickListener(res.getId() );
+            tvDate.setOnClickListener(listener);
+            tvPercent.setOnClickListener(listener);
+            tvCount.setOnClickListener(listener);
+        }
 
         return tr;
     }

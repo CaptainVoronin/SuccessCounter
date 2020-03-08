@@ -38,4 +38,7 @@ public interface IExercise
     boolean hasSummaryStep();
 
     boolean isMinOrMax( int index, float value );
+
+    String getComment();
+    void setComment( String comment );
 }

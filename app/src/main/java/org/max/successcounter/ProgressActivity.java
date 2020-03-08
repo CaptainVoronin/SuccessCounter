@@ -46,7 +46,7 @@ import androidx.appcompat.app.AppCompatActivity;
 // TODO: Увелить шрифт в таблице результатов
 // TODO: Кнопка "История" не в дугу
 // TODO: Сделать анимацию при выводе деталей упражнения
-
+// TODO: При пустых результатах дурацкие дажы в
 public class ProgressActivity extends AppCompatActivity
 {
     public final static String TEMPLATE_ID = "TEMPLATE_ID";
@@ -85,6 +85,8 @@ public class ProgressActivity extends AppCompatActivity
             currentFilter = new ZeroFilter();
             startDate = getMinDate();
             endDate = getMaxDate();
+            if( startDate == null )
+                startDate = endDate = Calendar.getInstance().getTime();
 
             makeToolbar();
 
@@ -104,8 +106,8 @@ public class ProgressActivity extends AppCompatActivity
             fillStats();
             setTitle(template.getName());
 
-            tv = findViewById( R.id.tvComment );
-            tv.setOnClickListener( (View v ) -> showComment( v ) );
+            tv = findViewById(R.id.tvComment);
+            tv.setOnClickListener((View v) -> showComment(v));
 
         } catch (SQLException e)
         {
@@ -115,14 +117,14 @@ public class ProgressActivity extends AppCompatActivity
 
     private void showComment(View v)
     {
-        TextView tv = ( TextView ) v ;
+        TextView tv = (TextView) v;
         String text = tv.getText().toString();
 
-        if( text == null || text.length() == 0 )
+        if (text == null || text.length() == 0)
             return;
 
         AlertDialog.Builder dlg = new AlertDialog.Builder(this);
-        dlg.setMessage( text ).setNegativeButton( android.R.string.cancel, ( d, id) -> d.dismiss() ).show();
+        dlg.setMessage(text).setNegativeButton(android.R.string.cancel, (d, id) -> d.dismiss()).show();
     }
 
     private void readResultsFromDB() throws SQLException
@@ -255,7 +257,7 @@ public class ProgressActivity extends AppCompatActivity
         items.forEach(item -> {
             Entry e = new Entry((float) i.incrementAndGet(), new Float(item.getPercent()));
             e.setData(item);
-            exes.add( e );
+            exes.add(e);
         });
 
         mChart.clear();
@@ -305,7 +307,7 @@ public class ProgressActivity extends AppCompatActivity
             @Override
             public void onValueSelected(Entry e, Highlight h)
             {
-                onSelectValue( e, h );
+                onSelectValue(e, h);
             }
 
             @Override
@@ -334,47 +336,47 @@ public class ProgressActivity extends AppCompatActivity
 
     private void deselectValue()
     {
-        TextView tv = findViewById( R.id.tvResultDate );
-        tv.setText( getString( R.string.txtExerciseNotSelected ) );
+        TextView tv = findViewById(R.id.tvResultDate);
+        tv.setText(getString(R.string.txtExerciseNotSelected));
 
-        tv = findViewById( R.id.tvPercent);
-        tv.setText( "" );
+        tv = findViewById(R.id.tvPercent);
+        tv.setText("");
 
-        tv = findViewById( R.id.tvPoints );
-        tv.setText( "" );
+        tv = findViewById(R.id.tvPoints);
+        tv.setText("");
 
-        tv = findViewById( R.id.tvAttempts );
-        tv.setText( "" );
+        tv = findViewById(R.id.tvAttempts);
+        tv.setText("");
     }
 
     private void onSelectValue(Entry e, Highlight h)
     {
         Object o = e.getData();
-        if( o == null )
+        if (o == null)
             return;
-        Result res = ( Result ) o;
+        Result res = (Result) o;
 
-        showResultDetails( res );
+        showResultDetails(res);
     }
 
     private void showResultDetails(Result res)
     {
-        SimpleDateFormat sdf = new SimpleDateFormat( "dd MMMM yyyy" );
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
 
-        TextView tv = findViewById( R.id.tvResultDate );
-        tv.setText( sdf.format( res.getDate() ) );
+        TextView tv = findViewById(R.id.tvResultDate);
+        tv.setText(sdf.format(res.getDate()));
 
-        tv = findViewById( R.id.tvPercent);
-        tv.setText( Result.getPercentString( res ));
+        tv = findViewById(R.id.tvPercent);
+        tv.setText(Result.getPercentString(res));
 
-        tv = findViewById( R.id.tvPoints );
-        tv.setText( res.getPoints().toString() );
+        tv = findViewById(R.id.tvPoints);
+        tv.setText(res.getPoints().toString());
 
-        tv = findViewById( R.id.tvAttempts );
-        tv.setText( res.getShots().toString() );
+        tv = findViewById(R.id.tvAttempts);
+        tv.setText(res.getShots().toString());
 
-        tv = findViewById( R.id.tvComment );
-        tv.setText( res.getComment() );
+        tv = findViewById(R.id.tvComment);
+        tv.setText(res.getComment());
     }
 
     private void gotoExercise()

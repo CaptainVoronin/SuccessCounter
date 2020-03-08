@@ -2,6 +2,7 @@ package org.max.successcounter.model.excercise;
 
 import com.github.mikephil.charting.data.Entry;
 
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,9 @@ public abstract class AExercise implements IExercise
 
     @Getter @Setter
     long duration;
+
+    @Getter @Setter
+    String comment;
 
     public AExercise()
     {
@@ -133,6 +137,7 @@ public abstract class AExercise implements IExercise
         result.setShots(getAttemptsCount());
         result.setPercent(steps.get(steps.size() - 1).getPercent());
         result.setPoints(getTotalPoints());
+        result.setComment( getComment() );
 
         return result;
     }

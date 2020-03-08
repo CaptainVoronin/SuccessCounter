@@ -1,8 +1,11 @@
 package org.max.successcounter;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,10 +31,10 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
     private TextView lbExName;
 
     private ImageButton btnRollback;
-    private View mContentView;
     private T exercise;
     private Dao<Result, Integer> daoResult;
     private ImageButton btnBack;
+    private EditText edCommentInDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -41,14 +44,7 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
         setContentView( R.layout.aexercise_layout );
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        mContentView = findViewById(R.id.fullscreen_content);
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        setFullScreenMode();
 
         db = new DatabaseHelper(this);
 
@@ -58,6 +54,9 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
             prepareControls();
             loadHistory();
             setTitle( getExercise().getName() );
+            ImageButton btnComment = findViewById( R.id.btnComment );
+            btnComment.setOnClickListener( v-> showCommentDialog() );
+
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -251,4 +250,60 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
 
     }
 
+    /**
+     * It shows the dialog with the exercise comment
+     * and the user can edit this comment
+     */
+    protected void showCommentDialog()
+    {
+        LayoutInflater li = LayoutInflater.from(getApplicationContext());
+        View commentView = li.inflate(R.layout.comment_dialog, null);
+        AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+        dlg.setView( commentView );
+        edCommentInDialog = commentView.findViewById( R.id.edComment );
+        edCommentInDialog.setText( exercise.getComment() );
+        dlg.setNegativeButton( android.R.string.cancel, (d, id) -> { d.cancel(); setFullScreenMode(); }).
+                setPositiveButton( android.R.string.ok, (d, id)->{
+            exercise.setComment( edCommentInDialog.getText().toString() );
+            d.dismiss();
+            saveComment();
+            setFullScreenMode();
+        }).show();
+    }
+
+    /**
+     * It sets the fullscreen mode
+     */
+    private void setFullScreenMode()
+    {
+        View mContentView;
+        mContentView = findViewById(R.id.fullscreen_content);
+        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
+    }
+
+    /**
+     * The function saves the comment. It does it only if
+     * the result hab been saved ere this moment. Unless that happened
+     * the comment will be saved with the fist shot in the exercise.
+     */
+    protected void saveComment()
+    {
+        if( exercise.getAttemptsCount() == 0 )
+            return;
+
+        Result res = exercise.getResult();
+        try
+        {
+            daoResult.createOrUpdate( res );
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }
