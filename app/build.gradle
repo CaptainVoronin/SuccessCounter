@@ -1,3 +1,4 @@
+
 apply plugin: 'com.android.application'
 
 android {
@@ -21,7 +22,8 @@ android {
     }
 
     def versionArray = incrementBuild()
-    writeVersionClassFile(versionArray)
+    def fileName = writeVersionClassFile(versionArray)
+    commitFile( fileName, versionArray )
 
     def verName = versionArray[0].toString() + '.' + versionArray[1] + '.' + versionArray[2]
 
@@ -62,9 +64,9 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
     compileOnly "org.projectlombok:lombok:1.18.10"
+    compileOnly 'org.ajoberstar.grgit:grgit-core:4.0.1'
 
     implementation group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.1'
     implementation group: 'com.j256.ormlite', name: 'ormlite-core', version: '5.1'
@@ -116,7 +118,17 @@ def writeVersionClassFile(verArray) {
     buff = buff.replaceAll('MINOR\\s*=\\s*\\d+\\s*;', 'MINOR=' + verArray[1].toString() + ';')
     buff = buff.replaceAll('BUILD\\s*=\\s*\\d+\\s*;', 'BUILD=' + verArray[2].toString() + ';')
     buff = buff.replaceAll('BUILD_DATE=\\"[a-zA-Z0-9\\s]+\\";', 'BUILD_DATE=\"' + verArray[3].toString() + '\";')
-
     versionClassFile.write(buff);
+    return fileName
+}
 
+def commitFile( fileName, versionArray )
+{
+    grgit.add( patterns: [ fileName ] )
+    grgit.commit(message: 'Version ' + versionToString( versionArray ) + ' file commited')
+}
+
+def versionToString( versionArray )
+{
+    return versionArray[0] + '.' + versionArray[1] + '.' + versionArray[2]
 }
