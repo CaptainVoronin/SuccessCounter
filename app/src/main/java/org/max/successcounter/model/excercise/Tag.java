@@ -12,8 +12,17 @@ public class Tag
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     Integer id;
 
-    @DatabaseField ( unique = true, canBeNull = false, columnDefinition = "VARCHAR NOT NULL" )
+    @DatabaseField ( unique = true, canBeNull = false, columnDefinition = "VARCHAR NOT NULL UNIQUE" )
     String tag;
+
+    public Tag( String tag )
+    {
+        this.tag = tag;
+    }
+
+    public Tag(  )
+    {
+    }
 
     @Override
     public boolean equals( Object o )
