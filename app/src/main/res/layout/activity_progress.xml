@@ -6,8 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".ProgressActivity">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/stdtoobar"/>
+    <include
+        android:id="@+id/stdtoobar"
+        layout="@layout/toolbar" />
 
     <LinearLayout
         android:id="@+id/layoutDates"
@@ -18,25 +19,44 @@
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/stdtoobar">
 
+        <ImageView
+            android:id="@+id/btnStartDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5pt"
+            app:srcCompat="@drawable/ic_date_range_black_18dp" />
+
         <TextView
-            android:id="@+id/tvDateStart"
+            android:id="@+id/tvStartDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10pt"
-            android:background="@drawable/dashed_border"
             android:gravity="center"
             android:text="12 junuary 2020"
             android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/tvDateEnd"
+        <ImageView
+            android:id="@+id/btnEndDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10pt"
-            android:background="@drawable/dashed_border"
+            android:layout_marginRight="5pt"
+            app:srcCompat="@drawable/ic_date_range_black_18dp" />
+
+        <TextView
+            android:id="@+id/tvEndDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:text="34 junuary 2020"
             android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/btnSetTagFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            app:srcCompat="@drawable/ic_filter_list_gray_36dp" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -137,7 +157,7 @@
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/tvComment"
@@ -146,6 +166,12 @@
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:singleLine="true" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
             </TableRow>
         </TableLayout>
 
@@ -224,18 +250,13 @@
             </TableRow>
         </TableLayout>
 
-        <TextView
-            android:id="@+id/lbHistory"
-            android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/btnHistory"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10pt"
-            android:layout_marginBottom="10pt"
-            android:background="@drawable/dashed_border"
-            android:gravity="center_horizontal|center_vertical"
-            android:textAlignment="center"
-            android:textSize="11pt"
-            android:text="@string/txtButtonHistoryTitle" />
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            app:srcCompat="@drawable/ic_history_black_48dp" />
 
     </LinearLayout>
 
@@ -243,12 +264,12 @@
         android:id="@+id/btnAddNew"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
         android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
         android:clickable="true"
+        app:backgroundTint="@color/dark_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:backgroundTint="@color/dark_blue"
         app:srcCompat="@android:drawable/ic_menu_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
