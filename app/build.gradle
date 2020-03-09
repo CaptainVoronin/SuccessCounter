@@ -73,6 +73,7 @@ dependencies {
     implementation 'com.mysugr.MPAndroidChart:MPAndroidChart:3.1.0-mysugr-1'
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
     implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.17'
+    implementation 'org.jetbrains:annotations:15.0'
 }
 
 def incrementBuild() {
@@ -125,7 +126,7 @@ def writeVersionClassFile(verArray) {
 def commitFile( fileName, versionArray )
 {
     grgit.add( patterns: [ fileName ] )
-    grgit.commit(message: 'Version ' + versionToString( versionArray ) + ' file commited')
+    grgit.commit(message: 'Version ' + versionToString( versionArray ) + ' class file is commited\n')
 }
 
 def versionToString( versionArray )
