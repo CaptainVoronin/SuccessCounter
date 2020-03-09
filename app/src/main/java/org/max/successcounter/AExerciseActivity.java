@@ -7,21 +7,29 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.j256.ormlite.dao.Dao;
+
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.HistoryOperator;
+import org.max.successcounter.model.TagsOperator;
 import org.max.successcounter.model.excercise.ExerciseFactory;
-import org.max.successcounter.model.excercise.Result;
-import org.max.successcounter.model.excercise.Template;
 import org.max.successcounter.model.excercise.IExercise;
 import org.max.successcounter.model.excercise.IStep;
+import org.max.successcounter.model.excercise.Result;
+import org.max.successcounter.model.excercise.Tag;
+import org.max.successcounter.model.excercise.Template;
+
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-public abstract class AExerciseActivity<T extends IExercise> extends AppCompatActivity implements IExerciseForm<T>
+public abstract class AExerciseActivity<T extends IExercise> extends AppCompatActivity implements IExerciseForm<T>, DialogTags.DialogTagsResultListener
 {
     public final static String RESULT_ID = "RESULT_ID";
 
@@ -30,7 +38,9 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
     private TextView lbAttempts;
     private TextView lbExName;
 
-    private ImageButton btnRollback;
+    private ImageView btnRollback;
+    private ImageView btnComment;
+    private ImageView btnShowTagsDialog;
     private T exercise;
     private Dao<Result, Integer> daoResult;
     private ImageButton btnBack;
@@ -41,7 +51,7 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
     {
         super.onCreate(savedInstanceState);
 
-        setContentView( R.layout.aexercise_layout );
+        setContentView(R.layout.aexercise_layout);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setFullScreenMode();
@@ -50,13 +60,11 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
 
         try
         {
+            TagsOperator.instance.init(getDb());
             loadTemplate();
             prepareControls();
             loadHistory();
-            setTitle( getExercise().getName() );
-            ImageButton btnComment = findViewById( R.id.btnComment );
-            btnComment.setOnClickListener( v-> showCommentDialog() );
-
+            setTitle(getExercise().getName());
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -71,7 +79,7 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
         lbAttempts = findViewById(R.id.lbAttempts);
         lbExName = findViewById(R.id.tvExName);
 
-        lbExName.setText( getExercise().getName()  );
+        lbExName.setText(getExercise().getName());
         btnRollback = findViewById(R.id.btnRollback);
         btnRollback.setOnClickListener(e -> {
             undo();
@@ -80,7 +88,7 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
         });
         btnRollback.setEnabled(false);
 
-        btnBack = findViewById( R.id.btnBack );
+        btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -90,11 +98,39 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
             }
         });
 
-        LinearLayout ll = findViewById( R.id.viewChartPlaceholder );
-        prepareChart( ll );
+        LinearLayout ll = findViewById(R.id.viewChartPlaceholder);
+        prepareChart(ll);
 
-        ll = findViewById( R.id.buttonsPlaceholder );
-        prepareControlButtons( ll );
+        ll = findViewById(R.id.buttonsPlaceholder);
+        prepareControlButtons(ll);
+
+        btnComment = findViewById(R.id.btnComment);
+        btnComment.setOnClickListener(v -> showCommentDialog());
+        btnComment.setEnabled( false );
+
+        btnShowTagsDialog = findViewById(R.id.btnExerciseTags);
+        btnShowTagsDialog.setOnClickListener(v -> showTagsDialog());
+        btnShowTagsDialog.setEnabled( false );
+    }
+
+    /**
+     * Show dialog with exercise tags
+     */
+    private void showTagsDialog()
+    {
+        try
+        {
+            List<Tag> tags = null;
+            DialogTags dlg = new DialogTags(this, TagsOperator.instance.instance, this, true);
+            if (exercise.getAttemptsCount() != 0)
+                tags = exercise.getResult().getTags();
+
+            dlg.showDialog(tags);
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     protected abstract void prepareChart(LinearLayout placeholder);
@@ -103,10 +139,10 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
 
     protected void addStep(int points)
     {
-        getExercise().addStepByPoints( points );
-        saveResult( );
+        getExercise().addStepByPoints(points);
+        saveResult();
         updateUIResults();
-        if( getExercise().isFinished() )
+        if (getExercise().isFinished())
         {
             onExerciseFinished();
         }
@@ -117,13 +153,11 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
         try
         {
             Result res = exercise.getResult();
-            daoResult.createOrUpdate( res );
+            daoResult.createOrUpdate(res);
             List<IStep> steps = getExercise().getSteps();
-            HistoryOperator.instance.saveStep( steps.get( steps.size() - 1 ) );
-
-            btnRollback.setEnabled(getExercise().getSteps().size() != 0);
-            setResult(RESULT_OK);
-        } catch ( Exception e)
+            HistoryOperator.instance.saveStep(steps.get(steps.size() - 1));
+            onResultSaved();
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -131,43 +165,42 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
 
     protected void updateUIResults()
     {
-        lbPercent.setText( getEfficiencyString() );
-        lbAttempts.setText( getAttemptsString() );
+        lbPercent.setText(getEfficiencyString());
+        lbAttempts.setText(getAttemptsString());
         updateChart();
     }
 
     protected void loadTemplate() throws SQLException
     {
-        Integer templateID = getIntent().getIntExtra( ProgressActivity.TEMPLATE_ID, -1);
+        Integer templateID = getIntent().getIntExtra(ProgressActivity.TEMPLATE_ID, -1);
 
         if (templateID == -1)
             throw new IllegalArgumentException("Exercise result id is missing");
 
         // Load the exercise template
-        Template et = getTemplate( templateID );
+        Template et = getTemplate(templateID);
 
         // Make an exercise instance
-        T ex = ( T ) ExerciseFactory.instance.makeExercise( et );
-        ex.setTemplate( et );
-        setExerсise( ex );
+        T ex = (T) ExerciseFactory.instance.makeExercise(et);
+        ex.setTemplate(et);
+        setExerсise(ex);
     }
 
     protected void loadHistory() throws SQLException
     {
-        HistoryOperator.instance.init( getDb(), getExercise() );
+        HistoryOperator.instance.init(getDb(), getExercise());
 
         // Check if it is the continue of an exercise
-        Integer id = getIntent().getIntExtra( AExerciseActivity.RESULT_ID, -1);
-        daoResult = getDao( Result.class, getDb() );
+        Integer id = getIntent().getIntExtra(AExerciseActivity.RESULT_ID, -1);
+        daoResult = getDao(Result.class, getDb());
 
         // Yes, it is the continue
-        if( id != -1 )
+        if (id != -1)
         {
             List<IStep> steps = HistoryOperator.instance.getHistory();
-            getExercise().setSteps( steps );
+            getExercise().setSteps(steps);
             updateUIResults();
-        }
-        else
+        } else
         {
             // This is the new exercise,
             // so the the old history must be deleted
@@ -185,12 +218,11 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
         try
         {
             IStep step = getExercise().undo();
-            if( step != null )
+            if (step != null)
                 HistoryOperator.instance.deleteStep(step);
 
-            btnRollback.setEnabled( getExercise().getSteps().size() != 0);
-        }
-        catch (SQLException e)
+            btnRollback.setEnabled(getExercise().getSteps().size() != 0);
+        } catch (SQLException e)
         {
             e.printStackTrace();
         }
@@ -199,11 +231,11 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
     @Override
     public <T> Dao<T, Integer> getDao(Class<T> exerciseClass, DatabaseHelper db) throws SQLException
     {
-        return db.getDao( exerciseClass );
+        return db.getDao(exerciseClass);
     }
 
     @Override
-    public void setExerсise( T exercise )
+    public void setExerсise(T exercise)
     {
         this.exercise = exercise;
     }
@@ -216,12 +248,12 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
 
     protected abstract void updateChart();
 
-    private Template getTemplate(Integer id ) throws SQLException
+    private Template getTemplate(Integer id) throws SQLException
     {
-        Dao<Template, Integer> d = getDb().getDao( Template.class );
-        Template et = d.queryForId( id );
-        et.setMissOptionName( getString( R.string.missOptionName ) );
-        et.setSuccessOptionName( getString( R.string.successOptionName ) );
+        Dao<Template, Integer> d = getDb().getDao(Template.class);
+        Template et = d.queryForId(id);
+        et.setMissOptionName(getString(R.string.missOptionName));
+        et.setSuccessOptionName(getString(R.string.successOptionName));
         return et;
     }
 
@@ -231,8 +263,8 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
         String buff;
         List<IStep> steps = getExercise().getSteps();
 
-        if( steps.size() != 0 )
-            buff = Result.getPercentString( steps.get( steps.size() - 1 ).getPercent() );
+        if (steps.size() != 0)
+            buff = Result.getPercentString(steps.get(steps.size() - 1).getPercent());
         else
             buff = "0.0%";
 
@@ -259,16 +291,19 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
         LayoutInflater li = LayoutInflater.from(getApplicationContext());
         View commentView = li.inflate(R.layout.comment_dialog, null);
         AlertDialog.Builder dlg = new AlertDialog.Builder(this);
-        dlg.setView( commentView );
-        edCommentInDialog = commentView.findViewById( R.id.edComment );
-        edCommentInDialog.setText( exercise.getComment() );
-        dlg.setNegativeButton( android.R.string.cancel, (d, id) -> { d.cancel(); setFullScreenMode(); }).
-                setPositiveButton( android.R.string.ok, (d, id)->{
-            exercise.setComment( edCommentInDialog.getText().toString() );
-            d.dismiss();
-            saveComment();
+        dlg.setView(commentView);
+        edCommentInDialog = commentView.findViewById(R.id.edComment);
+        edCommentInDialog.setText(exercise.getComment());
+        dlg.setNegativeButton(android.R.string.cancel, (d, id) -> {
+            d.cancel();
             setFullScreenMode();
-        }).show();
+        }).
+                setPositiveButton(android.R.string.ok, (d, id) -> {
+                    exercise.setComment(edCommentInDialog.getText().toString());
+                    d.dismiss();
+                    saveComment();
+                    setFullScreenMode();
+                }).show();
     }
 
     /**
@@ -294,16 +329,80 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
      */
     protected void saveComment()
     {
-        if( exercise.getAttemptsCount() == 0 )
+        if (exercise.getAttemptsCount() == 0)
             return;
 
         Result res = exercise.getResult();
         try
         {
-            daoResult.createOrUpdate( res );
+            daoResult.createOrUpdate(res);
         } catch (SQLException e)
         {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * It's callback for the tags dialog
+     *
+     * @param result  - true if user pressed OK
+     * @param checked - list of selected tags
+     */
+    public void onResult(boolean result, List<Tag> checked)
+    {
+        setFullScreenMode();
+
+        if (!result)
+            return;
+
+        // Count tags to delete
+        long cnt = exercise.getResult().getTags().stream().filter( tag -> !checked.contains( tag ) ).count();
+
+        // Set the new tag set
+        exercise.getResult().setTags(checked);
+
+        try
+        {
+            saveTags();
+
+            // If there something must be deleted, delete
+            if( cnt != 0 )
+                TagsOperator.instance.deleteUnusedTags();
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This function saves the tags but only if the exercise result has been saved before.
+     * Otherwise tags will be saved after the first saving if the result
+     *
+     * @throws SQLException
+     */
+    private void saveTags() throws SQLException
+    {
+        int inserted = TagsOperator.instance.setTagsForResult(exercise.getResult());
+        if (inserted != exercise.getResult().getTags().size())
+            throw new SQLException("Not all tags were inserted");
+    }
+
+    public void onResultSaved()
+    {
+        btnRollback.setEnabled( true );
+
+        if( !btnComment.isEnabled() )
+        {
+            btnComment.setEnabled( true );
+            btnComment.setImageDrawable( getDrawable(R.drawable.ic_note_add_orange_18dp ) );
+        }
+
+        if( !btnShowTagsDialog.isEnabled() )
+        {
+            btnShowTagsDialog.setEnabled(true);
+            btnShowTagsDialog.setImageDrawable( getDrawable( R.drawable.ic_label_outline_orange_36dp) );
+        }
+        setResult(RESULT_OK);
     }
 }

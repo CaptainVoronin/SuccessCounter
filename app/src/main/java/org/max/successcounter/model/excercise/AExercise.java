@@ -135,7 +135,11 @@ public abstract class AExercise implements IExercise
         }
 
         result.setShots(getAttemptsCount());
-        result.setPercent(steps.get(steps.size() - 1).getPercent());
+        if( steps.size() != 0)
+            result.setPercent(steps.get(steps.size() - 1).getPercent());
+        else
+            result.setPercent(0f);
+
         result.setPoints(getTotalPoints());
         result.setComment( getComment() );
 

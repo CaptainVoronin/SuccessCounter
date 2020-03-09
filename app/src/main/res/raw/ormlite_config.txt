@@ -1,5 +1,5 @@
 #
-# generated on 2020/03/07 12:02:36
+# generated on 2020/03/08 11:52:31
 #
 # --table-start--
 dataClass=org.max.successcounter.model.excercise.Result
@@ -31,6 +31,9 @@ fieldName=points
 # --field-end--
 # --field-start--
 fieldName=comment
+# --field-end--
+# --field-start--
+fieldName=duration
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -121,6 +124,46 @@ columnName=parent_id
 canBeNull=false
 foreign=true
 columnDefinition=INTEGER REFERENCES template(id) ON DELETE CASCADE
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=org.max.successcounter.model.excercise.Tag
+tableName=tags
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+allowGeneratedIdInsert=true
+# --field-end--
+# --field-start--
+fieldName=tag
+canBeNull=false
+unique=true
+columnDefinition=VARCHAR NOT NULL UNIQUE
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=org.max.successcounter.model.excercise.ResultTags
+tableName=result_tags
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+allowGeneratedIdInsert=true
+# --field-end--
+# --field-start--
+fieldName=resultID
+canBeNull=false
+columnDefinition=INTEGER NOT NULL REFERENCES result( id ) ON DELETE CASCADE
+# --field-end--
+# --field-start--
+fieldName=tagID
+canBeNull=false
+columnDefinition=INTEGER NOT NULL REFERENCES tags( id ) ON DELETE CASCADE
 # --field-end--
 # --table-fields-end--
 # --table-end--

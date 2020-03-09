@@ -21,6 +21,7 @@ import com.j256.ormlite.dao.ForeignCollection;
 
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.excercise.Result;
+import org.max.successcounter.model.excercise.Tag;
 import org.max.successcounter.model.excercise.Template;
 
 import java.sql.SQLException;
@@ -64,7 +65,8 @@ public class MainActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-
+        // TODO : Delet after debug tags
+        //insertTags();
         btnPlus.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -74,6 +76,32 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(in, ActivityIDs.NEW_TEMPLATE_ACTIVITY_ID);
             }
         });
+    }
+
+    private void insertTags()
+    {
+        try
+        {
+            Dao<Tag, Integer> tagDao = dbHelper.getDao( Tag.class );
+            Tag t = new Tag( "Baza");
+            tagDao.create( t );
+            t = new Tag( "Abricol");
+            tagDao.create( t );
+            t = new Tag( "Empire");
+            tagDao.create( t );
+            t = new Tag( "narrow pockets");
+            tagDao.create( t );
+            t = new Tag( "wide pockets");
+            tagDao.create( t );
+            t = new Tag( "closed bridge");
+            tagDao.create( t );
+            t = new Tag( "open bridge");
+            tagDao.create( t );
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void fillList() throws SQLException

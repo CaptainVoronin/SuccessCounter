@@ -41,4 +41,7 @@
     <string name="titleDeleteDialog">Удаление</string>
     <string name="txtDeleteResults">Подтвердите удаление результатов упражнения</string>
     <string name="title_activity_about">О программе</string>
+    <string name="defaultTagDialogTitle">Тэги</string>
+    <string name="title_dialog_tag_filter">Фильтр по тэгам</string>
+    <string name="title_dialog_result_tags">Тэги результата</string>
 </resources>

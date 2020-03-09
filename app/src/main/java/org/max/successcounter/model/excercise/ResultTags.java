@@ -17,4 +17,15 @@ public class ResultTags
 
     @DatabaseField ( canBeNull = false, columnDefinition = "INTEGER NOT NULL REFERENCES tags( id ) ON DELETE CASCADE")
     Integer tagID;
+
+    public ResultTags(Integer resultID, Integer tagID)
+    {
+        this.resultID = resultID;
+        this.tagID = tagID;
+    }
+
+    public ResultTags()
+    {
+    }
+
 }

@@ -27,9 +27,6 @@ public class Tag
     @Override
     public boolean equals( Object o )
     {
-        if( o == null )
-            return false;
-
         if( !( o instanceof Tag ))
             return false;
 
@@ -38,6 +35,6 @@ public class Tag
         if( name == null )
             return false;
 
-        return name.equals( tag );
+        return name.toLowerCase().equals( tag.toLowerCase() );
     }
 }

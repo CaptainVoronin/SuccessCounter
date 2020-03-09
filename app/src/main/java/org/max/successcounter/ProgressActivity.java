@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -23,8 +24,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.j256.ormlite.dao.Dao;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.jetbrains.annotations.NotNull;
 import org.max.successcounter.db.DatabaseHelper;
+import org.max.successcounter.model.TagsOperator;
 import org.max.successcounter.model.excercise.Result;
+import org.max.successcounter.model.excercise.Tag;
 import org.max.successcounter.model.excercise.Template;
 
 import java.sql.SQLException;
@@ -33,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,29 +47,35 @@ import java.util.stream.Collectors;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import lombok.Setter;
 
 // TODO: Увелить шрифт в таблице результатов
-// TODO: Кнопка "История" не в дугу
-// TODO: Сделать анимацию при выводе деталей упражнения
-// TODO: При пустых результатах дурацкие дажы в
-public class ProgressActivity extends AppCompatActivity
+
+public class ProgressActivity extends AppCompatActivity implements DialogTags.DialogTagsResultListener
 {
+    public static final String DateFilterID = "DATEFILTER";
+    public static final String TagFilterID = "TAGFILTER";
+
     public final static String TEMPLATE_ID = "TEMPLATE_ID";
     Integer templateId;
     LineChart mChart;
     Dao<Template, Integer> exsetDao;
+    Dao<Tag, Integer> tagsDao;
     Template template;
     SharedPreferences mPrefs;
     List<Result> results;
-    Predicate<Result> currentFilter;
+    MultiFilter currentFilter;
     Date startDate;
     Date endDate;
+    Result currentResult;
+    List<Tag> tagFilterSet;
+    List<Tag> currentFilterTagSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exercise_progress);
+        setContentView(R.layout.activity_progress);
         mPrefs = getPreferences(Context.MODE_PRIVATE);
         DatabaseHelper db = new DatabaseHelper(this);
         try
@@ -79,14 +90,25 @@ public class ProgressActivity extends AppCompatActivity
                     throw new IllegalArgumentException();
             }
 
+            TagsOperator.instance.init(db);
+
             exsetDao = db.getDao(Template.class);
             readResultsFromDB();
 
-            currentFilter = new ZeroFilter();
-            startDate = getMinDate();
-            endDate = getMaxDate();
-            if( startDate == null )
+            tagsDao = db.getDao(Tag.class);
+            tagFilterSet = new ArrayList<>();
+            currentFilter = new MultiFilter();
+
+            if (results.size() != 0)
+            {
+                startDate = getMinDate();
+                endDate = getMaxDate();
+            } else
                 startDate = endDate = Calendar.getInstance().getTime();
+            DateIntervalFilter filter = new DateIntervalFilter();
+            filter.setStart(startDate);
+            filter.setEnd(endDate);
+            currentFilter.addFilter(DateFilterID, filter);
 
             makeToolbar();
 
@@ -95,10 +117,17 @@ public class ProgressActivity extends AppCompatActivity
                 gotoExercise();
             });
 
-            TextView tv = findViewById(R.id.lbHistory);
-            tv.setOnClickListener(e -> {
+            ImageView ibtn = findViewById(R.id.btnHistory);
+            ibtn.setOnClickListener(e -> {
                 gotoHistory();
             });
+
+            ibtn = findViewById(R.id.btnSetTagFilter);
+            ibtn.setOnClickListener(v -> showTagsDialogForFilter());
+
+            ibtn = findViewById(R.id.btnResultTags );
+            ibtn.setEnabled( false );
+            ibtn.setOnClickListener(v -> showTagsDialogForResultTags());
 
             prepareChart();
             fillChart();
@@ -106,8 +135,39 @@ public class ProgressActivity extends AppCompatActivity
             fillStats();
             setTitle(template.getName());
 
-            tv = findViewById(R.id.tvComment);
+            TextView tv = findViewById(R.id.tvComment);
             tv.setOnClickListener((View v) -> showComment(v));
+
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void showTagsDialogForFilter()
+    {
+        try
+        {
+            DialogTags dlgTags = new DialogTags(this, TagsOperator.instance, this, false);
+            dlgTags.setTitle( getString( R.string.title_dialog_tag_filter ) );
+            dlgTags.showDialog(currentFilterTagSet);
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void showTagsDialogForResultTags()
+    {
+        try
+        {
+            if( currentResult == null )
+                return;
+
+            DialogTags dlgTags = new DialogTags(this, TagsOperator.instance, new ResultTagsDialogListener(), true);
+            dlgTags.setTitle( getString( R.string.title_dialog_result_tags ) );
+            dlgTags.showDialog(currentResult.getTags());
 
         } catch (SQLException e)
         {
@@ -132,6 +192,14 @@ public class ProgressActivity extends AppCompatActivity
         results = new ArrayList<>();
         template = exsetDao.queryForId(templateId);
         results.addAll(template.getResults());
+        for (Result res : results)
+            setTagsFoResult(res);
+    }
+
+    private void setTagsFoResult(Result result) throws SQLException
+    {
+        List<Tag> tags = TagsOperator.instance.getTagsForResult(result);
+        result.setTags(tags);
     }
 
     private void fillStats()
@@ -155,19 +223,23 @@ public class ProgressActivity extends AppCompatActivity
         tv = findViewById(R.id.lbTotalShots);
         tv.setText("" + count);
 
-        tv = findViewById(R.id.tvDateStart);
-
+        ImageView btn = findViewById(R.id.btnStartDate);
         if (startDate != null)
+        {
+            tv = findViewById(R.id.tvStartDate);
             tv.setText(dt.format(startDate));
+        }
+        btn.setOnClickListener((View v) -> setDateStart());
 
-        tv.setOnClickListener((View v) -> setDateStart());
-
-        tv = findViewById(R.id.tvDateEnd);
+        btn = findViewById(R.id.btnEndDate);
 
         if (endDate != null)
+        {
+            tv = findViewById(R.id.tvEndDate);
             tv.setText(dt.format(endDate));
+        }
 
-        tv.setOnClickListener((View v) -> setDateEnd());
+        btn.setOnClickListener((View v) -> setDateEnd());
     }
 
     private void setDateEnd()
@@ -182,7 +254,7 @@ public class ProgressActivity extends AppCompatActivity
 
                 endDate = date;
                 SimpleDateFormat dt = new SimpleDateFormat("dd MMMM yyyy");
-                TextView tv = findViewById(R.id.tvDateEnd);
+                TextView tv = findViewById(R.id.tvEndDate);
                 tv.setText(dt.format(endDate));
                 applyDateFilter();
                 return null;
@@ -202,7 +274,7 @@ public class ProgressActivity extends AppCompatActivity
 
                 startDate = date;
                 SimpleDateFormat dt = new SimpleDateFormat("dd MMMM yyyy");
-                TextView tv = findViewById(R.id.tvDateStart);
+                TextView tv = findViewById(R.id.tvStartDate);
                 tv.setText(dt.format(startDate));
                 applyDateFilter();
                 return null;
@@ -215,7 +287,7 @@ public class ProgressActivity extends AppCompatActivity
         DateIntervalFilter f = new DateIntervalFilter();
         f.setStart(startDate);
         f.setEnd(endDate);
-        currentFilter = f;
+        currentFilter.addFilter(DateFilterID, f);
         fillChart();
     }
 
@@ -347,6 +419,14 @@ public class ProgressActivity extends AppCompatActivity
 
         tv = findViewById(R.id.tvAttempts);
         tv.setText("");
+
+        tv = findViewById(R.id.tvTags);
+        tv.setText("");
+
+        currentResult = null;
+        ImageView ibtn = findViewById(R.id.btnResultTags );
+        ibtn.setEnabled( false );
+
     }
 
     private void onSelectValue(Entry e, Highlight h)
@@ -354,9 +434,12 @@ public class ProgressActivity extends AppCompatActivity
         Object o = e.getData();
         if (o == null)
             return;
-        Result res = (Result) o;
+        currentResult = (Result) o;
 
-        showResultDetails(res);
+        ImageView ibtn = findViewById(R.id.btnResultTags );
+        ibtn.setEnabled( true );
+
+        showResultDetails(currentResult);
     }
 
     private void showResultDetails(Result res)
@@ -377,6 +460,14 @@ public class ProgressActivity extends AppCompatActivity
 
         tv = findViewById(R.id.tvComment);
         tv.setText(res.getComment());
+
+        tv = findViewById(R.id.tvTags);
+        if( res.getTags().size() != 0 )
+        {
+            List<String> names = res.getTags().stream().map(Tag::getTag).collect(Collectors.toList());
+            String buff = String.join(";", names);
+            tv.setText(buff);
+        }
     }
 
     private void gotoExercise()
@@ -508,14 +599,35 @@ public class ProgressActivity extends AppCompatActivity
         }
     }
 
-    class ZeroFilter implements Predicate<Result>
+    /**
+     * Callback fo DialogTags
+     *
+     * @param result
+     * @param checked
+     */
+    @Override
+    public void onResult(boolean result, List<Tag> checked)
     {
-
-        @Override
-        public boolean test(Result result)
+        if (result)
         {
-            return true;
+            currentFilterTagSet = new ArrayList<>();
+            currentFilterTagSet.addAll(checked);
+            setTagFilter(currentFilterTagSet);
+            ImageView ibtn = findViewById(R.id.btnSetTagFilter);
+
+            if (checked.size() != 0)
+                ibtn.setImageDrawable(getDrawable(R.drawable.ic_filter_list_green_36dp));
+            else
+                ibtn.setImageDrawable(getDrawable(R.drawable.ic_filter_list_gray_36dp));
         }
+    }
+
+    private void setTagFilter(List<Tag> checked)
+    {
+        TagFilter filter = new TagFilter();
+        filter.setTagSet(checked);
+        currentFilter.addFilter(TagFilterID, filter);
+        fillChart();
     }
 
     class DateIntervalFilter implements Predicate<Result>
@@ -537,6 +649,68 @@ public class ProgressActivity extends AppCompatActivity
         public void setEnd(Date end)
         {
             this.end = end;
+        }
+    }
+
+    class TagFilter implements Predicate<Result>
+    {
+        @Setter
+        @NotNull
+        List<Tag> tagSet;
+
+        public TagFilter()
+        {
+            tagSet = new ArrayList<>();
+        }
+
+        @Override
+        public boolean test(Result result)
+        {
+            if (tagSet.size() == 0)
+                return true;
+            else
+                return result.getTags().containsAll(tagSet);
+        }
+    }
+
+    class MultiFilter implements Predicate<Result>
+    {
+        HashMap<String, Predicate<Result>> filters;
+
+        public MultiFilter()
+        {
+            filters = new HashMap<>();
+        }
+
+        public void addFilter(String id, Predicate<Result> filter)
+        {
+            filters.put(id, filter);
+        }
+
+        public void removeFilter(String id)
+        {
+            filters.remove(id);
+        }
+
+        @Override
+        public boolean test(Result result)
+        {
+            for (Predicate<Result> filter : filters.values())
+            {
+                if (!filter.test(result))
+                    return false;
+            }
+            return true;
+        }
+    }
+
+    class ResultTagsDialogListener implements DialogTags.DialogTagsResultListener
+    {
+
+        @Override
+        public void onResult(boolean result, List<Tag> checked)
+        {
+
         }
     }
 }

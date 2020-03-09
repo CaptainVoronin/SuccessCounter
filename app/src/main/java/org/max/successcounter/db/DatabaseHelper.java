@@ -12,12 +12,14 @@ import org.max.successcounter.R;
 import org.max.successcounter.model.HistoryItem;
 import org.max.successcounter.model.excercise.OptionDescription;
 import org.max.successcounter.model.excercise.Result;
+import org.max.successcounter.model.excercise.ResultTags;
+import org.max.successcounter.model.excercise.Tag;
 import org.max.successcounter.model.excercise.Template;
 
 public final class DatabaseHelper extends OrmLiteSqliteOpenHelper
 {
     private static final String DATABASE_NAME = "scounter.db";
-    private static final int DATABASE_VERSION = 37;
+    private static final int DATABASE_VERSION = 40;
 
     public DatabaseHelper(Context context)
     {
@@ -40,6 +42,8 @@ public final class DatabaseHelper extends OrmLiteSqliteOpenHelper
             TableUtils.createTable(connectionSource, OptionDescription.class);
             TableUtils.createTable(connectionSource, Result.class);
             TableUtils.createTable(connectionSource, HistoryItem.class);
+            TableUtils.createTable(connectionSource, Tag.class);
+            TableUtils.createTable(connectionSource, ResultTags.class);
         } catch (java.sql.SQLException e)
         {
             Log.e(DatabaseHelper.class.getName(), "Unable to create databases", e);
@@ -63,6 +67,11 @@ public final class DatabaseHelper extends OrmLiteSqliteOpenHelper
             TableUtils.dropTable(connectionSource, HistoryItem.class, false);
             TableUtils.createTable(connectionSource, HistoryItem.class);
 
+            //TableUtils.dropTable(connectionSource, Tag.class, false);
+            TableUtils.createTable(connectionSource, Tag.class);
+
+            //TableUtils.dropTable(connectionSource, ResultTags.class, false);
+            TableUtils.createTable(connectionSource, ResultTags.class);
         } catch (java.sql.SQLException e)
         {
             Log.e(DatabaseHelper.class.getName(), "Unable to upgrade database from version " + oldVer + " to new "

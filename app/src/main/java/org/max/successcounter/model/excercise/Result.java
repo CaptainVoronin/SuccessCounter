@@ -4,8 +4,12 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -56,9 +60,13 @@ public class Result
     @DatabaseField
     Long duration;
 
+    @Getter @Setter
+    List<Tag> tags;
+
     public Result()
     {
         date = Calendar.getInstance().getTime();
+        tags = new ArrayList<>();
     }
 
     public static final String getPercentString(Result res)
