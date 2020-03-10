@@ -13,9 +13,15 @@ public class CompoundExcercise extends AExercise
     @Setter
     List<Option> options;
 
+    int maxShotPoints;
     int maxResult;
-    int attempts;
 
+    /**
+     * If fact, this option sets the logical operations
+     * which combines exercise outcomes AND  - several outcomes possible (the object ball pocketed
+     * and the cue ball is drawn to the rail, for instance). If the option set to false the only
+     * one from outcome is possible
+     */
     @Getter @Setter
     boolean hasSummaryStep;
 
@@ -24,8 +30,20 @@ public class CompoundExcercise extends AExercise
         super();
         options = new ArrayList<>();
         maxResult = -1;
-        attempts = 0;
         hasSummaryStep = true;
+        maxShotPoints = -1;
+    }
+
+    /**
+     * Set the maximum possible value points for one step
+     */
+    private void setMaxShotPoints()
+    {
+        // If the exercise has summary step it is the last step in the options list
+        if (hasSummaryStep)
+            maxShotPoints = options.get(options.size() - 1).getPoints();
+        else
+            maxShotPoints = (int) options.stream().collect(Collectors.maxBy((Option o1, Option o2) -> Integer.compare(o1.getPoints(), o2.getPoints()))).get().getPoints();
     }
 
     public void addOption( Option opt )
@@ -37,10 +55,8 @@ public class CompoundExcercise extends AExercise
     @Override
     public IStep addStepByPoints(Integer points)
     {
-        attempts++;
-        int max = getMaxPossiblePoints();
-        Float percent = 100f * ( points + getTotalPoints() ) / ( max * attempts );
-
+        incAttempts();
+        Float percent = 100f * (points + getTotalPoints()) / (getMaxPossiblePoints() * getAttempts());
         IStep step = new Step();
         step.setPercent( percent );
         step.setPoints( points );
@@ -50,15 +66,9 @@ public class CompoundExcercise extends AExercise
     }
 
     @Override
-    public int getMaxPossiblePoints()
-    {
-        return options.get( options.size() - 1 ).getPoints();
-    }
-
-    @Override
     public int getAttemptsCount()
     {
-        return attempts;
+        return getAttempts();
     }
 
     @Override
@@ -67,7 +77,7 @@ public class CompoundExcercise extends AExercise
         if( steps.size() == 0 )
             return null;
 
-        attempts--;
+        decAttempts();
         return super.undo();
     }
 
@@ -75,6 +85,14 @@ public class CompoundExcercise extends AExercise
     {
         long l = steps.stream().collect(Collectors.summarizingInt(IStep::getPoints)).getSum();
         return ( int ) l;
+    }
+
+    @Override
+    public int getMaxPossiblePoints()
+    {
+        if (maxShotPoints == -1)
+            setMaxShotPoints();
+        return maxShotPoints;
     }
 
     public static class Option{
