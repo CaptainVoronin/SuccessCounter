@@ -4,9 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.j256.ormlite.dao.Dao;
@@ -20,9 +17,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 public class NewCompoundActivity extends AppCompatActivity
 {
@@ -47,16 +42,16 @@ public class NewCompoundActivity extends AppCompatActivity
 
         template = new Template();
         template.setName(templateName);
-        String str = getString( R.string.missOptionName );
-        template.setMissOptionName( str );
-        str = getString( R.string.successOptionName );
-        template.setSuccessOptionName( str );
+        String str = getString(R.string.missOptionName);
+        template.setMissOptionName(str);
+        str = getString(R.string.successOptionName);
+        template.setSuccessOptionName(str);
 
         try
         {
             templateDao = db.getDao(Template.class);
             templateDao.assignEmptyForeignCollection(template, "options");
-            optionDao = db.getDao( OptionDescription.class );
+            optionDao = db.getDao(OptionDescription.class);
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -64,13 +59,13 @@ public class NewCompoundActivity extends AppCompatActivity
 
         prepareNewExercise();
 
-        outcomes = new ExerciseOutcomes( this, R.id.partsTable, template );
+        outcomes = new ExerciseOutcomes(this, R.id.partsTable, template);
         outcomes.makeTable();
 
         TextView tv = findViewById(R.id.lbName);
         tv.setText(templateName);
 
-        Button btnSave = findViewById( R.id.btnSave );
+        Button btnSave = findViewById(R.id.btnSave);
         btnSave.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -78,7 +73,7 @@ public class NewCompoundActivity extends AppCompatActivity
             {
                 save();
             }
-        } );
+        });
 
     }
 
@@ -90,18 +85,20 @@ public class NewCompoundActivity extends AppCompatActivity
 
     private void prepareNewExercise()
     {
-        template.setExType( Template.Type.compound );
+        template.setExType(Template.Type.compound);
         template.setLimited(false);
         template.setLimit(0);
 
         OptionDescription op = new OptionDescription();
         op.setDescription("Outcome 1");
         op.setPoints(1);
+        op.setOrderNum(0);
         template.addOption(op);
 
         op = new OptionDescription();
         op.setDescription("Outcome 2");
         op.setPoints(2);
+        op.setOrderNum(1);
         template.addOption(op);
     }
 
@@ -115,7 +112,7 @@ public class NewCompoundActivity extends AppCompatActivity
             // Because of that reason we remove all the options
             // from the template and save them in a list
             List<OptionDescription> ops = new ArrayList<>();
-            template.getOptions().stream().forEach( item -> ops.add( item ));
+            template.getOptions().stream().forEach(item -> ops.add(item));
             template.getOptions().clear();
 
             // Than the template is saved
@@ -123,19 +120,19 @@ public class NewCompoundActivity extends AppCompatActivity
 
             // restore the options
             // It is stupid, really
-            ops.stream().forEach( item -> item.setParent( template ) );
+            ops.stream().forEach(item -> item.setParent(template));
 
             // Finally, I'd say OrmLite is crap
 
-            for( OptionDescription op : ops )
-                optionDao.create( op );
+            for (OptionDescription op : ops)
+                optionDao.create(op);
 
-            setResult( RESULT_OK );
+            setResult(RESULT_OK);
 
         } catch (SQLException e)
         {
             e.printStackTrace();
-            setResult( RESULT_CANCELED );
+            setResult(RESULT_CANCELED);
         }
         finish();
     }
