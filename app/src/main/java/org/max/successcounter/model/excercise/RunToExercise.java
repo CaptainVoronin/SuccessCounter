@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 
-public class RunToExcercise extends SimpleExercise
+public class RunToExercise extends SimpleExercise
 {
     boolean finished;
 
@@ -13,13 +13,13 @@ public class RunToExcercise extends SimpleExercise
     @Setter
     int limit;
 
-    public RunToExcercise()
+    public RunToExercise()
     {
         super();
         finished = false;
     }
 
-    public RunToExcercise(int limit)
+    public RunToExercise(int limit)
     {
         super();
         setLimit(limit);
