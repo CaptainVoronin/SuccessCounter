@@ -24,7 +24,6 @@ import org.max.successcounter.model.excercise.Tag;
 import org.max.successcounter.model.excercise.Template;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -404,5 +403,19 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
             btnShowTagsDialog.setImageDrawable( getDrawable( R.drawable.ic_label_outline_orange_36dp) );
         }
         setResult(RESULT_OK);
+    }
+
+    @Override
+    protected void onPostResume()
+    {
+        super.onPostResume();
+        setFullScreenMode();
+    }
+
+    @Override
+    public void setTitle(CharSequence title)
+    {
+        TextView tv = findViewById(R.id.tvExName);
+        tv.setText(title);
     }
 }
