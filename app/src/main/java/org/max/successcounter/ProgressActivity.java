@@ -105,10 +105,7 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
                 endDate = getMaxDate();
             } else
                 startDate = endDate = Calendar.getInstance().getTime();
-            DateIntervalFilter filter = new DateIntervalFilter();
-            filter.setStart(startDate);
-            filter.setEnd(endDate);
-            currentFilter.addFilter(DateFilterID, filter);
+            setDateFilter(getMinDate(), getMaxDate());
 
             makeToolbar();
 
@@ -125,8 +122,8 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
             ibtn = findViewById(R.id.btnSetTagFilter);
             ibtn.setOnClickListener(v -> showTagsDialogForFilter());
 
-            ibtn = findViewById(R.id.btnResultTags );
-            ibtn.setEnabled( false );
+            ibtn = findViewById(R.id.btnResultTags);
+            ibtn.setEnabled(false);
             ibtn.setOnClickListener(v -> showTagsDialogForResultTags());
 
             prepareChart();
@@ -150,7 +147,7 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
         try
         {
             DialogTags dlgTags = new DialogTags(this, TagsOperator.instance, this, false);
-            dlgTags.setTitle( getString( R.string.title_dialog_tag_filter ) );
+            dlgTags.setTitle(getString(R.string.title_dialog_tag_filter));
             dlgTags.showDialog(currentFilterTagSet);
         } catch (SQLException e)
         {
@@ -162,11 +159,11 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
     {
         try
         {
-            if( currentResult == null )
+            if (currentResult == null)
                 return;
 
             DialogTags dlgTags = new DialogTags(this, TagsOperator.instance, new ResultTagsDialogListener(), true);
-            dlgTags.setTitle( getString( R.string.title_dialog_result_tags ) );
+            dlgTags.setTitle(getString(R.string.title_dialog_result_tags));
             dlgTags.showDialog(currentResult.getTags());
 
         } catch (SQLException e)
@@ -424,8 +421,8 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
         tv.setText("");
 
         currentResult = null;
-        ImageView ibtn = findViewById(R.id.btnResultTags );
-        ibtn.setEnabled( false );
+        ImageView ibtn = findViewById(R.id.btnResultTags);
+        ibtn.setEnabled(false);
 
     }
 
@@ -436,8 +433,8 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
             return;
         currentResult = (Result) o;
 
-        ImageView ibtn = findViewById(R.id.btnResultTags );
-        ibtn.setEnabled( true );
+        ImageView ibtn = findViewById(R.id.btnResultTags);
+        ibtn.setEnabled(true);
 
         showResultDetails(currentResult);
     }
@@ -462,7 +459,7 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
         tv.setText(res.getComment());
 
         tv = findViewById(R.id.tvTags);
-        if( res.getTags().size() != 0 )
+        if (res.getTags().size() != 0)
         {
             List<String> names = res.getTags().stream().map(Tag::getTag).collect(Collectors.toList());
             String buff = String.join(";", names);
@@ -473,28 +470,7 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
     private void gotoExercise()
     {
         Intent in;
-
-        switch (template.getExType())
-        {
-            case simple:
-                if (template.getLimited())
-                {
-                    if (template.getSuccesLimited())
-                        in = new Intent(this, SeriesExerciseActivity.class);
-                    else
-                        in = new Intent(this, RunToExerciseActivity.class);
-                } else
-                    in = new Intent(this, SimpleExerciseActivity.class);
-                break;
-            case compound:
-                in = new Intent(this, CompoundExerciseActivity.class);
-                break;
-            case series:
-                in = new Intent(this, SeriesExerciseActivity.class);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown template type");
-        }
+        in = new Intent(this, AExerciseActivity.getExerciseActivityClass(template));
         in.putExtra(TEMPLATE_ID, template.getId());
         startActivityForResult(in, ActivityIDs.DO_EXERCISE_ACTIVITY_ID);
     }
@@ -511,8 +487,7 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
                 try
                 {
                     readResultsFromDB();
-                    startDate = getMinDate();
-                    endDate = getMaxDate();
+                    setDateFilter(getMinDate(), getMaxDate());
                     fillChart();
                     fillStats();
 
@@ -521,6 +496,27 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
                     e.printStackTrace();
                 }
             }
+    }
+
+    private void setDateFilter(Date minDate, Date maxDate)
+    {
+
+        if (minDate == null)
+            minDate = Calendar.getInstance().getTime();
+
+        if (minDate.before(startDate))
+            startDate = minDate;
+
+        if (maxDate == null)
+            maxDate = Calendar.getInstance().getTime();
+
+        if (maxDate.after(endDate))
+            endDate = maxDate;
+
+        DateIntervalFilter dateIntervalFilter = new DateIntervalFilter();
+        dateIntervalFilter.setStart(startDate);
+        dateIntervalFilter.setEnd(endDate);
+        currentFilter.addFilter(DateFilterID, dateIntervalFilter);
     }
 
     @Override
@@ -704,13 +700,27 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
         }
     }
 
+    /**
+     * A callback for the result tags dialog
+     */
     class ResultTagsDialogListener implements DialogTags.DialogTagsResultListener
     {
-
         @Override
         public void onResult(boolean result, List<Tag> checked)
         {
-
+            // Save old tag set in case of problems with update
+            List<Tag> oldSet = currentResult.getTags();
+            try
+            {
+                currentResult.setTags(checked);
+                TagsOperator.instance.setTagsForResult(currentResult);
+                showResultDetails(currentResult);
+            } catch (SQLException e)
+            {
+                // The old set will be restored in case of problems with DB
+                currentResult.setTags(oldSet);
+                e.printStackTrace();
+            }
         }
     }
 }
