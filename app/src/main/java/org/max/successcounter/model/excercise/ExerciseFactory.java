@@ -11,14 +11,14 @@ public enum ExerciseFactory
         switch (template.getExType())
         {
             case compound:
-                exs = new CompoundExcercise();
-                ((CompoundExcercise) exs).setHasSummaryStep(template.isHasSummaryStep());
+                exs = new CompoundExercise();
+                ((CompoundExercise) exs).setHasSummaryStep(template.isHasSummaryStep());
                 for (OptionDescription od : template.getOptionsAsList())
-                    ((CompoundExcercise) exs).addOption(makeOption(od));
+                    ((CompoundExercise) exs).addOption(makeOption(od));
                 break;
             case simple:
                 if (template.getLimited())
-                    exs = new RunToExcercise(template.getLimit());
+                    exs = new RunToExercise(template.getLimit());
                 else
                     exs = new SimpleExercise();
                 break;
@@ -34,11 +34,12 @@ public enum ExerciseFactory
         return exs;
     }
 
-    CompoundExcercise.Option makeOption(OptionDescription od)
+    CompoundExercise.Option makeOption(OptionDescription od)
     {
-        CompoundExcercise.Option op = new CompoundExcercise.Option();
+        CompoundExercise.Option op = new CompoundExercise.Option();
         op.setDescription(od.getDescription());
         op.setPoints(od.getPoints());
+        op.setColor(od.getColor());
         return op;
     }
 }
