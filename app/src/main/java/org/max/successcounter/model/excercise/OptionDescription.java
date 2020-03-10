@@ -6,13 +6,25 @@ import com.j256.ormlite.table.DatabaseTable;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The class implements a single option in a compound exercise
+ */
 @DatabaseTable(tableName = "options")
 public class OptionDescription
 {
+    /**
+     * If this field is true
+     * the option means "miss" and should have 0 points
+     * Can't be true if lastDefault is true
+     */
     Boolean firstDefault;
 
+    /**
+     * If this field is true the option means "maximum points are collected"
+     * It must have the points value equals to sum of all other options
+     * Can't be true if firstDefault is true
+     */
     Boolean lastDefault;
-
 
     /**
      * The primary key
@@ -27,28 +39,40 @@ public class OptionDescription
         return firstDefault == null ? false : firstDefault;
     }
 
-    public void setFirstDefault(Boolean firstDefault)
-    {
-        this.firstDefault = firstDefault;
-    }
+    /**
+     * The points which this option brings to the player
+     * If firstDefault is true it should be 0
+     */
+    @Getter
+    @DatabaseField
+    Integer points;
 
     public Boolean getLastDefault()
     {
         return lastDefault == null ? false : lastDefault;
     }
 
-    public void setLastDefault(Boolean lastDefault)
+    public void setFirstDefault(Boolean value)
     {
-        this.lastDefault = lastDefault;
+        if (value && lastDefault)
+            throw new IllegalArgumentException();
+        this.firstDefault = value;
     }
 
-    /**
-     * The points which this option brings to the player
-     */
-    @Getter
-    @Setter
-    @DatabaseField
-    Integer points;
+    public void setLastDefault(Boolean value)
+    {
+        if (firstDefault && value)
+            throw new IllegalArgumentException();
+        this.lastDefault = value;
+    }
+
+    public void setPoints(int value)
+    {
+        if (firstDefault && value != 0)
+            throw new IllegalArgumentException();
+        points = value;
+    }
+
     /**
      * Text description for UI
      */
@@ -74,7 +98,7 @@ public class OptionDescription
     @Getter
     @Setter
     @DatabaseField( canBeNull = false, foreign = true, columnName = "parent_id",
-        columnDefinition = "INTEGER REFERENCES template(id) ON DELETE CASCADE" )
+            columnDefinition = "INTEGER REFERENCES template(id) ON DELETE CASCADE" )
     Template parent;
 
     public OptionDescription()
