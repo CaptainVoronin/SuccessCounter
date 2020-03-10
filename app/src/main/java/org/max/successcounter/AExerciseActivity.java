@@ -45,31 +45,31 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
     private ImageButton btnBack;
     private EditText edCommentInDialog;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public static Class getExerciseActivityClass(Template template)
     {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.aexercise_layout);
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setFullScreenMode();
-
-        db = new DatabaseHelper(this);
-
-        try
+        Class clazz;
+        switch (template.getExType())
         {
-            TagsOperator.instance.init(getDb());
-            loadTemplate();
-            prepareControls();
-            loadHistory();
-            setTitle(getExercise().getName());
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
+            case simple:
+                if (template.getLimited())
+                {
+                    if (template.getSuccesLimited())
+                        clazz = SeriesExerciseActivity.class;
+                    else
+                        clazz = RunToExerciseActivity.class;
+                } else
+                    clazz = SimpleExerciseActivity.class;
+                break;
+            case compound:
+                clazz = CompoundExerciseActivity.class;
+                break;
+            case series:
+                clazz = SeriesExerciseActivity.class;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown template type");
         }
-
-        setResult(RESULT_CANCELED);
+        return clazz;
     }
 
     protected void prepareControls()
@@ -185,26 +185,31 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
         setExerсise(ex);
     }
 
-    protected void loadHistory() throws SQLException
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
     {
-        HistoryOperator.instance.init(getDb(), getExercise());
+        super.onCreate(savedInstanceState);
 
-        // Check if it is the continue of an exercise
-        Integer id = getIntent().getIntExtra(AExerciseActivity.RESULT_ID, -1);
-        daoResult = getDao(Result.class, getDb());
+        setContentView(R.layout.aexercise_layout);
 
-        // Yes, it is the continue
-        if (id != -1)
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        setFullScreenMode();
+
+        db = new DatabaseHelper(this);
+
+        try
         {
-            List<IStep> steps = HistoryOperator.instance.getHistory();
-            getExercise().setSteps(steps);
-            updateUIResults();
-        } else
+            TagsOperator.instance.init(getDb());
+            loadTemplate();
+            prepareControls();
+            loadOrClearHistory();
+            setTitle(getExercise().getName());
+        } catch (SQLException e)
         {
-            // This is the new exercise,
-            // so the the old history must be deleted
-            HistoryOperator.instance.clearHistory();
+            e.printStackTrace();
         }
+
+        setResult(RESULT_CANCELED);
     }
 
     protected DatabaseHelper getDb()
@@ -417,5 +422,28 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
     {
         TextView tv = findViewById(R.id.tvExName);
         tv.setText(title);
+    }
+
+    protected void loadOrClearHistory() throws SQLException
+    {
+        HistoryOperator.instance.init(getDb(), getExercise());
+
+        // Check if it is the continue of an exercise
+        Integer id = getIntent().getIntExtra(AExerciseActivity.RESULT_ID, -1);
+        daoResult = getDao(Result.class, getDb());
+
+        // Yes, it is the continue
+        if (id != -1)
+        {
+            List<IStep> steps = HistoryOperator.instance.getHistory();
+            getExercise().setSteps(steps);
+            updateUIResults();
+            onResultSaved();
+        } else
+        {
+            // This is the new exercise,
+            // so the the old history must be deleted
+            HistoryOperator.instance.clearHistory();
+        }
     }
 }
