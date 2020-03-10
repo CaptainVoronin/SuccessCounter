@@ -2,6 +2,7 @@ package org.max.successcounter;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.j256.ormlite.dao.Dao;
 
 import org.max.successcounter.db.DatabaseHelper;
+import org.max.successcounter.model.ResultDateComparator;
 import org.max.successcounter.model.excercise.Result;
 import org.max.successcounter.model.excercise.Template;
 
@@ -87,12 +89,18 @@ public class HistoryActivity extends AppCompatActivity
     private void fillList() throws SQLException
     {
         template = templateDao.queryForId(templateId);
+
         TableLayout table = findViewById(R.id.historyTable);
         table.removeAllViews();
         checks = new ArrayList<>();
-
-        for (Result res : template.getResults())
-            table.addView(makeRow(res, isItLastExercise(res, template.getExercisesAsList())));
+        List<Result> results = template.getExercisesAsList();
+        results.sort(new ResultDateComparator(true));
+        boolean isLast = true;
+        for (Result res : results)
+        {
+            table.addView(makeRow(res, isLast));
+            isLast = false;
+        }
     }
 
     private View makeRow(Result res, boolean isLast)
@@ -128,6 +136,9 @@ public class HistoryActivity extends AppCompatActivity
             tvDate.setOnClickListener(listener);
             tvPercent.setOnClickListener(listener);
             tvCount.setOnClickListener(listener);
+            tvDate.setTypeface(null, Typeface.BOLD);
+            tvPercent.setTypeface(null, Typeface.BOLD);
+            tvCount.setTypeface(null, Typeface.BOLD);
         }
 
         return tr;
@@ -176,17 +187,6 @@ public class HistoryActivity extends AppCompatActivity
         checks.stream().forEach(item -> { item.setVisibility(View.INVISIBLE); item.setChecked(false);});
         actionMode.finish();
         actionMode = null;
-    }
-
-    boolean isItLastExercise(Result res, List<Result> items)
-    {
-        long date = res.getDate().getTime();
-
-        for (Result item : items)
-            if (item.getDate().getTime() > date)
-                return false;
-
-        return true;
     }
 
     public void makeToolbar()
