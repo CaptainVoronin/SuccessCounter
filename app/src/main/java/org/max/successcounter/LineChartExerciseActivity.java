@@ -13,7 +13,6 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import org.max.successcounter.model.excercise.IExercise;
-import org.max.successcounter.model.excercise.SimpleExercise;
 
 public class LineChartExerciseActivity<T extends IExercise> extends AExerciseActivity<T>
 {
@@ -32,6 +31,7 @@ public class LineChartExerciseActivity<T extends IExercise> extends AExerciseAct
         mChart.setDrawGridBackground(false);
         mChart.setLayoutParams( new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT) );
         mChart.setNoDataText( getString( R.string.no_data_text ) );
+        mChart.setNoDataTextColor(getColor(R.color.red_worm15));
         YAxis y = mChart.getAxisLeft();
         y.setAxisMinimum(0f);
         y.setAxisMaximum(100f);
