@@ -10,14 +10,18 @@ import android.widget.CheckBox;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+
 import com.j256.ormlite.dao.Dao;
+
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.excercise.Result;
 import org.max.successcounter.model.excercise.Template;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,7 +30,6 @@ import androidx.appcompat.widget.Toolbar;
 
 // TODO: Таблица истории не в дугу
 // TODO: Нужна сортировка таблицы
-// TODO: Нужна очистка результатов
 
 public class HistoryActivity extends AppCompatActivity
 {
@@ -62,7 +65,6 @@ public class HistoryActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
         makeToolbar();
-
         DatabaseHelper db = new DatabaseHelper(this);
 
         try
@@ -208,7 +210,7 @@ public class HistoryActivity extends AppCompatActivity
         @Override
         public void onClick(View v)
         {
-            Intent in = new Intent(HistoryActivity.this, SimpleExerciseActivity.class);
+            Intent in = new Intent(HistoryActivity.this, AExerciseActivity.getExerciseActivityClass(template));
             in.putExtra(AExerciseActivity.RESULT_ID, id);
             in.putExtra(ProgressActivity.TEMPLATE_ID, template.getId());
             startActivityForResult(in, ActivityIDs.EXERCISEACTIVITY_ID);
