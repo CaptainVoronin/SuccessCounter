@@ -1,6 +1,7 @@
 package org.max.successcounter.model.excercise;
 
 import java.util.stream.Collectors;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -68,12 +69,6 @@ public class RunToExcercise extends SimpleExercise
     public Integer getTotalPoints()
     {
         return steps.stream().collect( Collectors.summingInt( IStep::getPoints )).intValue();
-    }
-
-    @Override
-    public int getAttemptsCount()
-    {
-        return steps.size();
     }
 
     @Override
