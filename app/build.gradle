@@ -1,6 +1,8 @@
 
 apply plugin: 'com.android.application'
 
+def releaseBuild = false
+
 android {
     signingConfigs {
         debug {
@@ -14,6 +16,7 @@ android {
             storePassword '111111'
             keyAlias = 'apk_key'
             keyPassword '111111'
+            releaseBuild = true
         }
     }
 
@@ -23,7 +26,9 @@ android {
 
     def versionArray = incrementBuild()
     def fileName = writeVersionClassFile(versionArray)
-    commitFile( fileName, versionArray )
+
+    if( releaseBuild )
+        commitFile( fileName, versionArray )
 
     def verName = versionArray[0].toString() + '.' + versionArray[1] + '.' + versionArray[2]
 
