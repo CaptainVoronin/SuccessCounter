@@ -96,28 +96,13 @@ public class CompoundExcercise extends AExercise
     }
 
     public static class Option{
+        @Getter @Setter
         String description;
+
+        @Getter @Setter
         Integer points;
 
-        public String getDescription()
-        {
-            return description;
-        }
-
-        public void setDescription(String description)
-        {
-            this.description = description;
-        }
-
-        public Integer getPoints()
-        {
-            return points;
-        }
-
-        public void setPoints(Integer points)
-        {
-            this.points = points;
-        }
+        @Getter @Setter
+        int color;
     }
-
 }
