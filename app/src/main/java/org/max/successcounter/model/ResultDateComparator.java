@@ -1,7 +1,6 @@
 package org.max.successcounter.model;
 
 import org.max.successcounter.model.excercise.Result;
-import org.max.successcounter.model.excercise.Tag;
 
 import java.util.Comparator;
 
@@ -19,6 +18,11 @@ public class ResultDateComparator implements Comparator<Result>
         reverseOrder = false;
     }
 
+    public ResultDateComparator(boolean reverseOrder)
+    {
+        this.reverseOrder = reverseOrder;
+    }
+
     @Override
     public int compare(Result o1, Result o2)
     {
@@ -33,8 +37,8 @@ public class ResultDateComparator implements Comparator<Result>
         if(  o2 == null && o1 == null )
             directResult = 0;
 
-        directResult = Long.compare( o1.getDate().getTime(), o1.getDate().getTime() );
+        directResult = Long.compare(o1.getDate().getTime(), o2.getDate().getTime());
 
-        return directResult * (!reverseOrder ? 1 : -1);
+        return directResult * (reverseOrder ? -1 : 1);
     }
 }
