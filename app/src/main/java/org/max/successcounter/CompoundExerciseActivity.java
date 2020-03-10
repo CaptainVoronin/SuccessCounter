@@ -1,29 +1,21 @@
 package org.max.successcounter;
 
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 
-import org.apache.commons.math3.analysis.function.Min;
-import org.max.successcounter.model.excercise.CompoundExcercise;
+import org.max.successcounter.model.excercise.CompoundExercise;
 
-public class CompoundExerciseActivity extends LineChartExerciseActivity<CompoundExcercise>
+public class CompoundExerciseActivity extends LineChartExerciseActivity<CompoundExercise>
 {
 
     @Override
     protected void prepareControlButtons(LinearLayout placeholder)
     {
-        CompoundExcercise cx = ( CompoundExcercise ) getExercise();
+        CompoundExercise cx = getExercise();
 
         LayoutInflater lif = getLayoutInflater();
         LinearLayout ll = (LinearLayout) lif.inflate( R.layout.compound_exercise_buttons, placeholder, true );
@@ -35,23 +27,12 @@ public class CompoundExerciseActivity extends LineChartExerciseActivity<Compound
         } );
     }
 
-    public class OnOptionClick implements Button.OnClickListener
-    {
-        @Override
-        public void onClick(View v)
-        {
-            Object tag = v.getTag();
-            CompoundExcercise.Option opt = (CompoundExcercise.Option ) tag;
-            addStep( opt.getPoints() );
-        }
-    }
-
-    Button makeButton( CompoundExcercise.Option option )
+    Button makeButton(CompoundExercise.Option option)
     {
         GradientDrawable gdw = new GradientDrawable();
-        gdw.setColor( getColor( R.color.dark_blue )  );
+        gdw.setColor(option.getColor());
         gdw.setCornerRadius( 20 );
-        gdw.setStroke(3, getColor( R.color.secondAccent ));
+        gdw.setStroke(3, getColor(R.color.colorAccent));
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -60,11 +41,22 @@ public class CompoundExerciseActivity extends LineChartExerciseActivity<Compound
 
         Button btn = new Button( this );
         btn.setText( option.getDescription() );
-        btn.setTextColor( getColor( R.color.secondAccent ) );
+        btn.setTextColor(getColor(R.color.colorAccent));
         btn.setTag( option );
         btn.setOnClickListener( new OnOptionClick() );
         btn.setBackground( gdw );
         btn.setLayoutParams( lp );
         return btn;
+    }
+
+    public class OnOptionClick implements Button.OnClickListener
+    {
+        @Override
+        public void onClick(View v)
+        {
+            Object tag = v.getTag();
+            CompoundExercise.Option opt = (CompoundExercise.Option) tag;
+            addStep(opt.getPoints());
+        }
     }
 }
