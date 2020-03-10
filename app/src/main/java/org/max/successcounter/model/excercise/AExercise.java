@@ -2,7 +2,6 @@ package org.max.successcounter.model.excercise;
 
 import com.github.mikephil.charting.data.Entry;
 
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +29,10 @@ public abstract class AExercise implements IExercise
 
     @Getter @Setter
     String comment;
+
+    @Getter
+    @Setter
+    private int attempts;
 
     public AExercise()
     {
@@ -122,7 +125,7 @@ public abstract class AExercise implements IExercise
     @Override
     public int getAttemptsCount()
     {
-        return steps.size();
+        return attempts;
     }
 
     @Override
@@ -151,6 +154,19 @@ public abstract class AExercise implements IExercise
     {
         this.steps = steps;
         this.steps.forEach(step -> step.setExercise(this));
+        attempts = this.steps.size();
+    }
+
+    protected int incAttempts()
+    {
+        return ++attempts;
+    }
+
+    protected int decAttempts()
+    {
+        if (attempts > 0)
+            attempts--;
+        return attempts;
     }
 
     @Override
