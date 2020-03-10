@@ -1,9 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="black_overlay">#66000000</color>
-    <color name="dark_blue">#001C2B</color>
-    <color name="secondAccent">#E5A345</color>
+
+    <!-- Blue palette -->
+    <color name="blue_cold11">#001C2B</color>
+    <color name="blue_worm12">#334955</color>
+    <color name="blue_worm13">#667780</color>
+    <color name="blue_worm14">#99A4AA</color>
+
+    <!-- Red palette -->
+    <color name="red_cold11">#3C0800</color>
+    <color name="red_cold12">#5A0C00</color>
+    <color name="red_cold13">#781000</color>
+    <color name="red_worm14">#934033</color>
+    <color name="red_worm15">#AE7066</color>
+    <color name="red_worm16">#C99F99</color>
+    <color name="red_worm17">#E4CFCC</color>
+
+    <!-- Green palette -->
+    <color name="green_cold11">#052F1E</color>
+    <color name="green_cold12">#07472D</color>
+    <color name="green_cold13">#095E3C</color>
+    <color name="green_worm14">#3B7E63</color>
+    <color name="green_worm15">#6C9E8A</color>
+    <color name="green_worm16">#9DBFB1</color>
+    <color name="green_worm17">#CEDFD8</color>
+
+    <!-- Brown palette -->
+    <color name="brown_cold11">#38260E</color>
+    <color name="brown_worm12">#60513E</color>
+    <color name="brown_worm13">#877D6E</color>
+    <color name="brown_worm14">#AFA89F</color>
+
+    <color name="brown_worm23">#7E693B</color>
+    <color name="brown_worm24">#9E8E6C</color>
+    <color name="brown_worm25">#BFB49D</color>
+
+    <!-- Theme colors -->
+    <color name="colorPrimary">@color/blue_worm13</color>
+    <color name="colorPrimaryDark">@color/blue_cold11</color>
+    <color name="colorAccent">@color/brown_worm24</color>
+    <color name="black_overlay">@color/blue_worm13</color>
+    <color name="dark_blue">@color/blue_cold11</color>
+    <color name="secondAccent">@color/red_worm14</color>
+
 </resources>
