@@ -10,24 +10,33 @@
         android:id="@+id/stdtoobar"/>
 
     <TextView
-        android:id="@+id/tvProgramName"
-        android:layout_width="wrap_content"
+        android:id="@+id/tvBTSAbbr"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="171dp"
-        android:layout_marginTop="63dp"
-        android:layout_marginEnd="171dp"
-        android:text="TextView"
+        android:layout_marginTop="30pt"
+        android:gravity="center_horizontal"
+        android:textSize="30sp"
+        app:layout_constraintTop_toBottomOf="@id/stdtoobar"
+        tools:text="@string/txtBTSAbbr" />
+
+    <TextView
+        android:id="@+id/tvProgramName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3pt"
+        android:gravity="center_horizontal"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stdtoobar" />
+        app:layout_constraintTop_toBottomOf="@id/tvBTSAbbr"
+        tools:text="@string/txtProgramName" />
 
     <TextView
         android:id="@+id/tvBy"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="177dp"
-        android:layout_marginEnd="177dp"
+        android:gravity="center_horizontal"
         android:text="by"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,5 +79,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvVersion" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
