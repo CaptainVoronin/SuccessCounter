@@ -6,8 +6,9 @@
     <color name="blue_worm12">#334955</color>
     <color name="blue_worm13">#667780</color>
     <color name="blue_worm14">#99A4AA</color>
+    <color name="blue_worm15">#CCD2D5</color>
 
-    <!-- Red palette -->
+    <!-- Red pale palette -->
     <color name="red_cold11">#3C0800</color>
     <color name="red_cold12">#5A0C00</color>
     <color name="red_cold13">#781000</color>
@@ -15,6 +16,16 @@
     <color name="red_worm15">#AE7066</color>
     <color name="red_worm16">#C99F99</color>
     <color name="red_worm17">#E4CFCC</color>
+
+    <!-- Red bright palette -->
+    <color name="red_bright_cold11">#370800</color>
+    <color name="red_bright_cold12">#6F0F00</color>
+    <color name="red_bright_cold13">#781000</color>
+    <color name="red_bright_worm14">#A61700</color>
+    <color name="red_bright_worm15">#DD1E00</color>
+    <color name="red_bright_worm16">#E44B33</color>
+    <color name="red_bright_worm17">#EB7866</color>
+    <color name="red_bright_worm18">#F2A599</color>
 
     <!-- Green palette -->
     <color name="green_cold11">#052F1E</color>
@@ -41,6 +52,6 @@
     <color name="colorAccent">@color/brown_worm24</color>
     <color name="black_overlay">@color/blue_worm13</color>
     <color name="dark_blue">@color/blue_cold11</color>
-    <color name="secondAccent">@color/red_worm14</color>
+    <color name="secondAccent">@color/red_bright_worm14</color>
 
 </resources>
