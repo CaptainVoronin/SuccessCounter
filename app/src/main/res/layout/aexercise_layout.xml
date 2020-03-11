@@ -27,7 +27,7 @@
                 android:layout_gravity="left|center_vertical"
                 android:layout_marginLeft="3pt"
                 android:layout_weight="0.1"
-                android:background="@color/dark_blue"
+                android:background="@color/colorPrimaryDark"
                 app:srcCompat="@drawable/left_arrow" />
 
             <TextView
@@ -39,16 +39,15 @@
                 android:gravity="center_horizontal|center_vertical"
                 android:text="Exercise name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@android:color/darker_gray" />
+                android:textColor="@color/blue_worm15" />
 
             <ImageView
-                android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.1"
                 android:layout_gravity="left|center_vertical"
                 android:layout_marginRight="3pt"
-                android:background="@color/dark_blue"
+                android:background="@color/colorPrimaryDark"
                 app:srcCompat="@drawable/empty_placeholder" />
         </LinearLayout>
 
