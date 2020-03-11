@@ -25,7 +25,6 @@
             android:id="@+id/btnStartDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5pt"
             app:srcCompat="@drawable/ic_date_range_black_18dp" />
 
         <TextView
@@ -41,7 +40,6 @@
             android:id="@+id/btnEndDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5pt"
             app:srcCompat="@drawable/ic_date_range_black_18dp" />
 
         <TextView
