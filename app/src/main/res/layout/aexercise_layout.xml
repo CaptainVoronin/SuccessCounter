@@ -55,7 +55,6 @@
             android:id="@+id/lbPercent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.1"
             android:background="@color/dark_blue"
             android:fontFamily="sans-serif-condensed-medium"
             android:gravity="center_vertical"
@@ -70,7 +69,6 @@
             android:id="@+id/lbAttempts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.1"
             android:background="@color/dark_blue"
             android:gravity="clip_horizontal|center_vertical"
             android:textAlignment="center"
@@ -81,7 +79,8 @@
             android:id="@+id/viewChartPlaceholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.4"
+            android:layout_marginTop="5pt"
+            android:layout_weight="0.1"
             android:orientation="vertical">
 
         </LinearLayout>
@@ -90,10 +89,10 @@
             android:id="@+id/buttonsPlaceholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:layout_marginTop="20pt"
+            android:layout_weight="0.4"
             android:gravity="center_vertical|center_horizontal"
             android:orientation="horizontal">
+
         </LinearLayout>
 
         <LinearLayout
