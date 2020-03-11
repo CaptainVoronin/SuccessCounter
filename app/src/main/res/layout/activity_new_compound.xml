@@ -25,15 +25,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/stdtoobar" />
 
-    <Button
-        android:id="@+id/btnSave"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Сохранить"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <TableLayout
         android:id="@+id/partsTable"
         android:layout_width="409dp"
@@ -42,11 +33,20 @@
         android:layout_marginTop="1dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnSave"
+        app:layout_constraintBottom_toTopOf="@+id/btnSaveCompound"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbName">
+        app:layout_constraintTop_toBottomOf="@+id/lbName"></TableLayout>
 
-    </TableLayout>
+    <Button
+        android:id="@+id/btnSaveCompound"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@string/txtSave" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
