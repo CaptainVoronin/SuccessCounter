@@ -34,6 +34,14 @@ public class OptionDescription
     @DatabaseField(generatedId = true)
     Integer id;
 
+
+    public OptionDescription()
+    {
+        firstDefault = false;
+        lastDefault = false;
+        color = 0x001C2B;
+    }
+
     public Boolean getFirstDefault()
     {
         return firstDefault == null ? false : firstDefault;
@@ -100,9 +108,4 @@ public class OptionDescription
     @DatabaseField( canBeNull = false, foreign = true, columnName = "parent_id",
             columnDefinition = "INTEGER REFERENCES template(id) ON DELETE CASCADE" )
     Template parent;
-
-    public OptionDescription()
-    {
-        color = 0x001C2B;
-    }
 }
