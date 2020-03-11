@@ -3,25 +3,24 @@ package org.max.successcounter.model;
 import android.app.Activity;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
+
 import org.max.successcounter.AbstractTableAdapter;
 import org.max.successcounter.R;
 import org.max.successcounter.model.excercise.OptionDescription;
 import org.max.successcounter.model.excercise.Template;
-
-import java.util.List;
 
 public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
 {
     EditorListener editorListener;
     Template template;
 
-    public ExerciseOutcomes(Activity ctx, int view_id, Template template )
+    public ExerciseOutcomes(Activity ctx, int view_id, Template template)
     {
-        super(ctx, view_id, R.layout.compound_default_outcome, template.getOptionsAsList() );
+        super(ctx, view_id, R.layout.compound_default_outcome, template.getOptionsAsListAllSteps());
         editorListener = new EditorListener();
         this.template = template;
     }
@@ -30,59 +29,48 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
     public void makeTable()
     {
         super.makeTable();
-        getTable().addView( makePlaceholder(), getItems().size() - 1 );
+        getTable().addView(makePlaceholder(), getItems().size() - 1);
     }
 
     @Override
     protected TableRow makeRow(OptionDescription item)
     {
-        if( item.getFirstDefault() )
-            return makeUneditableRow( item );
-        else if( item.getLastDefault() )
-            return makeSummaryRow( item );
+        if (item.getFirstDefault())
+            return makeUneditableRow(item);
+        else if (item.getLastDefault())
+            return makeSummaryRow(item);
         else
-            return makeGeneralRow( item );
+            return makeGeneralRow(item);
     }
 
     private TableRow makeSummaryRow(OptionDescription item)
     {
         TextView tvStepName;
         TextView tvStepPoints;
-        ImageButton btnRemove;
+        ImageView btnRemove;
 
-        TableRow row = ( TableRow ) getContext().getLayoutInflater().inflate( getRow_layout_id(), null, false );
+        TableRow row = (TableRow) getContext().getLayoutInflater().inflate(getRow_layout_id(), null, false);
         tvStepName = row.findViewById(R.id.lbStepName);
         tvStepPoints = row.findViewById(R.id.lbStepPoints);
-        btnRemove = row.findViewById(R.id.btnRemoveStep);
-        btnRemove.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                template.setHasSummaryStep( false );
-                makeTable();
-            }
+        btnRemove = row.findViewById(R.id.btnRemoveOption);
+        btnRemove.setOnClickListener(v -> {
+            template.setHasSummaryStep(false);
+            makeTable();
         });
 
-        if( template.isHasSummaryStep() )
+        if (template.isHasSummaryStep())
         {
             tvStepName.setText(item.getDescription());
-            tvStepPoints.setVisibility( View.VISIBLE );
+            tvStepPoints.setVisibility(View.VISIBLE);
             tvStepPoints.setText(item.getPoints().toString());
             btnRemove.setVisibility(View.VISIBLE);
-        }
-        else
+        } else
         {
-            tvStepPoints.setVisibility( View.INVISIBLE );
-            tvStepName.setText( getContext().getString( R.string.messageRestoreSummaryStep ));
-            tvStepName.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    template.setHasSummaryStep( true );
-                    makeTable();
-                }
+            tvStepPoints.setVisibility(View.INVISIBLE);
+            tvStepName.setText(getContext().getString(R.string.messageRestoreSummaryStep));
+            tvStepName.setOnClickListener(v -> {
+                template.setHasSummaryStep(true);
+                makeTable();
             });
             btnRemove.setVisibility(View.INVISIBLE);
         }
@@ -92,43 +80,47 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
 
     private TableRow makeUneditableRow(OptionDescription item)
     {
-        TableRow row = ( TableRow ) getContext().getLayoutInflater().inflate( getRow_layout_id(), null, false );
+        TableRow row = (TableRow) getContext().getLayoutInflater().inflate(getRow_layout_id(), null, false);
         TextView tv = row.findViewById(R.id.lbStepName);
-        tv.setText( item.getDescription() );
+        tv.setText(item.getDescription());
 
         tv = row.findViewById(R.id.lbStepPoints);
         tv.setText(item.getPoints().toString());
 
-        ImageButton btnRemove;
-        btnRemove = row.findViewById( R.id.btnRemoveStep );
-        btnRemove.setVisibility( View.INVISIBLE );
+        ImageView btnRemove;
+        btnRemove = row.findViewById(R.id.btnRemoveOption);
+        btnRemove.setVisibility(View.INVISIBLE);
         return row;
     }
 
     private TableRow makeGeneralRow(OptionDescription item)
     {
-        TableRow row = ( TableRow ) getContext().getLayoutInflater().inflate( getRow_layout_id(), null, false );
-        InplaceEditor editor = new InplaceEditor( editorListener, item, row );
+        TableRow row = (TableRow) getContext().getLayoutInflater().inflate(getRow_layout_id(), null, false);
+        InplaceEditor editor = new InplaceEditor(editorListener, item, row);
         TextView tv = row.findViewById(R.id.lbStepName);
-        tv.setText( item.getDescription() );
-        tv.setOnClickListener( editor );
+        tv.setText(item.getDescription());
+        tv.setOnClickListener(editor);
 
         tv = row.findViewById(R.id.lbStepPoints);
         tv.setText(item.getPoints().toString());
-        tv.setOnClickListener( editor );
+        tv.setOnClickListener(editor);
 
-        /*ImageButton btnRemove;
-        btnRemove = row.findViewById( R.id.btnRemoveStep );*/
+        // Here getOptionsAsList is used deliberately because
+        // we need only non default options here which can be removed by user
+        if (template.getOptionsAsList().stream().filter(op -> !op.getFirstDefault()).filter(op -> !op.getLastDefault()).count() <= 2)
+        {
+            ImageView iv = row.findViewById(R.id.btnRemoveOption);
+            iv.setVisibility(View.INVISIBLE);
+        }
 
         return row;
-
     }
 
     private TableRow makePlaceholder()
     {
         TableRow tr = (TableRow) getContext().getLayoutInflater().inflate(R.layout.add_step_placeholder, null, false);
-        ImageButton btn = tr.findViewById(R.id.btnAddStep);
-        btn.setOnClickListener(new PlaceholderClickListener ( editorListener ) );
+        ImageView btn = tr.findViewById(R.id.btnAddStep);
+        btn.setOnClickListener(new PlaceholderClickListener(editorListener));
         return tr;
     }
 
@@ -136,7 +128,7 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
     {
         TextView tvDesc, tvPoints;
         EditText edDesc, edPoints;
-        ImageButton btnSave, btnRemove;
+        ImageView btnSave, btnRemove;
         ViewSwitcher swcDesc, swcPoints;
         EditorListener editorListener;
 
@@ -144,52 +136,52 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         OptionDescription option;
         boolean inEditMode;
 
-        public InplaceEditor( EditorListener editorListener, OptionDescription option, TableRow row )
+        public InplaceEditor(EditorListener editorListener, OptionDescription option, TableRow row)
         {
             this.row = row;
             this.option = option;
             inEditMode = false;
             this.editorListener = editorListener;
 
-            tvDesc = row.findViewById( R.id.lbStepName );
-            tvPoints = row.findViewById( R.id.lbStepPoints );
-            edDesc = row.findViewById( R.id.edStepDesc);
-            edPoints = row.findViewById( R.id.edStepPoints );
-            swcDesc = row.findViewById( R.id.swcDescription );
-            swcPoints = row.findViewById( R.id.swcPoints );
-            btnSave = row.findViewById( R.id.btnSave );
-            btnSave.setOnClickListener( this );
+            tvDesc = row.findViewById(R.id.lbStepName);
+            tvPoints = row.findViewById(R.id.lbStepPoints);
+            edDesc = row.findViewById(R.id.edStepDesc);
+            edPoints = row.findViewById(R.id.edStepPoints);
+            swcDesc = row.findViewById(R.id.swcDescription);
+            swcPoints = row.findViewById(R.id.swcPoints);
+            btnSave = row.findViewById(R.id.btnSaveOption);
+            btnSave.setOnClickListener(this);
 
-            btnRemove = row.findViewById( R.id.btnRemoveStep );
-            btnRemove.setOnClickListener( new RemoveRowListener( option ) );
+            btnRemove = row.findViewById(R.id.btnRemoveOption);
+            btnRemove.setOnClickListener(new RemoveRowListener(option));
         }
 
         @Override
         public void onClick(View v)
         {
 
-            if( !inEditMode )
+            if (!inEditMode)
                 toEditMode();
             else
                 toDisplayMode();
-         }
+        }
 
         public void toDisplayMode()
         {
             swcDesc.showNext();
             swcPoints.showNext();
 
-            btnSave.setVisibility( View.GONE );
-            btnRemove.setVisibility( View.VISIBLE );
+            btnSave.setVisibility(View.GONE);
+            btnRemove.setVisibility(View.VISIBLE);
 
-            option.setDescription( edDesc.getText().toString() );
-            tvDesc.setText( option.getDescription() );
+            option.setDescription(edDesc.getText().toString());
+            tvDesc.setText(option.getDescription());
 
-            option.setPoints( Integer.parseInt( edPoints.getText().toString() ) );
-            tvPoints.setText( option.getPoints().toString() );
+            option.setPoints(Integer.parseInt(edPoints.getText().toString()));
+            tvPoints.setText(option.getPoints().toString());
 
-            editorListener.onEditFinish( this );
-            setItems( template.getOptionsAsList() );
+            editorListener.onEditFinish(this);
+            setItems(template.getOptionsAsListAllSteps());
             makeTable();
             inEditMode = false;
         }
@@ -199,23 +191,26 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             swcDesc.showNext();
             swcPoints.showNext();
 
-            editorListener.onEditStart( this );
+            editorListener.onEditStart(this);
 
-            btnSave.setVisibility( View.VISIBLE);
-            btnRemove.setVisibility( View.GONE );
+            btnSave.setVisibility(View.VISIBLE);
+            btnRemove.setVisibility(View.GONE);
 
-            edDesc.setText( option.getDescription() );
-            edPoints.setText( option.getPoints().toString() );
+            edDesc.setText(option.getDescription());
+            edPoints.setText(option.getPoints().toString());
 
             inEditMode = true;
         }
     }
 
+    /**
+     * Callback for the plcaholder. The callback add new option to the list
+     */
     class PlaceholderClickListener implements View.OnClickListener
     {
         EditorListener editorListener;
 
-        public PlaceholderClickListener( EditorListener editorListener )
+        public PlaceholderClickListener(EditorListener editorListener)
         {
             this.editorListener = editorListener;
         }
@@ -224,10 +219,10 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         public void onClick(View v)
         {
             OptionDescription op = new OptionDescription();
-            op.setPoints( 1 );
-            op.setDescription( "Enter description" );
-            template.addOption( op );
-            setItems( template.getOptionsAsList() );
+            op.setPoints(1);
+            op.setDescription(getContext().getString(R.string.txtAddDescription));
+            template.addOption(op);
+            setItems(template.getOptionsAsListAllSteps());
             makeTable();
         }
     }
@@ -236,16 +231,16 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
     {
         InplaceEditor current;
 
-        public void onEditStart( InplaceEditor editor )
+        public void onEditStart(InplaceEditor editor)
         {
-            if( current != null && current != editor )
+            if (current != null && current != editor)
                 current.toDisplayMode();
             current = editor;
         }
 
-        public void onEditFinish( InplaceEditor editor )
+        public void onEditFinish(InplaceEditor editor)
         {
-            if( current == editor )
+            if (current == editor)
                 current = null;
         }
     }
@@ -253,6 +248,7 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
     private class RemoveRowListener implements View.OnClickListener
     {
         OptionDescription option;
+
         public RemoveRowListener(OptionDescription option)
         {
             this.option = option;
@@ -261,8 +257,8 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         @Override
         public void onClick(View v)
         {
-            template.addOption( option );
-            setItems( template.getOptionsAsList() );
+            template.removeOption(option);
+            setItems(template.getOptionsAsListAllSteps());
             makeTable();
         }
     }
