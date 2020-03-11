@@ -65,7 +65,7 @@ public class NewCompoundActivity extends AppCompatActivity
         TextView tv = findViewById(R.id.lbName);
         tv.setText(templateName);
 
-        Button btnSave = findViewById(R.id.btnSave);
+        Button btnSave = findViewById(R.id.btnSaveCompound);
         btnSave.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -107,7 +107,7 @@ public class NewCompoundActivity extends AppCompatActivity
         try
         {
             // The template and it's options must be saved separately
-            // because at the moment the template saves it doesn't have the id
+            // because at the moment the template is saving there is no it's id
             // so it's options don't have parent id.
             // Because of that reason we remove all the options
             // from the template and save them in a list
