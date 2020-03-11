@@ -2,6 +2,7 @@
 apply plugin: 'com.android.application'
 
 def releaseBuild = false
+def buildType = "debug"
 
 android {
     signingConfigs {
@@ -16,7 +17,6 @@ android {
             storePassword '111111'
             keyAlias = 'apk_key'
             keyPassword '111111'
-            releaseBuild = true
         }
     }
 
@@ -24,21 +24,33 @@ android {
         abortOnError false
     }
 
+    splits {
+        if (project.gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }) {
+            buildType = "release"
+            releaseBuild = true
+            println( "----------------- release ----------------------")
+        } else {
+            buildType = "debug"
+            releaseBuild = false
+            println( "----------------- debug ----------------------")
+        }
+    }
+
     def versionArray = incrementBuild()
-    def fileName = writeVersionClassFile(versionArray)
+    def fileName = writeVersionClassFile(versionArray, buildType )
 
     if( releaseBuild )
         commitFile( fileName, versionArray )
 
-    def verName = versionArray[0].toString() + '.' + versionArray[1] + '.' + versionArray[2]
+    def vName = versionArray[0].toString() + '.' + versionArray[1] + '.' + versionArray[2]
 
     compileSdkVersion 28
     defaultConfig {
-        applicationId "org.max.successcounter"
+        applicationId "org.max.bts"
         minSdkVersion 28
         targetSdkVersion 28
         versionCode 1
-        versionName verName
+        versionName vName
         setProperty("archivesBaseName", "scounter-$versionName")
         applicationIdSuffix = 'debug'
         signingConfig signingConfigs.debug
@@ -47,6 +59,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -110,7 +123,7 @@ def incrementBuild() {
         throw new FileNotFoundException("File version.properties not found")
 }
 
-def writeVersionClassFile(verArray) {
+def writeVersionClassFile(verArray, buildType) {
     def fileName = "src\\main\\java\\org\\max\\successcounter\\Version.java"
 
     def versionClassFile = file(fileName)
@@ -124,6 +137,7 @@ def writeVersionClassFile(verArray) {
     buff = buff.replaceAll('MINOR\\s*=\\s*\\d+\\s*;', 'MINOR=' + verArray[1].toString() + ';')
     buff = buff.replaceAll('BUILD\\s*=\\s*\\d+\\s*;', 'BUILD=' + verArray[2].toString() + ';')
     buff = buff.replaceAll('BUILD_DATE=\\"[a-zA-Z0-9\\s]+\\";', 'BUILD_DATE=\"' + verArray[3].toString() + '\";')
+    buff = buff.replaceAll('buildType\\s*=\\s*\\"[a-zA-Z0-9\\s]+\\"\\s*;', 'buildType=\"' + buildType  + '\";')
     versionClassFile.write(buff);
     return fileName
 }
