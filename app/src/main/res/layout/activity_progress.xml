@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="10pt"
             android:gravity="center"
-            android:text="12 junuary 2020"
+            android:text="12 mar 2020"
             android:textSize="18sp" />
 
         <ImageView
@@ -49,14 +49,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="34 junuary 2020"
+            android:text="34 mar 2020"
             android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/btnSetTagFilter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
+            android:layout_marginLeft="15dp"
             app:srcCompat="@drawable/ic_filter_list_gray_36dp" />
 
     </LinearLayout>
