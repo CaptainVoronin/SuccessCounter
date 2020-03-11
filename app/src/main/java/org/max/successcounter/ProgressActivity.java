@@ -26,6 +26,7 @@ import com.j256.ormlite.dao.Dao;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.jetbrains.annotations.NotNull;
 import org.max.successcounter.db.DatabaseHelper;
+import org.max.successcounter.model.ResultDateComparator;
 import org.max.successcounter.model.TagsOperator;
 import org.max.successcounter.model.excercise.Result;
 import org.max.successcounter.model.excercise.Tag;
@@ -35,11 +36,9 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -101,11 +100,11 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
 
             if (results.size() != 0)
             {
-                startDate = getMinDate();
-                endDate = getMaxDate();
+                startDate = getMinResultDateInFullSet();
+                endDate = getMaxResultDateInFullSet();
             } else
                 startDate = endDate = Calendar.getInstance().getTime();
-            setDateFilter(getMinDate(), getMaxDate());
+            setDateFilter(getMinResultDateInFullSet(), getMaxResultDateInFullSet());
 
             makeToolbar();
 
@@ -191,6 +190,7 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
         results.addAll(template.getResults());
         for (Result res : results)
             setTagsFoResult(res);
+        results.sort(new ResultDateComparator());
     }
 
     private void setTagsFoResult(Result result) throws SQLException
@@ -487,7 +487,7 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
                 try
                 {
                     readResultsFromDB();
-                    setDateFilter(getMinDate(), getMaxDate());
+                    setDateFilter(getMinResultDateInFullSet(), getMaxResultDateInFullSet());
                     fillChart();
                     fillStats();
 
@@ -501,14 +501,8 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
     private void setDateFilter(Date minDate, Date maxDate)
     {
 
-        if (minDate == null)
-            minDate = Calendar.getInstance().getTime();
-
         if (minDate.before(startDate))
             startDate = minDate;
-
-        if (maxDate == null)
-            maxDate = Calendar.getInstance().getTime();
 
         if (maxDate.after(endDate))
             endDate = maxDate;
@@ -548,51 +542,20 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
         tv.setText(template.getName());
     }
 
-    Date getMinDate()
+    Date getMinResultDateInFullSet()
     {
-        List<Result> items = results.stream().filter(currentFilter).collect(Collectors.toList());
-        try
-        {
-            Result res = items.stream().min(new Comparator<Result>()
-            {
-                @Override
-                public int compare(Result o1, Result o2)
-                {
-                    return Long.compare(o1.getDate().getTime(), o2.getDate().getTime());
-                }
-            }).orElseThrow(NoSuchElementException::new);
-
-            return res.getDate();
-
-        } catch (Throwable throwable)
-        {
-            throwable.printStackTrace();
-            return null;
-        }
+        if (results != null && results.size() != 0)
+            return results.get(0).getDate();
+        else
+            return Calendar.getInstance().getTime();
     }
 
-    Date getMaxDate()
+    Date getMaxResultDateInFullSet()
     {
-        List<Result> items = results.stream().filter(currentFilter).collect(Collectors.toList());
-
-        try
-        {
-            Result res = items.stream().max(new Comparator<Result>()
-            {
-                @Override
-                public int compare(Result o1, Result o2)
-                {
-                    return Long.compare(o1.getDate().getTime(), o2.getDate().getTime());
-                }
-            }).orElseThrow(NoSuchElementException::new);
-
-            return res.getDate();
-
-        } catch (Throwable throwable)
-        {
-            throwable.printStackTrace();
-            return null;
-        }
+        if (results != null && results.size() != 0)
+            return results.get(results.size() - 1).getDate();
+        else
+            return Calendar.getInstance().getTime();
     }
 
     /**
