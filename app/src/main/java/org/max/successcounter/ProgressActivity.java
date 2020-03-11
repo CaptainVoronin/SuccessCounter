@@ -69,6 +69,7 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
     Result currentResult;
     List<Tag> tagFilterSet;
     List<Tag> currentFilterTagSet;
+    SimpleDateFormat dateFormatter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -77,6 +78,8 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
         setContentView(R.layout.activity_progress);
         mPrefs = getPreferences(Context.MODE_PRIVATE);
         DatabaseHelper db = new DatabaseHelper(this);
+        dateFormatter = new SimpleDateFormat("dd MMM yy");
+
         try
         {
             Intent in = getIntent();
@@ -201,7 +204,6 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
 
     private void fillStats()
     {
-        SimpleDateFormat dt = new SimpleDateFormat("dd MMMM yyyy");
 
         TextView tv = findViewById(R.id.lbTotalExercises);
         int count = 0;
@@ -224,7 +226,7 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
         if (startDate != null)
         {
             tv = findViewById(R.id.tvStartDate);
-            tv.setText(dt.format(startDate));
+            tv.setText(dateFormatter.format(startDate));
         }
         btn.setOnClickListener((View v) -> setDateStart());
 
@@ -233,12 +235,15 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
         if (endDate != null)
         {
             tv = findViewById(R.id.tvEndDate);
-            tv.setText(dt.format(endDate));
+            tv.setText(dateFormatter.format(endDate));
         }
 
         btn.setOnClickListener((View v) -> setDateEnd());
     }
 
+    /**
+     * It calls the DatePicker and set endDate
+     */
     private void setDateEnd()
     {
         getDate(endDate, new Function<Date, Date>()
@@ -250,15 +255,17 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
                     return null;
 
                 endDate = date;
-                SimpleDateFormat dt = new SimpleDateFormat("dd MMMM yyyy");
                 TextView tv = findViewById(R.id.tvEndDate);
-                tv.setText(dt.format(endDate));
+                tv.setText(dateFormatter.format(endDate));
                 applyDateFilter();
                 return null;
             }
         });
     }
 
+    /**
+     * It calls Date picker and set startDate
+     */
     private void setDateStart()
     {
         getDate(startDate, new Function<Date, Date>()
@@ -270,9 +277,8 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
                     return null;
 
                 startDate = date;
-                SimpleDateFormat dt = new SimpleDateFormat("dd MMMM yyyy");
                 TextView tv = findViewById(R.id.tvStartDate);
-                tv.setText(dt.format(startDate));
+                tv.setText(dateFormatter.format(startDate));
                 applyDateFilter();
                 return null;
             }
@@ -441,10 +447,8 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
 
     private void showResultDetails(Result res)
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
-
         TextView tv = findViewById(R.id.tvResultDate);
-        tv.setText(sdf.format(res.getDate()));
+        tv.setText(dateFormatter.format(res.getDate()));
 
         tv = findViewById(R.id.tvPercent);
         tv.setText(Result.getPercentString(res));
