@@ -74,11 +74,11 @@
 
     <Button
         android:id="@+id/btnSave"
-        android:background="@color/dark_blue"
-        android:textColor="@color/secondAccent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
         android:text="Сохранить"
+        android:textColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
