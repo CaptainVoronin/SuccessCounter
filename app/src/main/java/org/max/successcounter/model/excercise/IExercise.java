@@ -1,44 +1,89 @@
 package org.max.successcounter.model.excercise;
 
 import com.github.mikephil.charting.data.Entry;
+
 import java.util.List;
 
+/**
+ * This interface contains methods that are used at runtime
+ * by exercise activities
+ */
 public interface IExercise
 {
-    String getName();
-    void setName( String name );
+    Template getTemplate();
 
-    void setTemplate( Template template );
-    Template getTemplate(  );
+    void setTemplate(Template template);
 
-    Integer getId();
-    void setId( Integer id );
-
+    /**
+     * getSteps return all the shots being made
+     *
+     * @return
+     */
     List<IStep> getSteps();
+
+    /**
+     * The function is used for loading the history from DB
+     *
+     * @param steps — steps red from the DB
+     */
     void setSteps(List<IStep> steps);
 
-//    Float getPercentAtStep( int stepNum );
-//    IStep getLastStep( );
+    /**
+     * addNewShot is used by activity to add info about new shots
+     * use done
+     *
+     * @param points
+     * @return — the new steps added
+     */
+    IStep addNewShot(int points);
 
-    IStep addStepByPoints( Integer points );
-    void addStep( IStep step );
-
+    /**
+     * getAttemptsCount — return the total number of shots made
+     *
+     * @return — the total number of shots
+     */
     int getAttemptsCount();
 
+    /**
+     * undo is called by activity
+     *
+     * @return
+     */
     IStep undo();
 
+    // TODO: this is crap. Making the history
+    // is not business of IExercise
     List<Entry> getPercentHistory();
 
+    /**
+     * isFinished returns the state of an exercise with the limit
+     * for unlimited exercises it always returns false
+     *
+     * @return
+     */
     boolean isFinished();
-    Integer getTotalPoints();
+
+    /**
+     * getTotalPoints returns total points collected by the player
+     *
+     * @return — total points
+     */
+    int getTotalPoints();
+
     Result getResult();
 
+    /**
+     * getMaxPossiblePoints return the maximum possible points which may bring a single shot
+     * It always equals to 1 for simple exercises and varies for compound ones
+     *
+     * @return
+     */
     int getMaxPossiblePoints();
 
-    boolean hasSummaryStep();
-
-    boolean isMinOrMax( int index, float value );
+    // TODO: is seems as crap too
+    boolean isMinOrMax(int index, float value);
 
     String getComment();
-    void setComment( String comment );
+
+    void setComment(String comment);
 }

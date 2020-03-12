@@ -37,4 +37,10 @@ public class Tag
 
         return name.toLowerCase().equals( tag.toLowerCase() );
     }
+
+    @Override
+    public int hashCode()
+    {
+        return id;
+    }
 }

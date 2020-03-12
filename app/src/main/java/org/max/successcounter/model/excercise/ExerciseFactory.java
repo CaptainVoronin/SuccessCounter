@@ -29,7 +29,7 @@ public enum ExerciseFactory
                 throw new IllegalArgumentException("Unknown exercise type");
         }
 
-        exs.setName(template.getName());
+        //exs.setName(template.getName());
         exs.setTemplate(template);
         return exs;
     }

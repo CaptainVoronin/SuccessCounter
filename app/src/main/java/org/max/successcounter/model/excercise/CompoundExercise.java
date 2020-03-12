@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 
-public class CompoundExcercise extends AExercise
+public class CompoundExercise extends AExercise
 {
     @Getter
     @Setter
@@ -25,7 +25,7 @@ public class CompoundExcercise extends AExercise
     @Getter @Setter
     boolean hasSummaryStep;
 
-    public CompoundExcercise()
+    public CompoundExercise()
     {
         super();
         options = new ArrayList<>();
@@ -51,37 +51,17 @@ public class CompoundExcercise extends AExercise
         options.add( opt );
     }
 
-
-    @Override
-    public IStep addStepByPoints(Integer points)
-    {
-        incAttempts();
-        Float percent = 100f * (points + getTotalPoints()) / (getMaxPossiblePoints() * getAttempts());
-        IStep step = new Step();
-        step.setPercent( percent );
-        step.setPoints( points );
-        steps.add( step );
-
-        return step;
-    }
-
-    @Override
-    public int getAttemptsCount()
-    {
-        return getAttempts();
-    }
-
     @Override
     public IStep undo()
     {
         if( steps.size() == 0 )
             return null;
 
-        decAttempts();
         return super.undo();
     }
 
-    public Integer getTotalPoints()
+    @Override
+    public int getTotalPoints()
     {
         long l = steps.stream().collect(Collectors.summarizingInt(IStep::getPoints)).getSum();
         return ( int ) l;

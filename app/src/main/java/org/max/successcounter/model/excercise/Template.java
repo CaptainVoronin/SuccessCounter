@@ -4,11 +4,15 @@ import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
+
 import static java.lang.Math.abs;
 
 @DatabaseTable(tableName = "template")
@@ -80,7 +84,7 @@ public class Template
         hasSummaryStep = new Boolean( true );
     }
 
-    public List<Result> getExercisesAsList()
+    public List<Result> getResultsAsList()
     {
         List<Result> list = new ArrayList<>();
         results.forEach(item -> list.add(item));
@@ -92,8 +96,17 @@ public class Template
         List<OptionDescription> list = new ArrayList<>();
         options.forEach(item -> list.add(item));
         list.add( 0, getMissOption() );
-        list.add( getSuccessOption() );
+        if (hasSummaryStep)
+            list.add(getSuccessOption());
+        return list;
+    }
 
+    public List<OptionDescription> getOptionsAsListAllSteps()
+    {
+        List<OptionDescription> list = new ArrayList<>();
+        options.forEach(item -> list.add(item));
+        list.add(0, getMissOption());
+        list.add(getSuccessOption());
         return list;
     }
 
@@ -125,6 +138,11 @@ public class Template
         return op;
     }
 
+    /**
+     * Create and return the "full success option@
+     *
+     * @return an option with maximum possible points
+     */
     private OptionDescription getSuccessOption()
     {
         OptionDescription op = makeDefaultOption( successOptionName, getFullSuccessOptionPoints() );

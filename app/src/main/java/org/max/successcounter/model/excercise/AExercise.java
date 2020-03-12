@@ -2,13 +2,17 @@ package org.max.successcounter.model.excercise;
 
 import com.github.mikephil.charting.data.Entry;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.subjects.PublishSubject;
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class AExercise implements IExercise
+public abstract class AExercise implements IExercise, Publisher<IExerciseEvent>
 {
     @Getter
     @Setter
@@ -17,11 +21,14 @@ public abstract class AExercise implements IExercise
     @Getter
     @Setter
     Integer id;
+
     @Getter
     List<IStep> steps;
+
     @Getter
     @Setter
     Template template;
+
     Result result;
 
     @Getter @Setter
@@ -31,12 +38,12 @@ public abstract class AExercise implements IExercise
     String comment;
 
     @Getter
-    @Setter
-    private int attempts;
+    PublishSubject<IExerciseEvent> publisher;
 
     public AExercise()
     {
         steps = new ArrayList<>();
+        publisher = PublishSubject.create();
     }
 
     @Override
@@ -76,12 +83,6 @@ public abstract class AExercise implements IExercise
     }
 
     @Override
-    public void addStep(IStep step)
-    {
-        steps.add(step);
-    }
-
-    @Override
     public IStep undo()
     {
         IStep step = null;
@@ -109,27 +110,19 @@ public abstract class AExercise implements IExercise
     }
 
     @Override
-    public boolean isFinished()
+    public final boolean isFinished()
     {
         return false;
     }
 
-    public Float getPercentAtStep(int stepNum)
+    @Override
+    public final int getAttemptsCount()
     {
-        if (stepNum < 0 || stepNum >= steps.size())
-            return 0f;
-        else
-            return steps.get(stepNum).getPercent();
+        return steps.size();
     }
 
     @Override
-    public int getAttemptsCount()
-    {
-        return attempts;
-    }
-
-    @Override
-    public Result getResult()
+    public final Result getResult()
     {
         if (result == null)
         {
@@ -150,28 +143,53 @@ public abstract class AExercise implements IExercise
     }
 
     @Override
-    public void setSteps(List<IStep> steps)
+    public final void setSteps(List<IStep> steps)
     {
         this.steps = steps;
         this.steps.forEach(step -> step.setExercise(this));
-        attempts = this.steps.size();
-    }
 
-    protected int incAttempts()
-    {
-        return ++attempts;
-    }
-
-    protected int decAttempts()
-    {
-        if (attempts > 0)
-            attempts--;
-        return attempts;
     }
 
     @Override
-    public boolean hasSummaryStep()
+    public IStep addNewShot(int points)
     {
-        return false;
+        Float percent = 100f * (points + getTotalPoints()) / (getMaxPossiblePoints() * (getAttempts() + 1));
+        IStep step = new Step();
+        step.setPercent(percent);
+        step.setPoints(points);
+        steps.add(step);
+
+        ExerciseEvent e = new ExerciseEvent(IExerciseEvent.Type.ShotAdded);
+        publisher.onNext(e);
+        return step;
     }
+
+    protected int getAttempts()
+    {
+        return steps.size();
+    }
+
+    @Override
+    public int getTotalPoints()
+    {
+        return (int) steps.stream().filter(step -> step.getPoints() != 0).count();
+    }
+
+    @Override
+    public int getMaxPossiblePoints()
+    {
+        return 1;
+    }
+
+    @Override
+    public void subscribe(Subscriber<? super IExerciseEvent> s)
+    {
+
+    }
+
+    protected final void publishFinishEvent()
+    {
+        publisher.onComplete();
+    }
+
 }

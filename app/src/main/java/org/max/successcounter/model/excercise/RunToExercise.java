@@ -1,7 +1,5 @@
 package org.max.successcounter.model.excercise;
 
-import java.util.stream.Collectors;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,18 +25,14 @@ public class RunToExercise extends SimpleExercise
     }
 
     @Override
-    public IStep addStepByPoints(Integer points)
+    public IStep addNewShot(int points)
     {
-        IStep step = null;
-
+        boolean isFinished = false;
         // Prevent add points to a finished exercise
         if (isFinished())
             return null;
 
-        step = new Step();
-        step.setPoints(points);
-        steps.add(step);
-        step.setPercent(100f * getTotalPoints() / getAttemptsCount());
+        IStep step = super.addNewShot(points);
 
         if (template.getSuccesLimited())
         {
@@ -47,28 +41,21 @@ public class RunToExercise extends SimpleExercise
             // and may miss any number of shots
             if (getTotalPoints() == getLimit())
                 // the limit of successful shots is reached
-                finished = true;
+                isFinished = true;
         }
         else
         {
-
             if( steps.size() == getLimit() )
-                finished = true;
+                isFinished = true;
+        }
+
+        if (isFinished && !finished)
+        {
+            finished = isFinished;
+            publishFinishEvent();
         }
 
         return step;
-    }
-
-    @Override
-    public boolean isFinished()
-    {
-        return finished;
-    }
-
-    @Override
-    public Integer getTotalPoints()
-    {
-        return steps.stream().collect( Collectors.summingInt( IStep::getPoints )).intValue();
     }
 
     @Override

@@ -5,7 +5,7 @@ public class SeriesExercise extends AExercise
     boolean finished;
 
     @Override
-    public IStep addStepByPoints(Integer points)
+    public IStep addNewShot(int points)
     {
         // Prevent add points to a finished exercise
         if (isFinished())
@@ -16,32 +16,11 @@ public class SeriesExercise extends AExercise
         if (points == 0)
         {
             finished = true;
+            publishFinishEvent();
             return null;
         }
 
-        SeriesStep step = new SeriesStep();
-        step.setPoints( 1 );
-        steps.add( step );
-        step.setPercent((float) steps.size());
-        return null;
-    }
-
-    @Override
-    public Integer getTotalPoints()
-    {
-        return steps.size();
-    }
-
-    @Override
-    public int getMaxPossiblePoints()
-    {
-        return 1;
-    }
-
-    @Override
-    public boolean isFinished()
-    {
-        return finished;
+        return super.addNewShot(points);
     }
 
 }

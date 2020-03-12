@@ -2,27 +2,5 @@ package org.max.successcounter.model.excercise;
 
 public class SimpleExercise extends AExercise
 {
-    @Override
-    public IStep addStepByPoints(Integer points)
-    {
-        IStep step = new Step();
-        step.setPoints(points);
-        step.setExercise(this);
-        addStep(step);
-        Float p = 100F * getTotalPoints() / getSteps().size();
-        step.setPercent(p);
-        return step;
-    }
 
-    @Override
-    public Integer getTotalPoints()
-    {
-        return (int) steps.stream().filter(step -> step.getPoints() != 0).count();
-    }
-
-    @Override
-    public int getMaxPossiblePoints()
-    {
-        return 1;
-    }
 }
