@@ -5,6 +5,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * The class realises buttons that used on the "select exercise type"screen on
+ * the NewExerciseActivity
+ */
 public class ComplexButton
 {
     private final int layoutID = R.layout.complex_button_layout;

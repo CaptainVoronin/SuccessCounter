@@ -3,11 +3,11 @@ package org.max.successcounter;
 import com.j256.ormlite.dao.Dao;
 
 import org.max.successcounter.db.DatabaseHelper;
-import org.max.successcounter.model.excercise.IExercise;
+import org.max.successcounter.model.excercise.AExercise;
 
 import java.sql.SQLException;
 
-interface IExerciseForm<T extends IExercise>
+interface IExerciseForm<T extends AExercise>
 {
     void setExerсise( T exercise );
     T getExercise();

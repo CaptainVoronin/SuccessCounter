@@ -11,11 +11,13 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.j256.ormlite.dao.Dao;
+
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.excercise.Template;
+
 import java.sql.SQLException;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 public class NewLimitedActivity extends AppCompatActivity
 {
@@ -35,7 +37,7 @@ public class NewLimitedActivity extends AppCompatActivity
         Intent in = getIntent();
         templateName = in.getStringExtra( NewExerciseActivity.TEMPLATE_NAME );
 
-        btnSave = findViewById( R.id.btnSave );
+        btnSave = findViewById(R.id.btnSave);
         btnSave.setOnClickListener(new View.OnClickListener()
         {
             @Override

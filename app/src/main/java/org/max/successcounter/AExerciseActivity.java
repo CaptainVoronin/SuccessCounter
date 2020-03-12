@@ -16,8 +16,9 @@ import com.j256.ormlite.dao.Dao;
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.HistoryOperator;
 import org.max.successcounter.model.TagsOperator;
+import org.max.successcounter.model.excercise.AExercise;
 import org.max.successcounter.model.excercise.ExerciseFactory;
-import org.max.successcounter.model.excercise.IExercise;
+import org.max.successcounter.model.excercise.IExerciseEvent;
 import org.max.successcounter.model.excercise.IStep;
 import org.max.successcounter.model.excercise.Result;
 import org.max.successcounter.model.excercise.Tag;
@@ -27,8 +28,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
-public abstract class AExerciseActivity<T extends IExercise> extends AppCompatActivity implements IExerciseForm<T>, DialogTags.DialogTagsResultListener
+public abstract class AExerciseActivity<T extends AExercise> extends AppCompatActivity
+        implements IExerciseForm<T>, DialogTags.DialogTagsResultListener,
+        Observer<IExerciseEvent>
 {
     public final static String RESULT_ID = "RESULT_ID";
 
@@ -36,7 +41,6 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
     private TextView lbPercent;
     private TextView lbAttempts;
     private TextView lbExName;
-
     private ImageView btnRollback;
     private ImageView btnComment;
     private ImageView btnShowTagsDialog;
@@ -78,7 +82,7 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
         lbAttempts = findViewById(R.id.lbAttempts);
         lbExName = findViewById(R.id.tvExName);
 
-        lbExName.setText(getExercise().getName());
+        lbExName.setText(getExercise().getTemplate().getName());
         btnRollback = findViewById(R.id.btnRollback);
         btnRollback.setOnClickListener(e -> {
             undo();
@@ -138,7 +142,7 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
 
     protected void addStep(int points)
     {
-        getExercise().addStepByPoints(points);
+        getExercise().addNewShot(points);
         saveResult();
         updateUIResults();
         if (getExercise().isFinished())
@@ -178,9 +182,9 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
 
         // Load the exercise template
         Template et = getTemplate(templateID);
-
         // Make an exercise instance
         T ex = (T) ExerciseFactory.instance.makeExercise(et);
+        ex.getPublisher().subscribe(this);
         ex.setTemplate(et);
         setExerсise(ex);
     }
@@ -203,7 +207,7 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
             loadTemplate();
             prepareControls();
             loadOrClearHistory();
-            setTitle(getExercise().getName());
+            setTitle(getExercise().getTemplate().getName());
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -445,5 +449,30 @@ public abstract class AExerciseActivity<T extends IExercise> extends AppCompatAc
             // so the the old history must be deleted
             HistoryOperator.instance.clearHistory();
         }
+    }
+
+    @Override
+    public void onNext(IExerciseEvent iExerciseEvent)
+    {
+        System.out.println("On next");
+    }
+
+    @Override
+    public void onComplete()
+    {
+        System.out.println("Complete");
+        onExerciseFinished();
+    }
+
+    @Override
+    public void onSubscribe(Disposable d)
+    {
+
+    }
+
+    @Override
+    public void onError(Throwable e)
+    {
+
     }
 }

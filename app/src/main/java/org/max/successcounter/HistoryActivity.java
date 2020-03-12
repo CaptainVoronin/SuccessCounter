@@ -93,7 +93,7 @@ public class HistoryActivity extends AppCompatActivity
         TableLayout table = findViewById(R.id.historyTable);
         table.removeAllViews();
         checks = new ArrayList<>();
-        List<Result> results = template.getExercisesAsList();
+        List<Result> results = template.getResultsAsList();
         results.sort(new ResultDateComparator(true));
         boolean isLast = true;
         for (Result res : results)
