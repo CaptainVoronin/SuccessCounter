@@ -20,9 +20,11 @@ import org.max.successcounter.model.excercise.AExercise;
 import org.max.successcounter.model.excercise.ExerciseFactory;
 import org.max.successcounter.model.excercise.IExerciseEvent;
 import org.max.successcounter.model.excercise.IStep;
+import org.max.successcounter.model.excercise.NewShotEvent;
 import org.max.successcounter.model.excercise.Result;
 import org.max.successcounter.model.excercise.Tag;
 import org.max.successcounter.model.excercise.Template;
+import org.max.successcounter.model.excercise.UndoEvent;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -49,6 +51,12 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
     private ImageButton btnBack;
     private EditText edCommentInDialog;
 
+    /**
+     * Returns the activity class for the template
+     *
+     * @param template
+     * @return the class of the activity that works with this template
+     */
     public static Class getExerciseActivityClass(Template template)
     {
         Class clazz;
@@ -84,22 +92,10 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
 
         lbExName.setText(getExercise().getTemplate().getName());
         btnRollback = findViewById(R.id.btnRollback);
-        btnRollback.setOnClickListener(e -> {
-            undo();
-            updateUIResults();
-            saveResult();
-        });
+        btnRollback.setOnClickListener(e -> undo());
         btnRollback.setEnabled(false);
-
         btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                finish();
-            }
-        });
+        btnBack.setOnClickListener(v -> finish());
 
         LinearLayout ll = findViewById(R.id.viewChartPlaceholder);
         prepareChart(ll);
@@ -109,11 +105,11 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
 
         btnComment = findViewById(R.id.btnComment);
         btnComment.setOnClickListener(v -> showCommentDialog());
-        btnComment.setEnabled( false );
+        btnComment.setEnabled(false);
 
         btnShowTagsDialog = findViewById(R.id.btnExerciseTags);
         btnShowTagsDialog.setOnClickListener(v -> showTagsDialog());
-        btnShowTagsDialog.setEnabled( false );
+        btnShowTagsDialog.setEnabled(false);
     }
 
     /**
@@ -140,25 +136,36 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
 
     protected abstract void prepareControlButtons(LinearLayout placeholder);
 
-    protected void addStep(int points)
+    protected void addNewShot(int points )
     {
         getExercise().addNewShot(points);
-        saveResult();
-        updateUIResults();
-        if (getExercise().isFinished())
-        {
-            onExerciseFinished();
-        }
     }
 
-    protected void saveResult()
+    /**
+     * newShotAdded is called as a reaction on NewStep event
+     *
+     * @param step
+     */
+    protected void newShotAdded(IStep step)
+    {
+        saveResult(step);
+        updateStatsOnUI();
+    }
+
+    /**
+     * Step miy be null because this function could be called
+     * for saving the comment or tags
+     *
+     * @param step step to save
+     */
+    protected void saveResult( IStep step )
     {
         try
         {
             Result res = exercise.getResult();
             daoResult.createOrUpdate(res);
-            List<IStep> steps = getExercise().getSteps();
-            HistoryOperator.instance.saveStep(steps.get(steps.size() - 1));
+            if (step != null)
+                HistoryOperator.instance.saveStep( step );
             onResultSaved();
         } catch (Exception e)
         {
@@ -166,7 +173,7 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
         }
     }
 
-    protected void updateUIResults()
+    protected void updateStatsOnUI()
     {
         lbPercent.setText(getEfficiencyString());
         lbAttempts.setText(getAttemptsString());
@@ -185,6 +192,7 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
         // Make an exercise instance
         T ex = (T) ExerciseFactory.instance.makeExercise(et);
         ex.getPublisher().subscribe(this);
+
         ex.setTemplate(et);
         setExerсise(ex);
     }
@@ -223,17 +231,7 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
 
     void undo()
     {
-        try
-        {
-            IStep step = getExercise().undo();
-            if (step != null)
-                HistoryOperator.instance.deleteStep(step);
-
-            btnRollback.setEnabled(getExercise().getSteps().size() != 0);
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
+        getExercise().undo();
     }
 
     @Override
@@ -243,13 +241,13 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
     }
 
     @Override
-    public void setExerсise(T exercise)
+    public final void setExerсise(T exercise)
     {
         this.exercise = exercise;
     }
 
     @Override
-    public T getExercise()
+    public final T getExercise()
     {
         return exercise;
     }
@@ -285,6 +283,9 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
         return "" + getExercise().getTotalPoints() + "(" + getExercise().getAttemptsCount() + ")";
     }
 
+    /**
+     * Just a stub in the base class
+     */
     public void onExerciseFinished()
     {
 
@@ -364,7 +365,7 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
             return;
 
         // Count tags to delete
-        long cnt = exercise.getResult().getTags().stream().filter( tag -> !checked.contains( tag ) ).count();
+        long cnt = exercise.getResult().getTags().stream().filter(tag -> !checked.contains(tag)).count();
 
         // Set the new tag set
         exercise.getResult().setTags(checked);
@@ -374,7 +375,7 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
             saveTags();
 
             // If there something must be deleted, delete
-            if( cnt != 0 )
+            if (cnt != 0)
                 TagsOperator.instance.deleteUnusedTags();
 
         } catch (SQLException e)
@@ -396,24 +397,30 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
             throw new SQLException("Not all tags were inserted");
     }
 
+    /**
+     * Is is called  after saving the result
+     */
     public void onResultSaved()
     {
-        btnRollback.setEnabled( true );
+        btnRollback.setEnabled(getExercise().getSteps().size() != 0);
 
-        if( !btnComment.isEnabled() )
+        if (!btnComment.isEnabled())
         {
-            btnComment.setEnabled( true );
-            btnComment.setImageDrawable( getDrawable(R.drawable.ic_note_add_orange_18dp ) );
+            btnComment.setEnabled(true);
+            btnComment.setImageDrawable(getDrawable(R.drawable.ic_note_add_orange_18dp));
         }
 
-        if( !btnShowTagsDialog.isEnabled() )
+        if (!btnShowTagsDialog.isEnabled())
         {
             btnShowTagsDialog.setEnabled(true);
-            btnShowTagsDialog.setImageDrawable( getDrawable( R.drawable.ic_label_outline_orange_36dp) );
+            btnShowTagsDialog.setImageDrawable(getDrawable(R.drawable.ic_label_outline_orange_36dp));
         }
         setResult(RESULT_OK);
     }
 
+    /**
+     * It restores the fullscreen mode after resume
+     */
     @Override
     protected void onPostResume()
     {
@@ -421,6 +428,10 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
         setFullScreenMode();
     }
 
+    /**
+     * Sets the title for the activity
+     * @param title
+     */
     @Override
     public void setTitle(CharSequence title)
     {
@@ -441,7 +452,7 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
         {
             List<IStep> steps = HistoryOperator.instance.getHistory();
             getExercise().setSteps(steps);
-            updateUIResults();
+            updateStatsOnUI();
             onResultSaved();
         } else
         {
@@ -452,16 +463,47 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
     }
 
     @Override
-    public void onNext(IExerciseEvent iExerciseEvent)
+    public void onNext(IExerciseEvent event)
     {
-        System.out.println("On next");
+        switch (event.getType())
+        {
+            case ShotAdded:
+            {
+                NewShotEvent e = (NewShotEvent) event;
+                newShotAdded(e.getStep());
+            }
+            break;
+            case Undo:
+            {
+                UndoEvent e = (UndoEvent) event;
+                onUndo(e.getStep());
+            }
+            break;
+            case Finished:
+                onExerciseFinished();
+                break;
+            default:
+                break;
+        }
     }
 
-    @Override
-    public void onComplete()
+    /**
+     * It is called on the undo event type
+     *
+     * @param step that has been removed from the sequence
+     */
+    private void onUndo(IStep step)
     {
-        System.out.println("Complete");
-        onExerciseFinished();
+        try
+        {
+            if (step != null)
+                HistoryOperator.instance.deleteStep(step);
+            saveResult(null);
+            updateStatsOnUI();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -474,5 +516,24 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
     public void onError(Throwable e)
     {
 
+    }
+
+    @Override
+    public void onComplete()
+    {
+
+    }
+
+    protected void setScreenProportions(float chartWeight, float buttonsWeight)
+    {
+        LinearLayout ll = findViewById(R.id.viewChartPlaceholder);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT, chartWeight);
+        ll.setLayoutParams(lp);
+
+        ll = findViewById(R.id.buttonsPlaceholder);
+        lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT, buttonsWeight);
+        ll.setLayoutParams( lp );
     }
 }
