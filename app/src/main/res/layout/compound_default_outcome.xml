@@ -7,10 +7,9 @@
 
     <ViewSwitcher
         android:id="@+id/swcDescription"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="0.7">
+        android:layout_gravity="center_vertical">
 
         <TextView
             android:id="@+id/lbStepName"
@@ -18,6 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:clickable="true"
+            android:layout_weight="0.7"
             android:text="Miss. Poins" />
 
         <EditText
@@ -25,6 +25,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_weight="0.7"
+            android:text=";lk;lk;lk"
             android:textSize="14sp"
             android:theme="@style/AppTheme"
             android:visibility="gone" />
@@ -32,10 +34,9 @@
 
     <ViewSwitcher
         android:id="@+id/swcPoints"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="0.2">
+        android:layout_gravity="center_vertical">
 
         <TextView
             android:id="@+id/lbStepPoints"
@@ -43,6 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:clickable="true"
+            android:layout_weight="0.2"
             android:text="0" />
 
         <EditText
@@ -50,7 +52,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_weight="0.2"
             android:inputType="number"
+            android:text="uytuytuyt"
             android:textSize="14sp"
             android:visibility="gone" />
 
