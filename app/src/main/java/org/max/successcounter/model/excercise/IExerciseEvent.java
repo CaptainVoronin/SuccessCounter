@@ -7,5 +7,5 @@ public interface IExerciseEvent
     ;
 
     enum Type
-    {ShotAdded, Finished, undo}
+    {ShotAdded, Finished, Undo, undo}
 }
