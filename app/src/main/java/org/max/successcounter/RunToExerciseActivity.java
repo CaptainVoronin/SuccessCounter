@@ -1,6 +1,7 @@
 package org.max.successcounter;
 
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -28,6 +29,12 @@ public class RunToExerciseActivity extends AExerciseActivity<RunToExercise>
 
     PieChart mChart;
 
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setScreenProportions(0.2f, 0.2f);
+    }
+
     @Override
     public void onExerciseFinished()
     {
@@ -45,12 +52,12 @@ public class RunToExerciseActivity extends AExerciseActivity<RunToExercise>
         ImageButton btn = placeholder.findViewById(R.id.btnAttempt);
 
         btn.setOnClickListener(e -> {
-            addStep(0);
+            addNewShot(0);
         });
 
         btn = findViewById(R.id.btnSuccess);
         btn.setOnClickListener(e -> {
-            addStep(1);
+            addNewShot(1);
         });
 
     }
