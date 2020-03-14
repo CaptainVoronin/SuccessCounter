@@ -14,6 +14,7 @@ public class CompoundExercise extends AExercise
     List<Option> options;
 
     int maxShotPoints;
+
     int maxResult;
 
     /**
@@ -49,15 +50,6 @@ public class CompoundExercise extends AExercise
     public void addOption( Option opt )
     {
         options.add( opt );
-    }
-
-    @Override
-    public IStep undo()
-    {
-        if( steps.size() == 0 )
-            return null;
-
-        return super.undo();
     }
 
     @Override
