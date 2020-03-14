@@ -66,12 +66,12 @@ public class LineChartExerciseActivity<T extends AExercise> extends AExerciseAct
         ImageButton btn = placeholder.findViewById(R.id.btnAttempt);
 
         btn.setOnClickListener(e -> {
-            addStep( 0 );
+            addNewShot(0);
         });
 
         btn = findViewById(R.id.btnSuccess);
         btn.setOnClickListener(e -> {
-            addStep( 1 );
+            addNewShot(1);
         });
     }
 
