@@ -91,7 +91,9 @@ public abstract class AExercise implements IExercise, Publisher<IExerciseEvent>
         {
             step = steps.get(steps.size() - 1);
             steps.remove(step);
+            publisher.onNext(new UndoEvent(step));
         }
+
         return step;
     }
 
@@ -159,7 +161,7 @@ public abstract class AExercise implements IExercise, Publisher<IExerciseEvent>
         step.setPoints(points);
         steps.add(step);
 
-        ExerciseEvent e = new ExerciseEvent(IExerciseEvent.Type.ShotAdded);
+        ExerciseEvent e = new NewShotEvent(step);
         publisher.onNext(e);
         return step;
     }
@@ -181,15 +183,14 @@ public abstract class AExercise implements IExercise, Publisher<IExerciseEvent>
         return 1;
     }
 
+    protected final void publishFinishEvent()
+    {
+        publisher.onNext(new FinishEvent());
+    }
+
     @Override
     public void subscribe(Subscriber<? super IExerciseEvent> s)
     {
-
+        //publisher.subscribe(s);
     }
-
-    protected final void publishFinishEvent()
-    {
-        publisher.onComplete();
-    }
-
 }
