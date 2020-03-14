@@ -54,7 +54,7 @@ public class CompoundExerciseActivity extends LineChartExerciseActivity<Compound
         {
             Object tag = v.getTag();
             CompoundExercise.Option opt = (CompoundExercise.Option) tag;
-            addStep(opt.getPoints());
+            addNewShot(opt.getPoints());
         }
     }
 }
