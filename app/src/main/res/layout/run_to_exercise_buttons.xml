@@ -3,11 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/btnSwitcher"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -42,9 +44,10 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/viewFinishMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/viewFinishMessage">
+        android:gravity="center_vertical">
 
         <TextView
             android:layout_width="match_parent"
