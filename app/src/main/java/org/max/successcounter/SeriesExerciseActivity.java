@@ -16,6 +16,7 @@ public class SeriesExerciseActivity extends LineChartExerciseActivity<SeriesExer
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setScreenProportions(0.2f, 0.2f);
     }
 
     @Override
@@ -28,12 +29,12 @@ public class SeriesExerciseActivity extends LineChartExerciseActivity<SeriesExer
         ImageButton btn = placeholder.findViewById(R.id.btnAttempt);
 
         btn.setOnClickListener(e -> {
-            addStep( 0 );
+            addNewShot(0);
         });
 
         btn = findViewById(R.id.btnSuccess);
         btn.setOnClickListener(e -> {
-            addStep( 1 );
+            addNewShot(1);
         });
     }
 
