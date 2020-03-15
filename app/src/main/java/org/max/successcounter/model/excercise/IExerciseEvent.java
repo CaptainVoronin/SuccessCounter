@@ -4,8 +4,6 @@ public interface IExerciseEvent
 {
     Type getType();
 
-    ;
-
     enum Type
-    {ShotAdded, Finished, Undo, undo}
+    {ShotAdded, Finished, Undo, Resume}
 }
