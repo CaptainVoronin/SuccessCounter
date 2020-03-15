@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.j256.ormlite.dao.Dao;
 
 import org.max.successcounter.db.DatabaseHelper;
+import org.max.successcounter.model.HistoryOperator;
 import org.max.successcounter.model.ResultDateComparator;
 import org.max.successcounter.model.excercise.Result;
 import org.max.successcounter.model.excercise.Template;
@@ -30,7 +31,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.Toolbar;
 
-// TODO: Таблица истории не в дугу
 // TODO: Нужна сортировка таблицы
 
 public class HistoryActivity extends AppCompatActivity
@@ -75,9 +75,11 @@ public class HistoryActivity extends AppCompatActivity
             templateDao = db.getDao(Template.class);
             Intent in = getIntent();
             templateId = in.getIntExtra(TEMPLATE_ID, -1);
+
             if (templateId == -1)
                 throw new IllegalArgumentException();
-
+            template = templateDao.queryForId(templateId);
+            HistoryOperator.instance.init(db, template);
             fillList();
 
         } catch (SQLException e)
@@ -88,19 +90,14 @@ public class HistoryActivity extends AppCompatActivity
 
     private void fillList() throws SQLException
     {
-        template = templateDao.queryForId(templateId);
-
+        long savedResultID = HistoryOperator.instance.getSavedResultIDForTemplate();
         TableLayout table = findViewById(R.id.historyTable);
         table.removeAllViews();
         checks = new ArrayList<>();
         List<Result> results = template.getResultsAsList();
         results.sort(new ResultDateComparator(true));
-        boolean isLast = true;
         for (Result res : results)
-        {
-            table.addView(makeRow(res, isLast));
-            isLast = false;
-        }
+            table.addView(makeRow(res, res.getId() == savedResultID));
     }
 
     private View makeRow(Result res, boolean isLast)
@@ -163,6 +160,7 @@ public class HistoryActivity extends AppCompatActivity
         dlg.setMessage( R.string.txtDeleteResults ).
         setPositiveButton( android.R.string.ok, ( DialogInterface dialog, int id ) -> deleteResults() ).setNegativeButton(android.R.string.cancel, ( DialogInterface dialog, int id ) -> dialog.dismiss() ) .show();
     }
+
     private void deleteResults()
     {
         List<Result> results = checks.stream().filter(CheckBox::isChecked).map( CheckBox::getTag ).
@@ -170,6 +168,7 @@ public class HistoryActivity extends AppCompatActivity
         try
         {
             resultDao.delete( results );
+            template = templateDao.queryForId(template.getId());
             fillList();
             if( actionMode != null )
                 finishActionMode();
