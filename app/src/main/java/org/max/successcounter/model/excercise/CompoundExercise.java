@@ -7,7 +7,11 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 
-public class CompoundExercise extends AExercise
+/**
+ * This is a class which provides functionality for a compound
+ * exercise where a shot could bring different value of points
+ */
+public class CompoundExercise extends BaseExercise
 {
     @Getter
     @Setter
@@ -26,13 +30,14 @@ public class CompoundExercise extends AExercise
     @Getter @Setter
     boolean hasSummaryStep;
 
-    public CompoundExercise()
+    public CompoundExercise(Template template)
     {
-        super();
+        super(template);
         options = new ArrayList<>();
         maxResult = -1;
         hasSummaryStep = true;
         maxShotPoints = -1;
+        setHasSummaryStep(template.isHasSummaryStep());
     }
 
     /**
