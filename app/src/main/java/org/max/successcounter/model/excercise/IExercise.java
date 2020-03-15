@@ -12,8 +12,6 @@ public interface IExercise
 {
     Template getTemplate();
 
-    void setTemplate(Template template);
-
     /**
      * getSteps return all the shots being made
      *
