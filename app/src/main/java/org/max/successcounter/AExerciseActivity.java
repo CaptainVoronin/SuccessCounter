@@ -38,7 +38,7 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
         Observer<IExerciseEvent>
 {
     public final static String RESULT_ID = "RESULT_ID";
-
+    Template template;
     private DatabaseHelper db;
     private TextView lbPercent;
     private TextView lbAttempts;
@@ -136,14 +136,13 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
 
     protected abstract void prepareControlButtons(LinearLayout placeholder);
 
-    protected void addNewShot(int points )
+    protected void addNewShot(int points)
     {
         getExercise().addNewShot(points);
     }
 
     /**
-     * newShotAdded is called as a reaction on NewStep event
-     *
+     * newShotAdded is called as a reaction on the NewStep event
      * @param step
      */
     protected void newShotAdded(IStep step)
@@ -158,14 +157,14 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
      *
      * @param step step to save
      */
-    protected void saveResult( IStep step )
+    protected void saveResult(IStep step)
     {
         try
         {
             Result res = exercise.getResult();
             daoResult.createOrUpdate(res);
             if (step != null)
-                HistoryOperator.instance.saveStep( step );
+                HistoryOperator.instance.saveStep(getExercise().getResult(), step);
             onResultSaved();
         } catch (Exception e)
         {
@@ -188,12 +187,11 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
             throw new IllegalArgumentException("Exercise result id is missing");
 
         // Load the exercise template
-        Template et = getTemplate(templateID);
+        template = getTemplate(templateID);
         // Make an exercise instance
-        T ex = (T) ExerciseFactory.instance.makeExercise(et);
+        T ex = (T) ExerciseFactory.instance.makeExercise(template);
         ex.getPublisher().subscribe(this);
 
-        ex.setTemplate(et);
         setExerсise(ex);
     }
 
@@ -430,6 +428,7 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
 
     /**
      * Sets the title for the activity
+     *
      * @param title
      */
     @Override
@@ -441,7 +440,7 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
 
     protected void loadOrClearHistory() throws SQLException
     {
-        HistoryOperator.instance.init(getDb(), getExercise());
+        HistoryOperator.instance.init(getDb(), template);
 
         // Check if it is the continue of an exercise
         Integer id = getIntent().getIntExtra(AExerciseActivity.RESULT_ID, -1);
@@ -534,6 +533,6 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
         ll = findViewById(R.id.buttonsPlaceholder);
         lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, buttonsWeight);
-        ll.setLayoutParams( lp );
+        ll.setLayoutParams(lp);
     }
 }
