@@ -51,7 +51,7 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName vName
-        setProperty("archivesBaseName", "scounter-$versionName")
+        setProperty("archivesBaseName", "bts-$versionName")
         applicationIdSuffix = 'debug'
         signingConfig signingConfigs.debug
     }

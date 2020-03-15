@@ -5,20 +5,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ViewSwitcher;
 
 import org.max.successcounter.model.excercise.CompoundExercise;
 
 public class CompoundExerciseActivity extends LineChartExerciseActivity<CompoundExercise>
 {
+    ViewSwitcher switcher;
 
     @Override
     protected void prepareControlButtons(LinearLayout placeholder)
     {
         CompoundExercise cx = getExercise();
-
         LayoutInflater lif = getLayoutInflater();
-        LinearLayout ll = (LinearLayout) lif.inflate( R.layout.compound_exercise_buttons, placeholder, true );
-        ll.setOrientation( LinearLayout.VERTICAL );
+        LinearLayout lc = (LinearLayout) lif.inflate(R.layout.compound_exercise_buttons, placeholder, true);
+        switcher = lc.findViewById(R.id.btnSwitcher);
+
+        LinearLayout ll = placeholder.findViewById(R.id.llButtons);
         cx.getOptions().forEach( item->{
             ll.addView( makeButton( item ) );
         } );
@@ -56,5 +59,17 @@ public class CompoundExerciseActivity extends LineChartExerciseActivity<Compound
             CompoundExercise.Option opt = (CompoundExercise.Option) tag;
             addNewShot(opt.getPoints());
         }
+    }
+
+    @Override
+    public void onExerciseFinished()
+    {
+        switcher.showNext();
+    }
+
+    @Override
+    protected void onExerciseResumed()
+    {
+        switcher.showNext();
     }
 }

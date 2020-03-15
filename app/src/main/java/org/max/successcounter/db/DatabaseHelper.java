@@ -19,7 +19,7 @@ import org.max.successcounter.model.excercise.Template;
 public final class DatabaseHelper extends OrmLiteSqliteOpenHelper
 {
     private static final String DATABASE_NAME = "scounter.db";
-    private static final int DATABASE_VERSION = 43;
+    private static final int DATABASE_VERSION = 45;
 
     public DatabaseHelper(Context context)
     {

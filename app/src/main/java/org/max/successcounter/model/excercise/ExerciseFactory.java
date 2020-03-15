@@ -15,10 +15,10 @@ public enum ExerciseFactory
                 for (OptionDescription od : template.getOptionsAsList())
                     ((CompoundExercise) exs).addOption(makeOption(od));
                 break;
-            case simple:
+            case series:
                 exs = new BaseExercise(template);
                 break;
-            case series:
+            case runTo:
                 exs = new SeriesExercise(template);
                 break;
             default:

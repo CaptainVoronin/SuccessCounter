@@ -1,5 +1,5 @@
 #
-# generated on 2020/03/08 11:52:31
+# generated on 2020/03/15 08:28:09
 #
 # --table-start--
 dataClass=org.max.successcounter.model.excercise.Result
@@ -57,9 +57,6 @@ allowGeneratedIdInsert=true
 fieldName=limit
 # --field-end--
 # --field-start--
-fieldName=limited
-# --field-end--
-# --field-start--
 fieldName=succesLimited
 # --field-end--
 # --field-start--
@@ -96,10 +93,12 @@ fieldName=percent
 fieldName=parent
 columnName=parent_id
 foreign=true
+columnDefinition=INTEGER NOT NULL REFERENCES result( id ) ON DELETE CASCADE
 # --field-end--
 # --field-start--
 fieldName=templateID
 canBeNull=false
+columnDefinition=INTEGER NOT NULL REFERENCES template( id ) ON DELETE CASCADE
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -117,6 +116,12 @@ fieldName=points
 # --field-end--
 # --field-start--
 fieldName=description
+# --field-end--
+# --field-start--
+fieldName=orderNum
+# --field-end--
+# --field-start--
+fieldName=color
 # --field-end--
 # --field-start--
 fieldName=parent

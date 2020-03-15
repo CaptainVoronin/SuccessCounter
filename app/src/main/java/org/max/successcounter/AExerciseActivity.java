@@ -16,7 +16,7 @@ import com.j256.ormlite.dao.Dao;
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.HistoryOperator;
 import org.max.successcounter.model.TagsOperator;
-import org.max.successcounter.model.excercise.AExercise;
+import org.max.successcounter.model.excercise.BaseExercise;
 import org.max.successcounter.model.excercise.ExerciseFactory;
 import org.max.successcounter.model.excercise.IExerciseEvent;
 import org.max.successcounter.model.excercise.IStep;
@@ -33,7 +33,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
-public abstract class AExerciseActivity<T extends AExercise> extends AppCompatActivity
+public abstract class AExerciseActivity<T extends BaseExercise> extends AppCompatActivity
         implements IExerciseForm<T>, DialogTags.DialogTagsResultListener,
         Observer<IExerciseEvent>
 {
@@ -59,29 +59,17 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
      */
     public static Class getExerciseActivityClass(Template template)
     {
-        Class clazz;
         switch (template.getExType())
         {
-            case simple:
-                if (template.getLimited())
-                {
-                    if (template.getSuccesLimited())
-                        clazz = SeriesExerciseActivity.class;
-                    else
-                        clazz = RunToExerciseActivity.class;
-                } else
-                    clazz = SimpleExerciseActivity.class;
-                break;
-            case compound:
-                clazz = CompoundExerciseActivity.class;
-                break;
             case series:
-                clazz = SeriesExerciseActivity.class;
-                break;
+                return SeriesExerciseActivity.class;
+            case compound:
+                return CompoundExerciseActivity.class;
+            case runTo:
+                return RunToExerciseActivity.class;
             default:
                 throw new IllegalArgumentException("Unknown template type");
         }
-        return clazz;
     }
 
     protected void prepareControls()
@@ -143,6 +131,7 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
 
     /**
      * newShotAdded is called as a reaction on the NewStep event
+     *
      * @param step
      */
     protected void newShotAdded(IStep step)
@@ -286,7 +275,6 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
      */
     public void onExerciseFinished()
     {
-
     }
 
     /**
@@ -481,9 +469,19 @@ public abstract class AExerciseActivity<T extends AExercise> extends AppCompatAc
             case Finished:
                 onExerciseFinished();
                 break;
+            case Resume:
+                onExerciseResumed();
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * Just a stub
+     */
+    protected void onExerciseResumed()
+    {
     }
 
     /**

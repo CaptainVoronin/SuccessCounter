@@ -26,4 +26,9 @@ public class SeriesExercise extends BaseExercise
         return super.addNewShot(points);
     }
 
+    @Override
+    protected float calculateStepPercent(int stepPoints)
+    {
+        return 100f * getAttemptsCount() / template.getLimit();
+    }
 }

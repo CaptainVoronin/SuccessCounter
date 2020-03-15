@@ -42,6 +42,13 @@ public class NewCompoundActivity extends AppCompatActivity
 
         template = new Template();
         template.setName(templateName);
+        int limit = in.getIntExtra(NewExerciseActivity.TEMPLATE_LIMIT, 0);
+        if (limit > 0)
+        {
+            template.setLimit(limit);
+            template.setSuccesLimited(in.getBooleanExtra(NewExerciseActivity.SUCCESS_LIMITED, false));
+        }
+
         String str = getString(R.string.missOptionName);
         template.setMissOptionName(str);
         str = getString(R.string.successOptionName);
@@ -74,7 +81,6 @@ public class NewCompoundActivity extends AppCompatActivity
                 save();
             }
         });
-
     }
 
     private void makeToolbar()
@@ -86,8 +92,6 @@ public class NewCompoundActivity extends AppCompatActivity
     private void prepareNewExercise()
     {
         template.setExType(Template.Type.compound);
-        template.setLimited(false);
-        template.setLimit(0);
 
         OptionDescription op = new OptionDescription();
         op.setDescription("Outcome 1");

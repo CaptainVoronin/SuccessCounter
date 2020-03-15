@@ -6,8 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".NewExerciseActivity">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/stdtoobar"/>
+    <include
+        android:id="@+id/stdtoobar"
+        layout="@layout/toolbar" />
 
     <LinearLayout
         android:id="@+id/container"
@@ -30,6 +31,51 @@
             android:ems="10"
             android:text="*название"
             android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/lbLimitStaticText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/txtLimitWord"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbName" />
+
+        <EditText
+            android:id="@+id/edLimit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cardview_compat_inset_shadow"
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintTop_toBottomOf="@id/lbLimitStaticText" />
+
+        <RadioGroup
+            android:id="@+id/rgLimitType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:checkedButton="@id/rbSuccess"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edLimit">
+
+            <RadioButton
+                android:id="@+id/rbSuccess"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="@string/txtSuccessLimit" />
+
+            <RadioButton
+                android:id="@+id/rbTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="@string/txtTotalShots" />
+        </RadioGroup>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

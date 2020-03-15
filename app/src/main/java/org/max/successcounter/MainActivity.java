@@ -82,21 +82,21 @@ public class MainActivity extends AppCompatActivity
     {
         try
         {
-            Dao<Tag, Integer> tagDao = dbHelper.getDao( Tag.class );
-            Tag t = new Tag( "Baza");
-            tagDao.create( t );
-            t = new Tag( "Abricol");
-            tagDao.create( t );
-            t = new Tag( "Empire");
-            tagDao.create( t );
-            t = new Tag( "narrow pockets");
-            tagDao.create( t );
-            t = new Tag( "wide pockets");
-            tagDao.create( t );
-            t = new Tag( "closed bridge");
-            tagDao.create( t );
-            t = new Tag( "open bridge");
-            tagDao.create( t );
+            Dao<Tag, Integer> tagDao = dbHelper.getDao(Tag.class);
+            Tag t = new Tag("Baza");
+            tagDao.create(t);
+            t = new Tag("Abricol");
+            tagDao.create(t);
+            t = new Tag("Empire");
+            tagDao.create(t);
+            t = new Tag("narrow pockets");
+            tagDao.create(t);
+            t = new Tag("wide pockets");
+            tagDao.create(t);
+            t = new Tag("closed bridge");
+            tagDao.create(t);
+            t = new Tag("open bridge");
+            tagDao.create(t);
 
         } catch (SQLException e)
         {
@@ -334,8 +334,8 @@ public class MainActivity extends AppCompatActivity
     public void makeToolbar()
     {
 
-        Toolbar tb = findViewById( R.id.tooBar );
-        tb.inflateMenu( R.menu.main_menu );
+        Toolbar tb = findViewById(R.id.tooBar);
+        tb.inflateMenu(R.menu.main_menu);
         tb.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener()
         {
             @Override
@@ -354,13 +354,13 @@ public class MainActivity extends AppCompatActivity
 
         // Set the title text
         TextView tv = findViewById(R.id.tvTitle);
-        tv.setText( getString( R.string.txtMainActivityTitle ) );
+        tv.setText(getString(R.string.txtMainActivityTitle));
     }
 
     private void showAbout()
     {
-        Intent in = new Intent( this, AboutActivity.class );
-        startActivity( in );
+        Intent in = new Intent(this, AboutActivity.class);
+        startActivity(in);
     }
 
     class ResultComparator implements Comparator<Result>

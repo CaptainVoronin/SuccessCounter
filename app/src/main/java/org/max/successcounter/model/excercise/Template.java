@@ -18,10 +18,11 @@ import static java.lang.Math.abs;
 @DatabaseTable(tableName = "template")
 public class Template
 {
-    public enum Type{
-        simple,
-        compound,
-        series
+    public Template()
+    {
+        exType = Type.series;
+        limit = 0;
+        hasSummaryStep = new Boolean(true);
     }
 
     @Getter
@@ -40,10 +41,6 @@ public class Template
     @Getter @Setter
     @DatabaseField
     private Integer limit;
-
-    @Getter @Setter
-    @DatabaseField
-    private Boolean limited;
 
     @Getter @Setter
     @DatabaseField
@@ -76,12 +73,11 @@ public class Template
     @Setter
     String successOptionName;
 
-    public Template()
+    public enum Type
     {
-        exType = Type.simple;
-        limited = new Boolean(false);
-        limit = 0;
-        hasSummaryStep = new Boolean( true );
+        series,
+        compound,
+        runTo
     }
 
     public List<Result> getResultsAsList()
@@ -184,15 +180,6 @@ public class Template
         float y1 = (float) sr.predict(1);
         float y2 = (float) sr.predict(results.size());
         return regressionDirection(y1, y2, results.size() - 1);
-/*
-        float dy = y2 - y1;
-        float dx = results.size() - 1;
-        float tan = dy / dx / 10;
-
-        if( -0.087 <= abs( tan ) && abs( tan ) <= 0.087 ) return 0;
-        else if( dy >= 0  ) return 1;
-        else return -1;
-*/
     }
 
     public static int regressionDirection(float startY, float endY, int resultsLength)

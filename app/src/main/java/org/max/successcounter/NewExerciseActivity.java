@@ -1,129 +1,158 @@
 package org.max.successcounter;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import io.reactivex.Observable;
-import io.reactivex.ObservableConverter;
-import io.reactivex.functions.Predicate;
-import io.reactivex.subjects.PublishSubject;
-
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.j256.ormlite.dao.Dao;
+
 import org.max.successcounter.db.DatabaseHelper;
 import org.max.successcounter.model.excercise.Template;
+
 import java.sql.SQLException;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class NewExerciseActivity extends AppCompatActivity
 {
+    public final static String TEMPLATE_NAME = "TEMPLATE_NAME";
+    public static final String TEMPLATE_LIMIT = "TEMPLATE_LIMIT";
+    public static final String SUCCESS_LIMITED = "SUCCESS_LIMITED";
+
     final static String DEFAULT_TEXT = "*название";
 
-    public final static String TEMPLATE_NAME = "TEMPLATE_NAME";
-
     EditText edName;
-    ComplexButton btnNewSimpleUnlimited;
-    ComplexButton btnNewSimpleLimited;
+    EditText edLimitValue;
+    ComplexButton btnNewSimple;
     ComplexButton btnNewCompound;
     ComplexButton btnNewSeries;
+    RadioButton rbLimitSuccess;
+    RadioButton rbLimitTotal;
 
     Dao<Template, Integer> templateDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        PublishSubject mFocusChangeSubject = PublishSubject.create();
-
         super.onCreate(savedInstanceState);
-        setContentView( R.layout.activity_new_exercise);
+        setContentView(R.layout.activity_new_exercise);
         boolean nameChanged = false;
 
-        LinearLayout ll = findViewById( R.id.container );
+        LinearLayout ll = findViewById(R.id.container);
 
-        edName = findViewById( R.id.edName );
-        edName.setOnFocusChangeListener( (View v, boolean hasFocus )->
+        edName = findViewById(R.id.edName);
+        edName.setOnFocusChangeListener((View v, boolean hasFocus) ->
         {
-            mFocusChangeSubject.onNext( hasFocus );
-        });
-
-        Observable<Boolean> oHasFocus =  mFocusChangeSubject.filter(o -> (Boolean)o == true );
-
-        oHasFocus.subscribe( o->{
-            edName.setTypeface( getRegularFont() );
-            if( !nameChanged )
-                edName.setText("");
-            else
-                edName.setTypeface( getItalicFont() );
-        } );
-
-        Observable<Boolean> oNoFocus =  mFocusChangeSubject.filter(o -> (Boolean)o == false );
-        oNoFocus.subscribe( o -> {
-            if( edName.getText().length() == 0 )
+            if (hasFocus)
             {
-                edName.setText( DEFAULT_TEXT );
-                edName.setTypeface( getItalicFont() );
+                edName.setTypeface(getRegularFont());
+                if (!nameChanged)
+                    edName.setText("");
+                else
+                    edName.setTypeface(getItalicFont());
+            } else
+            {
+                if (edName.getText().length() == 0)
+                {
+                    edName.setText(DEFAULT_TEXT);
+                    edName.setTypeface(getItalicFont());
+                }
             }
         });
 
-        edName.addTextChangedListener( new NameChangeListener() );
+        edLimitValue = findViewById(R.id.edLimit);
+        edLimitValue.addTextChangedListener(new LimitTextWatcher());
 
-        btnNewSimpleUnlimited = new ComplexButton( this, getString( R.string.msgNewSimpleUnlimExTitle ),
-                getString( R.string.msgNewSimpleUnlimExComment ), new JustSaveAndReturn( Template.Type.simple ) );
-
-        ll.addView( btnNewSimpleUnlimited.inflate( ) );
-        btnNewSimpleUnlimited.setEnabled( false );
-
-
-        btnNewSimpleLimited = new ComplexButton( this, getString( R.string.msgNewSimpleLimExTitle ),
-                getString( R.string.msgNewSimpleLimExComment ), new OnBtnClickListener( NewLimitedActivity.class ) );
-
-        ll.addView( btnNewSimpleLimited.inflate( ) );
-        btnNewSimpleLimited.setEnabled( false );
-
-        btnNewCompound = new ComplexButton( this, getString( R.string.msgNewCompoundExTitle ),
-                getString( R.string.msgNewCompoundExComment ), new OnBtnClickListener( NewCompoundActivity.class ) );
-
-        ll.addView( btnNewCompound.inflate( ) );
-        btnNewCompound.setEnabled( false );
-
-        btnNewSeries = new ComplexButton( this, getString( R.string.msgNewSerisExTitle ),
-                getString( R.string.msgNewSerisExText ), new JustSaveAndReturn( Template.Type.series ) );
-        ll.addView( btnNewSeries.inflate( ) );
-
-        btnNewSeries.setEnabled( false );
+        edName.addTextChangedListener(new NameChangeListener());
+        rbLimitSuccess = findViewById(R.id.rbSuccess);
+        rbLimitTotal = findViewById(R.id.rbTotal);
+        createExerciseTypeButtons(ll);
 
         makeToolbar();
     }
 
+    private void createExerciseTypeButtons(LinearLayout ll)
+    {
+        btnNewSimple = new ComplexButton(this, getString(R.string.msgNewSimpleUnlimExTitle),
+                getString(R.string.msgNewSimpleExComment), new JustSaveAndReturn(Template.Type.series));
+
+        ll.addView(btnNewSimple.inflate());
+        btnNewSimple.setEnabled(false);
+
+        btnNewCompound = new ComplexButton(this, getString(R.string.msgNewCompoundExTitle),
+                getString(R.string.msgNewCompoundExComment), new OnBtnClickListener(NewCompoundActivity.class));
+
+        ll.addView(btnNewCompound.inflate());
+        btnNewCompound.setEnabled(false);
+
+        btnNewSeries = new ComplexButton(this, getString(R.string.msgNewSerisExTitle),
+                getString(R.string.msgNewSerisExText), new JustSaveAndReturn(Template.Type.runTo));
+        ll.addView(btnNewSeries.inflate());
+
+        btnNewSeries.setEnabled(false);
+    }
+
     public void makeToolbar()
     {
-        TextView tv = findViewById( R.id.tvTitle );
-        tv.setText( R.string.msgNewExerciseActivityTitle );
+        TextView tv = findViewById(R.id.tvTitle);
+        tv.setText(R.string.msgNewExerciseActivityTitle);
     }
 
     Typeface getItalicFont()
     {
-        return Typeface.create( "serif", Typeface.ITALIC );
+        return Typeface.create("serif", Typeface.ITALIC);
     }
 
     Typeface getRegularFont()
     {
-        return Typeface.create( "serif", Typeface.NORMAL );
+        return Typeface.create("serif", Typeface.NORMAL);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        if (resultCode == RESULT_OK)
+        {
+            setResult(RESULT_OK);
+            finish();
+        }
+    }
+
+    private boolean isNameCorrect()
+    {
+        String name = edName.getText().toString();
+
+        if (name.length() == 0)
+            return false;
+
+        if (name.equals(DEFAULT_TEXT))
+            return false;
+
+        return true;
+    }
+
+    private int getLimit()
+    {
+        String buff = edLimitValue.getText().toString();
+        if (buff.trim().length() != 0)
+            return Integer.parseInt(buff);
+        else
+            return 0;
     }
 
     class OnBtnClickListener implements View.OnClickListener
     {
         Class clazz;
 
-        public OnBtnClickListener( Class clazz )
+        public OnBtnClickListener(Class clazz)
         {
             this.clazz = clazz;
         }
@@ -131,27 +160,19 @@ public class NewExerciseActivity extends AppCompatActivity
         @Override
         public void onClick(View v)
         {
-            if( !isNameCorrect() )
+            if (!isNameCorrect())
                 return;
 
-            Intent in = new Intent( NewExerciseActivity.this, clazz );
-            in.putExtra( TEMPLATE_NAME, edName.getText().toString()  );
+            Intent in = new Intent(NewExerciseActivity.this, clazz);
+            in.putExtra(TEMPLATE_NAME, edName.getText().toString());
+            in.putExtra(TEMPLATE_LIMIT, getLimit());
+            in.putExtra(SUCCESS_LIMITED, rbLimitSuccess.isChecked());
             // TODO : What is 10?
-            startActivityForResult( in, 10 );
+            startActivityForResult(in, 10);
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-    {
-        if( resultCode == RESULT_OK )
-        {
-            setResult( RESULT_OK );
-            finish();
-        }
-    }
-
-    class NameChangeListener implements  TextWatcher
+    class NameChangeListener implements TextWatcher
     {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after)
@@ -162,19 +183,17 @@ public class NewExerciseActivity extends AppCompatActivity
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count)
         {
-            if( !s.toString().equals( DEFAULT_TEXT ) && s.toString().length() != 0 )
+            if (isNameCorrect())
             {
-                btnNewSimpleUnlimited.setEnabled( true );
-                btnNewSimpleLimited.setEnabled( true );
-                btnNewCompound.setEnabled( true );
-                btnNewSeries.setEnabled( true );
-            }
-            else
+                btnNewSimple.setEnabled(true);
+                btnNewCompound.setEnabled(true);
+                if (getLimit() != 0)
+                    btnNewSeries.setEnabled(true);
+            } else
             {
-                btnNewSimpleUnlimited.setEnabled( false );
-                btnNewSimpleLimited.setEnabled( false );
-                btnNewCompound.setEnabled( false );
-                btnNewSeries.setEnabled( false   );
+                btnNewSimple.setEnabled(false);
+                btnNewCompound.setEnabled(false);
+                btnNewSeries.setEnabled(false);
             }
         }
 
@@ -185,11 +204,11 @@ public class NewExerciseActivity extends AppCompatActivity
         }
     }
 
-    class JustSaveAndReturn implements View.OnClickListener{
-
+    class JustSaveAndReturn implements View.OnClickListener
+    {
         Template.Type type;
 
-        public JustSaveAndReturn( Template.Type type )
+        public JustSaveAndReturn(Template.Type type)
         {
             this.type = type;
         }
@@ -197,19 +216,25 @@ public class NewExerciseActivity extends AppCompatActivity
         @Override
         public void onClick(View v)
         {
-            if( !isNameCorrect() )
+            if (!isNameCorrect())
                 return;
 
             Template t = new Template();
-            t.setExType( type );
-            t.setLimited( false );
-            t.setName( edName.getText().toString() );
-            DatabaseHelper db = new DatabaseHelper( NewExerciseActivity.this);
+            t.setExType(type);
+            t.setName(edName.getText().toString());
+
+            if (getLimit() != 0)
+            {
+                t.setSuccesLimited(rbLimitSuccess.isChecked());
+                t.setLimit(getLimit());
+            }
+
+            DatabaseHelper db = new DatabaseHelper(NewExerciseActivity.this);
             try
             {
-                templateDao = db.getDao( Template.class );
+                templateDao = db.getDao(Template.class);
                 templateDao.create(t);
-                setResult( RESULT_OK );
+                setResult(RESULT_OK);
                 finish();
             } catch (SQLException e)
             {
@@ -218,17 +243,46 @@ public class NewExerciseActivity extends AppCompatActivity
         }
     }
 
-    private boolean isNameCorrect()
+    private class LimitTextWatcher implements TextWatcher
     {
-        String name = edName.getText().toString();
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after)
+        {
 
-        if( name.length() == 0 )
-            return false;
+        }
 
-        if( name.equals( DEFAULT_TEXT ) )
-            return false;
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count)
+        {
+            String buff = s.toString();
+            try
+            {
+                int value = Integer.parseInt(buff);
+                if (value != 0)
+                {
+                    rbLimitSuccess.setEnabled(true);
+                    rbLimitTotal.setEnabled(true);
+                    if (isNameCorrect())
+                        btnNewSeries.setEnabled(true);
+                } else
+                {
+                    rbLimitSuccess.setEnabled(false);
+                    rbLimitTotal.setEnabled(false);
+                    btnNewSeries.setEnabled(false);
+                }
+            } catch (NumberFormatException e)
+            {
+                rbLimitSuccess.setEnabled(false);
+                rbLimitTotal.setEnabled(false);
+                btnNewSeries.setEnabled(false);
+            }
+        }
 
-        return true;
+        @Override
+        public void afterTextChanged(Editable s)
+        {
+
+        }
     }
 
 }
