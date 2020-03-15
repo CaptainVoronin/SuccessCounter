@@ -349,20 +349,43 @@ public class ProgressActivity extends AppCompatActivity implements DialogTags.Di
 
         if (items.size() > 2)
         {
-            List<Entry> trend = makeTrend(items);
-            color = getColor(android.R.color.holo_red_light);
-            set = new LineDataSet(trend, getString(R.string.trend));
-            set.setDrawCircleHole(false);
-            set.setDrawCircles(false);
-            set.setColor(color);
-            set.setLineWidth(2f);
-            set.setValueFormatter(new EmptyValueFormatter());
+            set = prepareTrend(items);
             data.addDataSet(set);
         }
 
         data.setValueTextSize(12);
         mChart.setData(data);
         mChart.invalidate();
+    }
+
+    private LineDataSet prepareTrend(List<Result> items)
+    {
+        List<Entry> trend = makeTrend(items);
+        int dir = Template.regressionDirection(trend.get(0).getY(), trend.get(1).getY(), items.size() - 1);
+
+        int color = getTrendColor(dir);
+        LineDataSet set = new LineDataSet(trend, getString(R.string.trend));
+        set.setDrawCircleHole(false);
+        set.setDrawCircles(false);
+        set.setColor(color);
+        set.setLineWidth(2f);
+        set.setValueFormatter(new EmptyValueFormatter());
+        return set;
+    }
+
+    private int getTrendColor(int dir)
+    {
+        switch (dir)
+        {
+            case 1:
+                return getColor(R.color.green_worm14);
+            case 0:
+                return getColor(R.color.blue_worm14);
+            case -1:
+                return getColor(R.color.red_bright_worm17);
+            default:
+                return getColor(R.color.blue_worm14);
+        }
     }
 
     private void prepareChart()
