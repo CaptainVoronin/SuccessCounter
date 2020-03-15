@@ -1,22 +1,25 @@
 package org.max.successcounter.model.excercise;
 
-public class SeriesExercise extends AExercise
+/**
+ * This is a class realises functionality for
+ * an exercise with lasts to the first miss. The first miss terminates
+ * the run
+ */
+public class SeriesExercise extends BaseExercise
 {
-    boolean finished;
+
+    public SeriesExercise(Template template)
+    {
+        super(template);
+    }
 
     @Override
     public IStep addNewShot(int points)
     {
-        // Prevent add points to a finished exercise
-        if (isFinished())
-            return null;
-
-        // Упражнение с ограничением
-        // выполняется до первого промаха
+        // Упражнение выполняется до первого промаха
         if (points == 0)
         {
-            finished = true;
-            publishFinishEvent();
+            setFinished(true);
             return null;
         }
 
