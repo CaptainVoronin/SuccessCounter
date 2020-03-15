@@ -12,9 +12,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
-import org.max.successcounter.model.excercise.AExercise;
+import org.max.successcounter.model.excercise.BaseExercise;
 
-public class LineChartExerciseActivity<T extends AExercise> extends AExerciseActivity<T>
+public class LineChartExerciseActivity<T extends BaseExercise> extends AExerciseActivity<T>
 {
     private LineChart mChart;
     MinMaxValueFormatter formatter;
@@ -61,7 +61,7 @@ public class LineChartExerciseActivity<T extends AExercise> extends AExerciseAct
     {
 
         LayoutInflater lif = getLayoutInflater();
-        LinearLayout ll = (LinearLayout) lif.inflate( R.layout.simple_exercise_buttons, placeholder, true );
+        LinearLayout ll = (LinearLayout) lif.inflate(R.layout.run_to_exercise_buttons, placeholder, true);
 
         ImageButton btn = placeholder.findViewById(R.id.btnAttempt);
 
