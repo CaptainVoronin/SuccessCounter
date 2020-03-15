@@ -38,12 +38,16 @@ public abstract class AExercise implements IExercise, Publisher<IExerciseEvent>
     String comment;
 
     @Getter
+    boolean finished;
+
+    @Getter
     PublishSubject<IExerciseEvent> publisher;
 
     public AExercise()
     {
         steps = new ArrayList<>();
         publisher = PublishSubject.create();
+        finished = false;
     }
 
     @Override
@@ -92,8 +96,13 @@ public abstract class AExercise implements IExercise, Publisher<IExerciseEvent>
             step = steps.get(steps.size() - 1);
             steps.remove(step);
             publisher.onNext(new UndoEvent(step));
-        }
 
+            if (isFinished())
+            {
+                finished = false;
+                publisher.onNext(new ResumeEvent());
+            }
+        }
         return step;
     }
 
@@ -109,12 +118,6 @@ public abstract class AExercise implements IExercise, Publisher<IExerciseEvent>
         }
 
         return items;
-    }
-
-    @Override
-    public final boolean isFinished()
-    {
-        return false;
     }
 
     @Override
@@ -155,6 +158,11 @@ public abstract class AExercise implements IExercise, Publisher<IExerciseEvent>
     @Override
     public IStep addNewShot(int points)
     {
+        boolean isFinished = false;
+        // Prevent adding points to a finished exercise
+        if (isFinished())
+            return null;
+
         Float percent = 100f * (points + getTotalPoints()) / (getMaxPossiblePoints() * (getAttempts() + 1));
         IStep step = new Step();
         step.setPercent(percent);
@@ -163,6 +171,27 @@ public abstract class AExercise implements IExercise, Publisher<IExerciseEvent>
 
         ExerciseEvent e = new NewShotEvent(step);
         publisher.onNext(e);
+
+        if (template.getSuccesLimited())
+        {
+            // This is the case
+            // when a player must pocket exact number of balls
+            // and may miss any number of shots
+            if (getTotalPoints() == template.getLimit())
+                // the limit of successful shots is reached
+                isFinished = true;
+        } else
+        {
+            if (steps.size() == template.getLimit())
+                isFinished = true;
+        }
+
+        if (isFinished && !finished)
+        {
+            finished = isFinished;
+            publishFinishEvent();
+        }
+
         return step;
     }
 
