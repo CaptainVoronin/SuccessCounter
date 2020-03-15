@@ -11,26 +11,20 @@ public enum ExerciseFactory
         switch (template.getExType())
         {
             case compound:
-                exs = new CompoundExercise();
-                ((CompoundExercise) exs).setHasSummaryStep(template.isHasSummaryStep());
+                exs = new CompoundExercise(template);
                 for (OptionDescription od : template.getOptionsAsList())
                     ((CompoundExercise) exs).addOption(makeOption(od));
                 break;
             case simple:
-                if (template.getLimited())
-                    exs = new RunToExercise();
-                else
-                    exs = new SimpleExercise();
+                exs = new BaseExercise(template);
                 break;
             case series:
-                exs = new SeriesExercise();
+                exs = new SeriesExercise(template);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown exercise type");
         }
 
-        //exs.setName(template.getName());
-        exs.setTemplate(template);
         return exs;
     }
 
