@@ -264,6 +264,6 @@ public class BaseExercise implements IExercise, Publisher<IExerciseEvent>
      */
     protected float calculateStepPercent(int stepPoints)
     {
-        return 100f * (stepPoints + getTotalPoints()) / (getMaxPossiblePoints() * getAttemptsCount());
+        return 100f * getTotalPoints() / (getMaxPossiblePoints() * getAttemptsCount());
     }
 }
