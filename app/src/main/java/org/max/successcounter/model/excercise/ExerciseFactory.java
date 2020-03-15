@@ -18,7 +18,7 @@ public enum ExerciseFactory
                 break;
             case simple:
                 if (template.getLimited())
-                    exs = new RunToExercise(template.getLimit());
+                    exs = new RunToExercise();
                 else
                     exs = new SimpleExercise();
                 break;
