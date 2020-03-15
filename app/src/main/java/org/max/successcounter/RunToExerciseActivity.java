@@ -13,13 +13,13 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
+import org.max.successcounter.model.excercise.BaseExercise;
 import org.max.successcounter.model.excercise.IExercise;
-import org.max.successcounter.model.excercise.RunToExercise;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RunToExerciseActivity extends AExerciseActivity<RunToExercise>
+public class RunToExerciseActivity extends AExerciseActivity<BaseExercise>
 {
     public static final int[] CHART_COLORS = {
             Color.rgb(255, 255, 255), Color.rgb(0, 0x1C, 0x2B)};
