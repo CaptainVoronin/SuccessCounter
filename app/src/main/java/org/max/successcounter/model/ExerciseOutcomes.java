@@ -1,6 +1,7 @@
 package org.max.successcounter.model;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -135,6 +136,7 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
 
     private class InplaceEditor implements View.OnClickListener
     {
+        Color color;
         TextView tvDesc, tvPoints;
         EditText edDesc, edPoints;
         ImageView btnSave, btnRemove;
@@ -188,6 +190,7 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
 
             editorListener.onEditFinish(this);
             setItems(template.getOptionsAsListAllSteps());
+            row.setBackgroundColor(Color.WHITE);
             makeTable();
             inEditMode = false;
         }
@@ -206,7 +209,7 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             edPoints.setVisibility(View.VISIBLE);
             tvDesc.setVisibility(View.GONE);
             tvPoints.setVisibility(View.GONE);
-
+            row.setBackgroundColor(getContext().getColor(R.color.blue_worm15));
             inEditMode = true;
         }
 
@@ -259,7 +262,7 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         public void onEditStart(InplaceEditor editor)
         {
             if (current != null && current != editor)
-                current.toDisplayMode();
+                current.cancel();
             current = editor;
         }
 
