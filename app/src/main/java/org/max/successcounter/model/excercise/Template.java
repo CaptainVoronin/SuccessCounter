@@ -180,8 +180,11 @@ public class Template
         for (int i = 1; i <= results.size(); i++)
             sr.addData(i, results.get(i - 1).getPercent());
 
+
         float y1 = (float) sr.predict(1);
         float y2 = (float) sr.predict(results.size());
+        return regressionDirection(y1, y2, results.size() - 1);
+/*
         float dy = y2 - y1;
         float dx = results.size() - 1;
         float tan = dy / dx / 10;
@@ -189,5 +192,17 @@ public class Template
         if( -0.087 <= abs( tan ) && abs( tan ) <= 0.087 ) return 0;
         else if( dy >= 0  ) return 1;
         else return -1;
+*/
+    }
+
+    public static int regressionDirection(float startY, float endY, int resultsLength)
+    {
+        float dy = endY - startY;
+        float tan = dy / resultsLength / 10;
+
+        if (-0.087 <= abs(tan) && abs(tan) <= 0.087) return 0;
+        else if (dy >= 0) return 1;
+        else return -1;
+
     }
 }
