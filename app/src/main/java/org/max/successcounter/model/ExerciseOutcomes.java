@@ -6,7 +6,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.ViewSwitcher;
 
 import org.max.successcounter.AbstractTableAdapter;
 import org.max.successcounter.R;
@@ -43,6 +42,12 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             return makeGeneralRow(item);
     }
 
+    /**
+     * It makes the row with the summary step which sums points from all the options
+     *
+     * @param item
+     * @return
+     */
     private TableRow makeSummaryRow(OptionDescription item)
     {
         TextView tvStepName;
@@ -55,6 +60,8 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         btnRemove = row.findViewById(R.id.btnRemoveOption);
         btnRemove.setOnClickListener(v -> {
             template.setHasSummaryStep(false);
+            if (editorListener.getCurrent() != null)
+                editorListener.getCurrent().cancel();
             makeTable();
         });
 
@@ -70,6 +77,8 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             tvStepName.setText(getContext().getString(R.string.messageRestoreSummaryStep));
             tvStepName.setOnClickListener(v -> {
                 template.setHasSummaryStep(true);
+                if (editorListener.getCurrent() != null)
+                    editorListener.getCurrent().cancel();
                 makeTable();
             });
             btnRemove.setVisibility(View.INVISIBLE);
@@ -129,7 +138,6 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         TextView tvDesc, tvPoints;
         EditText edDesc, edPoints;
         ImageView btnSave, btnRemove;
-        ViewSwitcher swcDesc, swcPoints;
         EditorListener editorListener;
 
         TableRow row;
@@ -147,11 +155,8 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             tvPoints = row.findViewById(R.id.lbStepPoints);
             edDesc = row.findViewById(R.id.edStepDesc);
             edPoints = row.findViewById(R.id.edStepPoints);
-            swcDesc = row.findViewById(R.id.swcDescription);
-            swcPoints = row.findViewById(R.id.swcPoints);
             btnSave = row.findViewById(R.id.btnSaveOption);
             btnSave.setOnClickListener(this);
-
             btnRemove = row.findViewById(R.id.btnRemoveOption);
             btnRemove.setOnClickListener(new RemoveRowListener(option));
         }
@@ -159,7 +164,6 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         @Override
         public void onClick(View v)
         {
-
             if (!inEditMode)
                 toEditMode();
             else
@@ -168,9 +172,6 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
 
         public void toDisplayMode()
         {
-            swcDesc.showNext();
-            swcPoints.showNext();
-
             btnSave.setVisibility(View.GONE);
             btnRemove.setVisibility(View.VISIBLE);
 
@@ -180,6 +181,11 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             option.setPoints(Integer.parseInt(edPoints.getText().toString()));
             tvPoints.setText(option.getPoints().toString());
 
+            edDesc.setVisibility(View.GONE);
+            edPoints.setVisibility(View.GONE);
+            tvDesc.setVisibility(View.VISIBLE);
+            tvPoints.setVisibility(View.VISIBLE);
+
             editorListener.onEditFinish(this);
             setItems(template.getOptionsAsListAllSteps());
             makeTable();
@@ -188,9 +194,6 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
 
         public void toEditMode()
         {
-            swcDesc.showNext();
-            swcPoints.showNext();
-
             editorListener.onEditStart(this);
 
             btnSave.setVisibility(View.VISIBLE);
@@ -199,12 +202,31 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             edDesc.setText(option.getDescription());
             edPoints.setText(option.getPoints().toString());
 
+            edDesc.setVisibility(View.VISIBLE);
+            edPoints.setVisibility(View.VISIBLE);
+            tvDesc.setVisibility(View.GONE);
+            tvPoints.setVisibility(View.GONE);
+
             inEditMode = true;
+        }
+
+        public void cancel()
+        {
+            btnSave.setVisibility(View.GONE);
+            btnRemove.setVisibility(View.VISIBLE);
+            edDesc.setVisibility(View.GONE);
+            edPoints.setVisibility(View.GONE);
+            tvDesc.setVisibility(View.VISIBLE);
+            tvPoints.setVisibility(View.VISIBLE);
+            editorListener.onEditFinish(this);
+            setItems(template.getOptionsAsListAllSteps());
+            makeTable();
+            inEditMode = false;
         }
     }
 
     /**
-     * Callback for the plcaholder. The callback add new option to the list
+     * Callback for the placeholder. The callback add new option to the list
      */
     class PlaceholderClickListener implements View.OnClickListener
     {
@@ -218,6 +240,9 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         @Override
         public void onClick(View v)
         {
+            if (editorListener.getCurrent() != null)
+                editorListener.getCurrent().cancel();
+
             OptionDescription op = new OptionDescription();
             op.setPoints(1);
             op.setDescription(getContext().getString(R.string.txtAddDescription));
@@ -243,6 +268,11 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             if (current == editor)
                 current = null;
         }
+
+        public InplaceEditor getCurrent()
+        {
+            return current;
+        }
     }
 
     private class RemoveRowListener implements View.OnClickListener
@@ -257,6 +287,8 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         @Override
         public void onClick(View v)
         {
+            if (editorListener.getCurrent() != null)
+                editorListener.getCurrent().cancel();
             template.removeOption(option);
             setItems(template.getOptionsAsListAllSteps());
             makeTable();

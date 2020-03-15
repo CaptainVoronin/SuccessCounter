@@ -32,7 +32,7 @@
         app:layout_constraintBottom_toTopOf="@+id/btnSaveCompound"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbName"></TableLayout>
+        app:layout_constraintTop_toBottomOf="@+id/lbName" />
 
     <Button
         android:id="@+id/btnSaveCompound"
@@ -43,6 +43,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="@string/txtSave" />
+        android:text="@string/txtSave" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
