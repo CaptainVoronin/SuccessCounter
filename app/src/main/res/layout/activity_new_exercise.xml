@@ -28,6 +28,8 @@
             android:id="@+id/edName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5pt"
+            android:layout_marginRight="5pt"
             android:ems="10"
             android:text="*название"
             android:textStyle="italic" />
@@ -36,6 +38,7 @@
             android:id="@+id/lbLimitStaticText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10pt"
             android:gravity="center_horizontal"
             android:text="@string/txtLimitWord"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +49,9 @@
             android:id="@+id/edLimit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10pt"
             android:layout_marginTop="@dimen/cardview_compat_inset_shadow"
+            android:layout_marginRight="10pt"
             android:ems="10"
             android:inputType="number"
             app:layout_constraintTop_toBottomOf="@id/lbLimitStaticText" />
