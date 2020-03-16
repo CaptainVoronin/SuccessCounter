@@ -1,15 +1,13 @@
 package org.max.successcounter;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import android.widget.PopupMenu;
+import android.widget.CheckBox;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -17,28 +15,41 @@ import android.widget.TextView;
 import com.j256.ormlite.dao.Dao;
 
 import org.max.successcounter.db.DatabaseHelper;
-import org.max.successcounter.model.Exercise;
-import org.max.successcounter.model.ExerciseSet;
+import org.max.successcounter.model.HistoryOperator;
+import org.max.successcounter.model.ResultDateComparator;
+import org.max.successcounter.model.excercise.Result;
+import org.max.successcounter.model.excercise.Template;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.Toolbar;
+
+// TODO: Нужна сортировка таблицы
 
 public class HistoryActivity extends AppCompatActivity
 {
-    public final static String EX_SET_ID = "EX_SET_ID";
-    Dao<Exercise, Integer> exDao;
-    Dao<ExerciseSet, Integer> exSetDao;
-    Integer exSetId;
+    public final static String TEMPLATE_ID = "TEMPLATE_ID";
+    Dao<Template, Integer> templateDao;
+    Dao<Result, Integer> resultDao;
+    Integer templateId;
+    List<CheckBox> checks;
+    Template template;
+    Toolbar toolbar;
+    private MenuItem deleteActionMenuItem;
+    private ActionMode actionMode;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
-        if( requestCode == ActivityIDs.EXERCISEACTIVITY_ID )
-            if( resultCode == RESULT_OK )
+        if (requestCode == ActivityIDs.EXERCISEACTIVITY_ID)
+            if (resultCode == RESULT_OK)
             {
                 try
                 {
@@ -49,168 +60,148 @@ public class HistoryActivity extends AppCompatActivity
                 }
             }
     }
-
-    ExerciseSet exSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        makeToolbar();
         DatabaseHelper db = new DatabaseHelper(this);
+
         try
         {
-            exDao = db.getDao(Exercise.class);
-            exSetDao = db.getDao(ExerciseSet.class);
+            resultDao = db.getDao(Result.class);
+            templateDao = db.getDao(Template.class);
             Intent in = getIntent();
-            exSetId = in.getIntExtra(EX_SET_ID, -1);
-            if (exSetId == -1)
-                throw new IllegalArgumentException();
+            templateId = in.getIntExtra(TEMPLATE_ID, -1);
 
+            if (templateId == -1)
+                throw new IllegalArgumentException();
+            template = templateDao.queryForId(templateId);
+            HistoryOperator.instance.init(db, template);
             fillList();
-            setTitle( exSet.getName() );
+
         } catch (SQLException e)
         {
             e.printStackTrace();
         }
-
     }
 
     private void fillList() throws SQLException
     {
-        exSet = exSetDao.queryForId( exSetId );
-        TableLayout table = findViewById( R.id.historyTable );
+        long savedResultID = HistoryOperator.instance.getSavedResultIDForTemplate();
+        TableLayout table = findViewById(R.id.historyTable);
         table.removeAllViews();
-
-        for( Exercise ex : exSet.getExercisesAsList() )
-            table.addView( makeRow( ex, isItLastExercise( ex, exSet.getExercisesAsList() ) ) );
+        checks = new ArrayList<>();
+        List<Result> results = template.getResultsAsList();
+        results.sort(new ResultDateComparator(true));
+        for (Result res : results)
+            table.addView(makeRow(res, res.getId() == savedResultID));
     }
 
-    private View makeRow(Exercise ex, boolean isLast)
+    private View makeRow(Result res, boolean isLast)
     {
-        TableRow tr = (TableRow) getLayoutInflater().inflate( R.layout.historyrow, null );
-        TextView tv = tr.findViewById( R.id.lbDate );
-        tv.setText( Exercise.getFormattedDate( ex ) );
-        tv.setOnLongClickListener( new ExLongClickListener( ex.getId() ));
+        TextView tvDate;
+        TextView tvPercent;
+        TextView tvCount;
 
-        if( isLast )
-            tv.setOnClickListener( new ExClickListener( ex.getId() ) );
+        TableRow tr = (TableRow) getLayoutInflater().inflate(R.layout.historyrow, null);
 
-        tv = tr.findViewById( R.id.lbPercent );
-        tv.setText( Exercise.getPercentString( ex ) );
-        tv.setOnLongClickListener( new ExLongClickListener( ex.getId() ));
+        CheckBox chb = tr.findViewById(R.id.chbSelected);
+        checks.add(chb);
+        chb.setVisibility(actionMode != null ? View.VISIBLE : View.INVISIBLE);
+        chb.setTag(res);
+        chb.setOnCheckedChangeListener((btn, isChecked) -> setDeleteActionState());
 
-        if( isLast )
-            tv.setOnClickListener( new ExClickListener( ex.getId() ) );
+        tvDate = tr.findViewById(R.id.lbDate);
+        String buff = Result.getFormattedDate(res);
+        tvDate.setText(buff);
+        tvDate.setOnLongClickListener((View v) -> this.startActionMode());
 
-        tv = tr.findViewById( R.id.lbCount );
-        tv.setText( "" + ex.getSuccessCount() + "(" + ex.getAttemptsCount() + ")" );
-        tv.setOnLongClickListener( new ExLongClickListener( ex.getId() ));
+        tvPercent = tr.findViewById(R.id.lbPercent);
+        tvPercent.setText(Result.getPercentString(res));
+        tvPercent.setOnLongClickListener((View v) -> this.startActionMode());
 
-        if( isLast )
-            tv.setOnClickListener( new ExClickListener( ex.getId() ) );
+        tvCount = tr.findViewById(R.id.lbCount);
+        tvCount.setText("" + res.getPoints() + "(" + res.getShots() + ")");
+        tvCount.setOnLongClickListener((View v) -> this.startActionMode());
 
+        if (isLast)
+        {
+            ExClickListener listener = new ExClickListener(res.getId() );
+            tvDate.setOnClickListener(listener);
+            tvPercent.setOnClickListener(listener);
+            tvCount.setOnClickListener(listener);
+            tvDate.setTypeface(null, Typeface.BOLD);
+            tvPercent.setTypeface(null, Typeface.BOLD);
+            tvCount.setTypeface(null, Typeface.BOLD);
+        }
 
         return tr;
     }
 
-    private void deleteEx(Object tag)
+    private void setDeleteActionState()
     {
-        Exercise ex = (Exercise) tag;
-        AlertDialog.Builder builder = new AlertDialog.Builder(HistoryActivity.this);
-        builder.setTitle("Удаление");
-        builder.setMessage("Подтвердите удаление");
-        builder.setPositiveButton("Да", new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int id)
-            {
-                dialog.dismiss();
-                try
-                {
-                    exDao.delete(ex);
-                    setResult(RESULT_OK);
-                    fillList();
-                } catch (SQLException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        builder.setNegativeButton("Нет", new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int id)
-            {
-                dialog.dismiss();
-            }
-        });
-
-        builder.show();
+        long count = checks.stream().filter(CheckBox::isChecked).count();
+        deleteActionMenuItem.setEnabled( count != 0 );
     }
 
-    boolean showPopup(View v, long id)
+    private boolean startActionMode()
     {
-        PopupMenu popup = new PopupMenu(HistoryActivity.this, v);
-        //Inflating the Popup using xml file
-        popup.getMenuInflater()
-                .inflate(R.menu.ex_popup_menu, popup.getMenu());
-
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
-        {
-            public boolean onMenuItemClick(MenuItem item)
-            {
-                switch (item.getItemId())
-                {
-                    case R.id.idMenuDeleteExSet:
-                        deleteEx(v.getTag());
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-
-        });
-
-        popup.show();
+        checks.stream().forEach(item -> item.setVisibility(View.VISIBLE));
+        actionMode = startSupportActionMode( new ActionModeCallback() );
         return false;
     }
 
-    boolean isItLastExercise(Exercise ex, List<Exercise> items)
+    private void beginDeleteResults() throws SQLException
     {
-        long date = ex.getDate().getTime();
-
-        for (Exercise item : items)
-            if (item.getDate().getTime() > date)
-                return false;
-
-        return true;
+        AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+        dlg.setMessage( R.string.txtDeleteResults ).
+        setPositiveButton( android.R.string.ok, ( DialogInterface dialog, int id ) -> deleteResults() ).setNegativeButton(android.R.string.cancel, ( DialogInterface dialog, int id ) -> dialog.dismiss() ) .show();
     }
 
-    class ExLongClickListener implements View.OnLongClickListener
+    private void deleteResults()
     {
-        private final long id;
-
-        public ExLongClickListener( long id )
+        List<Result> results = checks.stream().filter(CheckBox::isChecked).map( CheckBox::getTag ).
+                map( item->(Result) item).collect(Collectors.toList());
+        try
         {
-            this.id = id;
-        }
+            resultDao.delete( results );
+            template = templateDao.queryForId(template.getId());
+            fillList();
+            if( actionMode != null )
+                finishActionMode();
+            
+            setResult( RESULT_OK );
 
-        @Override
-        public boolean onLongClick(View v)
+        } catch (SQLException e)
         {
-            return showPopup(v, id);
+            e.printStackTrace();
         }
     }
 
-    class ExClickListener implements View.OnClickListener{
+    private void finishActionMode()
+    {
+        checks.stream().forEach(item -> { item.setVisibility(View.INVISIBLE); item.setChecked(false);});
+        actionMode.finish();
+        actionMode = null;
+    }
+
+    public void makeToolbar()
+    {
+        toolbar = findViewById(R.id.tooBar);
+        TextView tv = findViewById(R.id.tvTitle);
+        tv.setText(R.string.msgHistoryActivityTitle);
+        setSupportActionBar(toolbar);
+    }
+
+    class ExClickListener implements View.OnClickListener
+    {
 
         private final Integer id;
 
-        public ExClickListener(Integer id )
+        public ExClickListener(Integer id)
         {
             this.id = id;
         }
@@ -218,12 +209,58 @@ public class HistoryActivity extends AppCompatActivity
         @Override
         public void onClick(View v)
         {
-            Intent in = new Intent( HistoryActivity.this, ExerciseActivity.class );
-            in.putExtra( ExerciseActivity.exerciseID, id );
-            in.putExtra( ExerciseDynamicActivity.EX_SET_ID, exSet.getId() );
-            startActivityForResult( in, ActivityIDs.EXERCISEACTIVITY_ID );
+            Intent in = new Intent(HistoryActivity.this, AExerciseActivity.getExerciseActivityClass(template));
+            in.putExtra(AExerciseActivity.RESULT_ID, id);
+            in.putExtra(ProgressActivity.TEMPLATE_ID, template.getId());
+            startActivityForResult(in, ActivityIDs.EXERCISEACTIVITY_ID);
+        }
+    }
 
-            // TODO : Обновлять после OK
+    class ActionModeCallback implements  androidx.appcompat.view.ActionMode.Callback
+    {
+        @Override
+        public boolean onCreateActionMode(androidx.appcompat.view.ActionMode mode, Menu menu)
+        {
+            mode.getMenuInflater().inflate(R.menu.history_actions, menu);
+            deleteActionMenuItem = menu.findItem( R.id.itemActionDeleteResults );
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(androidx.appcompat.view.ActionMode mode, Menu menu)
+        {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(androidx.appcompat.view.ActionMode mode, MenuItem item)
+        {
+            if( item.getItemId() == R.id.itemActionDeleteResults )
+            {
+                try
+                {
+                    beginDeleteResults();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+            else if ( item.getItemId() == R.id.itemActionCheckAll )
+            {
+                checks.stream().forEach( chb->chb.setChecked( !chb.isChecked() ) );
+                return true;
+            }
+            else
+                return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(androidx.appcompat.view.ActionMode mode)
+        {
+            mode = null;
+            deleteActionMenuItem.setEnabled( false );
+            deleteActionMenuItem = null;
         }
     }
 }

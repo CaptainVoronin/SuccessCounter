@@ -1,4 +1,8 @@
+
 apply plugin: 'com.android.application'
+
+def releaseBuild = false
+def buildType = "debug"
 
 android {
     signingConfigs {
@@ -15,17 +19,47 @@ android {
             keyPassword '111111'
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    splits {
+        if (project.gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }) {
+            buildType = "release"
+            releaseBuild = true
+            println( "----------------- release ----------------------")
+        } else {
+            buildType = "debug"
+            releaseBuild = false
+            println( "----------------- debug ----------------------")
+        }
+    }
+
+    def versionArray = incrementBuild()
+    def fileName = writeVersionClassFile(versionArray, buildType )
+
+    if( releaseBuild )
+        commitFile( fileName, versionArray )
+
+    def vName = versionArray[0].toString() + '.' + versionArray[1] + '.' + versionArray[2]
+
     compileSdkVersion 28
     defaultConfig {
-        applicationId "org.max.successcounter"
+        applicationId "org.max.bts"
         minSdkVersion 28
         targetSdkVersion 28
         versionCode 1
-        versionName '0.1'
-        setProperty("archivesBaseName", "scounter-$versionName")
+        versionName vName
+        setProperty("archivesBaseName", "bts-$versionName")
         applicationIdSuffix = 'debug'
         signingConfig signingConfigs.debug
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -44,12 +78,77 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation files('libs\\ormlite-android-5.1.jar')
-    implementation files('libs\\ormlite-core-5.1.jar')
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
+    compileOnly "org.projectlombok:lombok:1.18.10"
+    compileOnly 'org.ajoberstar.grgit:grgit-core:4.0.1'
+
+    implementation group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.1'
+    implementation group: 'com.j256.ormlite', name: 'ormlite-core', version: '5.1'
     implementation 'com.mysugr.MPAndroidChart:MPAndroidChart:3.1.0-mysugr-1'
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
+    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.17'
+    implementation 'org.jetbrains:annotations:15.0'
+}
+
+def incrementBuild() {
+    def minor = 0
+    def major = 0
+    def build = 1
+    def date = Calendar.getInstance()
+    def build_date
+    def props = new Properties()
+
+    def versionFile = file("version.properties")
+
+    if (versionFile.canRead()) {
+        props.load(new FileInputStream(versionFile))
+        major = props["MAJOR"].toInteger()
+        minor = props["MINOR"].toInteger()
+        build = props["BUILD"].toInteger() + 1
+
+        props["MAJOR"] = major.toString()
+        props["MINOR"] = minor.toString()
+        props["BUILD"] = build.toString()
+        props["BUILD_DATE"] = date.format("dd MMMM yyyy")
+        build_date = props["BUILD_DATE"]
+
+        props.store(versionFile.newWriter(), null)
+
+        return [major, minor, build, build_date]
+    } else
+        throw new FileNotFoundException("File version.properties not found")
+}
+
+def writeVersionClassFile(verArray, buildType) {
+    def fileName = "src\\main\\java\\org\\max\\successcounter\\Version.java"
+
+    def versionClassFile = file(fileName)
+
+    if (!versionClassFile.canRead())
+        throw new FileNotFoundException("Version class file not found")
+
+    String buff = versionClassFile.text
+
+    buff = buff.replaceAll('MAJOR\\s*=\\s*\\d+\\s*;', 'MAJOR=' + verArray[0].toString() + ';')
+    buff = buff.replaceAll('MINOR\\s*=\\s*\\d+\\s*;', 'MINOR=' + verArray[1].toString() + ';')
+    buff = buff.replaceAll('BUILD\\s*=\\s*\\d+\\s*;', 'BUILD=' + verArray[2].toString() + ';')
+    buff = buff.replaceAll('BUILD_DATE=\\"[a-zA-Z0-9\\s]+\\";', 'BUILD_DATE=\"' + verArray[3].toString() + '\";')
+    buff = buff.replaceAll('buildType\\s*=\\s*\\"[a-zA-Z0-9\\s]+\\"\\s*;', 'buildType=\"' + buildType  + '\";')
+    versionClassFile.write(buff);
+    return fileName
+}
+
+def commitFile( fileName, versionArray )
+{
+    grgit.add( patterns: [ fileName ] )
+    grgit.commit(message: 'Version ' + versionToString( versionArray ) + ' class file is commited\n')
+}
+
+def versionToString( versionArray )
+{
+    return versionArray[0] + '.' + versionArray[1] + '.' + versionArray[2]
 }

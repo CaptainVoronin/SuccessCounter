@@ -1,32 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
 
     <TextView
         android:id="@+id/lbName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="6pt"
+        android:layout_marginBottom="6pt"
         android:layout_weight="1"
         android:paddingLeft="5pt"
-        android:paddingTop="8pt"
-        android:textSize="6pt" />
+        android:text="лорлор"
+        android:textSize="8pt" />
+
+    <ImageView
+        android:id="@+id/imgTrendArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="6pt"
+        android:layout_marginBottom="6pt"
+        android:layout_marginLeft="5pt"
+        app:srcCompat="@drawable/empty" />
 
     <TextView
         android:id="@+id/lbPercent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="6pt"
+        android:layout_marginBottom="6pt"
         android:layout_weight="1"
-        android:paddingTop="8pt"
         android:textAlignment="textEnd"
-        android:textSize="6pt" />
+        android:textSize="8pt" />
 
     <TextView
         android:id="@+id/lbDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="6pt"
+        android:layout_marginBottom="6pt"
         android:layout_weight="1"
-        android:paddingTop="8pt"
-        android:paddingRight="5pt"
         android:textAlignment="textEnd"
-        android:textSize="6pt" />
+        android:layout_marginRight="5pt"
+        android:textSize="8pt" />
+
 </TableRow>
