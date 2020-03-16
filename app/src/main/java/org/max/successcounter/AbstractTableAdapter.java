@@ -72,4 +72,7 @@ public abstract class AbstractTableAdapter<T>
 
     protected abstract TableRow makeRow(T item);
 
+    public abstract boolean inEditMode();
+
+    public abstract void cancelEditing();
 }

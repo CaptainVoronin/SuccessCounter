@@ -13,6 +13,7 @@ import org.max.successcounter.model.excercise.Template;
 
 public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
 {
+
     EditorListener editorListener;
     Template template;
 
@@ -130,6 +131,19 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         ImageView btn = tr.findViewById(R.id.btnAddStep);
         btn.setOnClickListener(new PlaceholderClickListener(editorListener));
         return tr;
+    }
+
+    @Override
+    public boolean inEditMode()
+    {
+        return editorListener.inEditorMode();
+    }
+
+    @Override
+    public void cancelEditing()
+    {
+        if (editorListener.getCurrent() != null)
+            editorListener.getCurrent().cancel();
     }
 
     private class InplaceEditor implements View.OnClickListener
@@ -274,6 +288,11 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
         {
             return current;
         }
+
+        public boolean inEditorMode()
+        {
+            return current != null;
+        }
     }
 
     private class RemoveRowListener implements View.OnClickListener
@@ -295,4 +314,6 @@ public class ExerciseOutcomes extends AbstractTableAdapter<OptionDescription>
             makeTable();
         }
     }
+
+
 }
