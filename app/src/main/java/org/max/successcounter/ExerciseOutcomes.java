@@ -1,4 +1,4 @@
-package org.max.successcounter.model;
+package org.max.successcounter;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -8,8 +8,6 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import org.max.successcounter.AbstractTableAdapter;
-import org.max.successcounter.R;
 import org.max.successcounter.model.excercise.OptionDescription;
 import org.max.successcounter.model.excercise.Template;
 
