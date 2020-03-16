@@ -1,39 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    android:paddingTop="5pt">
+    android:gravity="center_vertical"
+    android:weightSum="1">
 
     <TextView
         android:id="@+id/lbStepName"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="0.7"
         android:clickable="true"
-        android:gravity="bottom"
         android:text="Miss. Poins"
-        android:textSize="10pt" />
+        android:layout_marginLeft="6pt"
+        android:layout_marginTop="3pt"
+        android:layout_marginBottom="3pt"
+        android:textSize="8pt" />
 
     <EditText
         android:id="@+id/edStepDesc"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="0.7"
-        android:gravity="bottom"
         android:text="Step name"
-        android:textSize="10pt"
+        android:layout_marginLeft="6pt"
+        android:layout_marginTop="3pt"
+        android:layout_marginBottom="3pt"
+        android:textSize="8pt"
         android:visibility="gone" />
 
     <TextView
         android:id="@+id/lbStepPoints"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="0.2"
         android:clickable="true"
         android:text="0"
-        android:textSize="10pt" />
+        android:layout_marginTop="3pt"
+        android:layout_marginBottom="3pt"
+        android:textSize="8pt" />
 
     <EditText
         android:id="@+id/edStepPoints"
@@ -42,24 +48,26 @@
         android:layout_weight="0.2"
         android:inputType="number"
         android:text="2"
-        android:textSize="10pt"
+        android:layout_marginTop="3pt"
+        android:layout_marginBottom="3pt"
+        android:textSize="8pt"
         android:visibility="gone" />
 
     <ImageView
         android:id="@+id/btnSaveOption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:visibility="gone"
         android:layout_weight="0.1"
         app:srcCompat="@drawable/ic_save_black_24dp"
-        tools:visibility="gone" />
+        android:layout_marginTop="3pt"
+        android:layout_marginBottom="3pt"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/btnRemoveOption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:layout_weight="0.1"
+        android:layout_marginBottom="6pt"
         app:srcCompat="@drawable/ic_delete_black_24dp" />
 </TableRow>
