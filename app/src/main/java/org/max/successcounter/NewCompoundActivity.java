@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.j256.ormlite.dao.Dao;
 
 import org.max.successcounter.db.DatabaseHelper;
-import org.max.successcounter.model.ExerciseOutcomes;
 import org.max.successcounter.model.excercise.OptionDescription;
 import org.max.successcounter.model.excercise.Template;
 
@@ -139,5 +138,14 @@ public class NewCompoundActivity extends AppCompatActivity
             setResult(RESULT_CANCELED);
         }
         finish();
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if (outcomes.inEditMode())
+            outcomes.cancelEditing();
+        else
+            super.onBackPressed();
     }
 }
