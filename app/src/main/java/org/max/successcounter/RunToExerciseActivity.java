@@ -15,9 +15,12 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import org.max.successcounter.model.excercise.BaseExercise;
 import org.max.successcounter.model.excercise.IExercise;
+import org.max.successcounter.model.excercise.IExerciseEvent;
+import org.max.successcounter.model.excercise.NewShotEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RunToExerciseActivity extends AExerciseActivity<BaseExercise>
 {
@@ -26,13 +29,46 @@ public class RunToExerciseActivity extends AExerciseActivity<BaseExercise>
 
     ViewSwitcher switcher;
     int currentViewID;
-
     PieChart mChart;
+
+    AtomicInteger limitIndicatorValue;
 
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        if (getExercise().getTemplate().getLimit() != 0)
+        {
+            prepareLimitIndicator();
+        }
         setScreenProportions(0.2f, 0.2f);
+    }
+
+    protected void prepareLimitIndicator()
+    {
+        limitIndicatorValue = new AtomicInteger(0);
+
+        if (getExercise().getTemplate().getSuccesLimited())
+        {
+            getExercise().getPublisher().filter(event -> ((event.getType() == IExerciseEvent.Type.ShotAdded)))
+                    .filter(event -> ((NewShotEvent) event).getStep().getPoints() > 0)
+                    .subscribe(event -> setLimitIndicator(limitIndicatorValue.incrementAndGet()));
+
+            getExercise().getPublisher().filter(event -> ((event.getType() == IExerciseEvent.Type.Undo)))
+                    .filter(event -> ((NewShotEvent) event).getStep().getPoints() > 0)
+                    .subscribe(event -> setLimitIndicator(limitIndicatorValue.decrementAndGet()));
+        } else
+        {
+            getExercise().getPublisher().filter(event -> ((event.getType() == IExerciseEvent.Type.ShotAdded)))
+                    .subscribe(event -> setLimitIndicator(limitIndicatorValue.incrementAndGet()));
+
+            getExercise().getPublisher().filter(event -> ((event.getType() == IExerciseEvent.Type.Undo)))
+                    .subscribe(event -> setLimitIndicator(limitIndicatorValue.decrementAndGet()));
+        }
+    }
+
+    private Object setLimitIndicator(int decrementAndGet)
+    {
+        return null;
     }
 
     @Override
@@ -88,12 +124,11 @@ public class RunToExerciseActivity extends AExerciseActivity<BaseExercise>
 
         IExercise ex = getExercise();
 
-        if( !ex.getTemplate().getSuccesLimited() )
+        if (!ex.getTemplate().getSuccesLimited())
         {
             percent1 = 100f * ex.getAttemptsCount() / ex.getTemplate().getLimit();
             percent2 = 100 - percent1;
-        }
-        else
+        } else
         {
             percent1 = 100f * ex.getTotalPoints() / ex.getTemplate().getLimit();
             percent2 = 100 - percent1;

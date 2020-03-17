@@ -28,12 +28,11 @@ android {
         if (project.gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }) {
             buildType = "release"
             releaseBuild = true
-            println( "----------------- release ----------------------")
+            println( "----------------- " + "Branch " + grgit.branch.current.name + " release ----------------------")
         } else {
             buildType = "debug"
             releaseBuild = false
-            println( "----------------- debug ----------------------")
-            println( grgit.branch.current.name )
+            println( "----------------- " + "Branch " + grgit.branch.current.name + " debug ----------------------")
         }
     }
 
@@ -139,7 +138,6 @@ def writeVersionClassFile(verArray, buildType) {
     buff = buff.replaceAll('BUILD\\s*=\\s*\\d+\\s*;', 'BUILD=' + verArray[2].toString() + ';')
     buff = buff.replaceAll('BUILD_DATE=\\"[a-zA-Z0-9\\s]+\\";', 'BUILD_DATE=\"' + verArray[3].toString() + '\";')
     buff = buff.replaceAll('buildType\\s*=\\s*\\"[a-zA-Z0-9\\s]+\\"\\s*;', 'buildType=\"' + buildType  + '\";')
-    println( "Branch " + grgit.branch.current.name )
     versionClassFile.write(buff);
     return fileName
 }
