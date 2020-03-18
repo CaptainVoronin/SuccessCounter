@@ -16,6 +16,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import org.max.successcounter.model.excercise.BaseExercise;
 import org.max.successcounter.model.excercise.IExercise;
@@ -98,7 +99,7 @@ public class LineChartExerciseActivity<T extends BaseExercise> extends AExercise
         entries.add(new PieEntry(percent2));
         PieDataSet dataSet = new PieDataSet(entries, "");
         dataSet.setColors(CHART_COLORS);
-        dataSet.setValueFormatter(new RunToExerciseActivity.BlankValueFormatter());
+        dataSet.setValueFormatter(new BlankValueFormatter());
         PieData data = new PieData(dataSet);
         mIndicatorChart.setData(data);
         mIndicatorChart.invalidate();
@@ -180,5 +181,20 @@ public class LineChartExerciseActivity<T extends BaseExercise> extends AExercise
         data.setValueTextSize(12);
         mChart.setData(data);
         mChart.invalidate();
+    }
+
+    class BlankValueFormatter extends ValueFormatter
+    {
+        @Override
+        public String getFormattedValue(float value)
+        {
+            return "";
+        }
+
+        @Override
+        public String getPieLabel(float value, PieEntry pieEntry)
+        {
+            return "";
+        }
     }
 }
