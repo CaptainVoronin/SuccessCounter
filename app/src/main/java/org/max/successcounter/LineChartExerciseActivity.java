@@ -3,6 +3,7 @@ package org.max.successcounter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
@@ -39,18 +40,18 @@ public class LineChartExerciseActivity<T extends BaseExercise> extends AExercise
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        mIndicatorChart = findViewById(R.id.indicatorChartHolder);
         if (getExercise().getTemplate().getLimit() != 0)
         {
             prepareLimitIndicator();
-        }
-        //setScreenProportions(0.2f, 0.2f);
+        } else
+            mIndicatorChart.setVisibility(View.INVISIBLE);
     }
 
     protected void prepareLimitIndicator()
     {
         limitIndicatorValue = new AtomicInteger(0);
         prepareIndicatorChart();
-
 
         if (getExercise().getTemplate().getSuccesLimited())
         {
@@ -73,7 +74,6 @@ public class LineChartExerciseActivity<T extends BaseExercise> extends AExercise
 
     private void prepareIndicatorChart()
     {
-        mIndicatorChart = findViewById(R.id.indicatorChartHolder);
         mIndicatorChart.getDescription().setEnabled(false);
         mIndicatorChart.setDrawHoleEnabled(false);
         mIndicatorChart.setNoDataText("");
@@ -87,8 +87,7 @@ public class LineChartExerciseActivity<T extends BaseExercise> extends AExercise
     private Object setLimitIndicator(int value)
     {
         final int[] CHART_COLORS = {
-                getColor(R.color.blue_worm13), Color.rgb(0, 0x1C, 0x2B)};
-        //
+                getColor(R.color.blue_worm13), getColor(R.color.colorPrimaryDark)};
 
         IExercise ex = getExercise();
         int percent1 = value;
