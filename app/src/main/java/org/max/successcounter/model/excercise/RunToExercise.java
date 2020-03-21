@@ -2,7 +2,7 @@ package org.max.successcounter.model.excercise;
 
 /**
  * This is a class realises functionality for
- * an exercise with lasts to the first miss. The first miss terminates
+ * an exercise that lasts until the first miss. The first miss terminates
  * the run
  */
 public class RunToExercise extends BaseExercise
