@@ -5,10 +5,10 @@ package org.max.successcounter.model.excercise;
  * an exercise with lasts to the first miss. The first miss terminates
  * the run
  */
-public class SeriesExercise extends BaseExercise
+public class RunToExercise extends BaseExercise
 {
 
-    public SeriesExercise(Template template)
+    public RunToExercise(Template template)
     {
         super(template);
     }
