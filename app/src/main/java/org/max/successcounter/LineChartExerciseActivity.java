@@ -84,7 +84,7 @@ public class LineChartExerciseActivity<T extends BaseExercise> extends AExercise
         mIndicatorChart.setDescription(null);
     }
 
-    private Object setLimitIndicator(int value)
+    protected Object setLimitIndicator(int value)
     {
         final int[] CHART_COLORS = {
                 getColor(R.color.blue_worm13), getColor(R.color.colorPrimaryDark)};
