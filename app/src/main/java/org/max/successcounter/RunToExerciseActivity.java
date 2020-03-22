@@ -3,6 +3,7 @@ package org.max.successcounter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ViewSwitcher;
@@ -13,16 +14,14 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
-import org.max.successcounter.model.excercise.BaseExercise;
 import org.max.successcounter.model.excercise.IExercise;
-import org.max.successcounter.model.excercise.IExerciseEvent;
-import org.max.successcounter.model.excercise.NewShotEvent;
+import org.max.successcounter.model.excercise.RunToExercise;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RunToExerciseActivity extends AExerciseActivity<BaseExercise>
+public class RunToExerciseActivity extends AExerciseActivity<RunToExercise>
 {
     public static final int[] CHART_COLORS = {
             Color.rgb(255, 255, 255), Color.rgb(0, 0x1C, 0x2B)};
@@ -36,39 +35,9 @@ public class RunToExerciseActivity extends AExerciseActivity<BaseExercise>
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (getExercise().getTemplate().getLimit() != 0)
-        {
-            prepareLimitIndicator();
-        }
+        PieChart pch = findViewById(R.id.indicatorChartHolder);
+        pch.setVisibility(View.INVISIBLE);
         setScreenProportions(0.2f, 0.2f);
-    }
-
-    protected void prepareLimitIndicator()
-    {
-        limitIndicatorValue = new AtomicInteger(0);
-
-        if (getExercise().getTemplate().getSuccesLimited())
-        {
-            getExercise().getPublisher().filter(event -> ((event.getType() == IExerciseEvent.Type.ShotAdded)))
-                    .filter(event -> ((NewShotEvent) event).getStep().getPoints() > 0)
-                    .subscribe(event -> setLimitIndicator(limitIndicatorValue.incrementAndGet()));
-
-            getExercise().getPublisher().filter(event -> ((event.getType() == IExerciseEvent.Type.Undo)))
-                    .filter(event -> ((NewShotEvent) event).getStep().getPoints() > 0)
-                    .subscribe(event -> setLimitIndicator(limitIndicatorValue.decrementAndGet()));
-        } else
-        {
-            getExercise().getPublisher().filter(event -> ((event.getType() == IExerciseEvent.Type.ShotAdded)))
-                    .subscribe(event -> setLimitIndicator(limitIndicatorValue.incrementAndGet()));
-
-            getExercise().getPublisher().filter(event -> ((event.getType() == IExerciseEvent.Type.Undo)))
-                    .subscribe(event -> setLimitIndicator(limitIndicatorValue.decrementAndGet()));
-        }
-    }
-
-    private Object setLimitIndicator(int decrementAndGet)
-    {
-        return null;
     }
 
     @Override
