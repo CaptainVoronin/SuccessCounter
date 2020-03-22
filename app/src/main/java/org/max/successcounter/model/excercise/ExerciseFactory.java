@@ -19,7 +19,7 @@ public enum ExerciseFactory
                 exs = new BaseExercise(template);
                 break;
             case runTo:
-                exs = new SeriesExercise(template);
+                exs = new RunToExercise(template);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown exercise type");
