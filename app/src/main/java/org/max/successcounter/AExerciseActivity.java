@@ -101,7 +101,7 @@ public abstract class AExerciseActivity<T extends BaseExercise> extends AppCompa
     }
 
     /**
-     * Show dialog with exercise tags
+     * Show the dialog with exercise tags
      */
     private void showTagsDialog()
     {
