@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity
                     dialog.dismiss();
                     String name = ed.getText().toString();
                     res.setName(name);
-                    //exTemplateDao.update(set);
+                    exTemplateDao.update(res);
                     fillList();
                 } catch (SQLException e)
                 {
