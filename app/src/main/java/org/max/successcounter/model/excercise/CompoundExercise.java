@@ -72,14 +72,22 @@ public class CompoundExercise extends BaseExercise
         return maxShotPoints;
     }
 
-    public static class Option{
-        @Getter @Setter
+    public static class Option
+    {
+        @Getter
+        @Setter
         String description;
 
-        @Getter @Setter
+        @Getter
+        @Setter
         Integer points;
 
-        @Getter @Setter
+        @Getter
+        @Setter
         int color;
+
+        @Getter
+        @Setter
+        int orderNum;
     }
 }
