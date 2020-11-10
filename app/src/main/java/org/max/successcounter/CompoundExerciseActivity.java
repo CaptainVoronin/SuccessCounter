@@ -22,16 +22,17 @@ public class CompoundExerciseActivity extends LineChartExerciseActivity<Compound
         switcher = lc.findViewById(R.id.btnSwitcher);
 
         LinearLayout ll = placeholder.findViewById(R.id.llButtons);
-        cx.getOptions().forEach( item->{
-            ll.addView( makeButton( item ) );
-        } );
+        cx.getOptions().stream().sorted((o1, o2) -> Integer.compare(o1.getOrderNum(), o2.getOrderNum()))
+                .forEach(item -> {
+                    ll.addView(makeButton(item));
+                });
     }
 
     Button makeButton(CompoundExercise.Option option)
     {
         GradientDrawable gdw = new GradientDrawable();
         gdw.setColor(option.getColor());
-        gdw.setCornerRadius( 20 );
+        gdw.setCornerRadius(20);
         gdw.setStroke(3, getColor(R.color.colorAccent));
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -39,26 +40,15 @@ public class CompoundExerciseActivity extends LineChartExerciseActivity<Compound
 
         lp.setMargins(15, 0, 15, 5);
 
-        Button btn = new Button( this );
-        btn.setText( option.getDescription() );
+        Button btn = new Button(this);
+        btn.setText(option.getDescription());
         btn.setTextColor(getColor(R.color.colorAccent));
-        btn.setTag( option );
-        btn.setOnClickListener( new OnOptionClick() );
-        btn.setBackground( gdw );
-        btn.setLayoutParams( lp );
+        btn.setTag(option);
+        btn.setOnClickListener(new OnOptionClick());
+        btn.setBackground(gdw);
+        btn.setLayoutParams(lp);
 
         return btn;
-    }
-
-    public class OnOptionClick implements Button.OnClickListener
-    {
-        @Override
-        public void onClick(View v)
-        {
-            Object tag = v.getTag();
-            CompoundExercise.Option opt = (CompoundExercise.Option) tag;
-            addNewShot(opt.getPoints());
-        }
     }
 
     @Override
@@ -71,5 +61,16 @@ public class CompoundExerciseActivity extends LineChartExerciseActivity<Compound
     protected void onExerciseResumed()
     {
         switcher.showNext();
+    }
+
+    public class OnOptionClick implements Button.OnClickListener
+    {
+        @Override
+        public void onClick(View v)
+        {
+            Object tag = v.getTag();
+            CompoundExercise.Option opt = (CompoundExercise.Option) tag;
+            addNewShot(opt.getPoints());
+        }
     }
 }
