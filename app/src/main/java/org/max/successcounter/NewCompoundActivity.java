@@ -115,7 +115,7 @@ public class NewCompoundActivity extends AppCompatActivity
             // Because of that reason we remove all the options
             // from the template and save them in a list
             List<OptionDescription> ops = new ArrayList<>();
-            template.getOptions().stream().forEach(item -> ops.add(item));
+            ops.addAll(template.getOptions());
             template.getOptions().clear();
 
             // Than the template is saved
@@ -126,7 +126,6 @@ public class NewCompoundActivity extends AppCompatActivity
             ops.stream().forEach(item -> item.setParent(template));
 
             // Finally, I'd say OrmLite is crap
-
             for (OptionDescription op : ops)
                 optionDao.create(op);
 
