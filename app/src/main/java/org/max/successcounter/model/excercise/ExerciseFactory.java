@@ -34,6 +34,7 @@ public enum ExerciseFactory
         op.setDescription(od.getDescription());
         op.setPoints(od.getPoints());
         op.setColor(od.getColor());
+        op.setOrderNum(od.getOrderNum());
         return op;
     }
 }
